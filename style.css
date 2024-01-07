@@ -1,0 +1,134 @@
+body {
+  margin: 0;
+  background-color: lightslategrey;
+}
+
+.nav {
+  z-index: 500;
+  position: relative;
+}
+
+#menu {
+  display: none;
+}
+
+ul {
+  list-style-type: none;
+  position: relative;
+  left: 55px;
+  bottom: 75px;
+}
+
+li a {
+  display: block;
+  color: #000;
+  text-decoration: none;
+  position: relative;
+}
+
+#menuButton {
+  padding: 1em 5em;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #2c9caf;
+  transition: all 1000ms;
+  font-size: 15px;
+  position: relative;
+  overflow: hidden;
+  outline: 2px solid #2c9caf;
+  margin: 5%;
+}
+
+div.First-Part {
+  display: flex;
+}
+
+.First-Part {
+  position: relative;
+  padding: 10px;
+  background-color: #cfe3ff;
+  justify-content: space-around;
+  align-items: center;
+}
+
+textarea {
+  background-color: white;
+  /* max-width: 300px;
+  height: 200px; */
+  padding: 10px;
+  /* text-align: center; */
+  border: 2px solid white;
+  border-radius: 5px;
+  box-shadow: 3px 3px 2px rgb(249, 255, 85);
+}
+
+.Second-Part {
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  padding: 20px 60px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 0;
+  background-color: white;
+  box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 15px;
+  transition: all 0.5s ease;
+  position: relative;
+  margin: 3%;
+}
+
+/*Pseudo class */
+
+#menuButton:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+  outline: 2px solid #70bdca;
+  box-shadow: 4px 5px 17px -4px #268391;
+}
+
+#menuButton::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: #2c9caf;
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 1000ms;
+}
+
+button:hover::before {
+  width: 250%;
+}
+
+li a:hover {
+  background-color: #9c9c9c;
+  color: white;
+  max-width: 10%;
+}
+
+button:hover {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
+}
+
+button:active {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+  transform: translateY(10px);
+  transition: 100ms;
+}
