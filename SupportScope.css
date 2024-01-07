@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  background-color: antiquewhite;
+}
+
+.container {
+  margin: 2%;
+  display: flex;
+  justify-content: space-around;
+}
+
+textarea {
+  position: relative;
+  top: 40px;
+}
