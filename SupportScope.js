@@ -9,19 +9,12 @@ checkButton.addEventListener("click", function (e) {
 });
 
 function formattaApp(textareaValue) {
-  return textareaValue
-    .split(/\r?\n/)
-    .map((line) => line.trim().toLowerCase())
-    .filter((app) => app !== ""); // Rimuove stringhe vuote
+  return textareaValue.split("\n").map((line) => line.trim());
 }
 
 function calcolaDifferenza() {
-  const allAppsTextarea = document
-    .querySelector(".AllApps")
-    .value.toLowerCase();
-  const supportScopeTextarea = document
-    .querySelector(".SupportScope")
-    .value.toLowerCase();
+  const allAppsTextarea = document.querySelector(".AllApps").value;
+  const supportScopeTextarea = document.querySelector(".SupportScope").value;
   const differenceTextarea = document.querySelector(".Difference");
   const totalAppsCountElement = document.querySelector("#totalAppsCount");
 
@@ -29,18 +22,18 @@ function calcolaDifferenza() {
   const allAppsList = formattaApp(allAppsTextarea);
   const supportScopeList = formattaApp(supportScopeTextarea);
 
+  console.log("All Apps List:", allAppsList);
+  console.log("Support Scope List:", supportScopeList);
+
   // Trova le app presenti nella seconda textarea ma non nella prima
   const differenza = supportScopeList.filter(
     (app) => !allAppsList.includes(app)
   );
 
-  // Log di debug per verificare i valori delle variabili
-  console.log("All Apps List:", allAppsList);
-  console.log("Support Scope List:", supportScopeList);
   console.log("Difference:", differenza);
 
   // Aggiorna il risultato nella terza textarea
-  differenceTextarea.value = differenza.join("\n") || ""; // Assicurati che il valore sia almeno una stringa vuota
+  differenceTextarea.value = differenza.join("\n");
 
   // Visualizza il conteggio totale delle app nella terza textarea
   totalAppsCountElement.textContent = `Totale app non presenti: ${differenza.length}`;
