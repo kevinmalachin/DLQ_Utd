@@ -9,7 +9,7 @@ checkButton.addEventListener("click", function (e) {
 });
 
 function formattaApp(textareaValue) {
-  return textareaValue.split("\n").map((line) => line.trim());
+  return textareaValue.split(/\r?\n/).filter((line) => line.trim() !== ""); // Rimuovi righe vuote o contenenti solo spazi
 }
 
 function calcolaDifferenza() {
@@ -27,13 +27,15 @@ function calcolaDifferenza() {
 
   // Trova le app presenti nella seconda textarea ma non nella prima
   const differenza = supportScopeList.filter(
-    (app) => !allAppsList.some((item) => item.includes(app))
+    (app) => !allAppsList.includes(app)
   );
 
   console.log("Difference:", differenza);
 
   // Aggiorna il risultato nella terza textarea
-  differenceTextarea.value = differenza.join("\n");
+  differenceTextarea.value = `Totale app mancanti: ${
+    differenza.length
+  }\n\n${differenza.join("\n")}`;
 
   // Visualizza il conteggio totale delle app nella terza textarea
   totalAppsCountElement.textContent = `Totale app non presenti: ${differenza.length}`;
