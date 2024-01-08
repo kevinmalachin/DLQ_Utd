@@ -14,14 +14,14 @@ function calcolaDifferenza() {
   let supportScopeTextarea = document.querySelector(".SupportScope").value;
   let differenceTextarea = document.querySelector(".Difference");
 
-  // Converte i testi in array di stringhe
+  // Converts text in array
   let allAppsList = allAppsTextarea.split("\n");
   let supportScopeList = supportScopeTextarea.split("\n");
 
-  // Calcola la differenza tra i due elenchi
+  // Difference between the two
   let differenza = allAppsList.filter((app) => !supportScopeList.includes(app));
 
-  // Mostra il risultato nella Difference textarea
+  // Here is the result
   differenceTextarea.value = differenza.join("\n");
 }
 
