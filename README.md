@@ -17,7 +17,4 @@ in the third text area will appear those apps that are in the runtime (1) but no
 
 of course it will depend on how you filter the support scope
 
-Missing features:
-
-- report the number of missing application in the upper corner
-- test
+STILL TESTING
