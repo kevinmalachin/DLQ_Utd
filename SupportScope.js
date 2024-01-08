@@ -27,7 +27,7 @@ function calcolaDifferenza() {
 
   // Trova le app presenti nella seconda textarea ma non nella prima
   const differenza = supportScopeList.filter(
-    (app) => !allAppsList.includes(app)
+    (app) => !allAppsList.some((item) => item.includes(app))
   );
 
   console.log("Difference:", differenza);
