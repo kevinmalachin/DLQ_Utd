@@ -120,6 +120,9 @@ li a:hover {
   background-color: #a9a9a9;
   color: white;
   background: (0deg, rgba(184, 238, 255, 0.32), rgba(184, 238, 255, 0.32));
+  transform: scale(1.1);
+  box-shadow: 4px 5px 17px -4px #268391;
+  padding: 8px 16px;
 }
 
 button:hover {
