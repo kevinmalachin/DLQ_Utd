@@ -10,20 +10,9 @@ body {
 
 #menu {
   display: none;
-}
-
-ul {
-  list-style-type: none;
   position: relative;
-  left: 55px;
-  bottom: 75px;
-}
-
-li a {
-  display: block;
-  color: #000;
-  text-decoration: none;
-  position: relative;
+  bottom: 80px;
+  height: 50px;
 }
 
 #menuButton {
@@ -39,7 +28,23 @@ li a {
   position: relative;
   overflow: hidden;
   outline: 2px solid #2c9caf;
-  margin: 5%;
+}
+
+ul {
+  list-style-type: none;
+  position: relative;
+  left: 25px;
+}
+
+li {
+  position: relative;
+  left: 55px;
+}
+
+li a {
+  color: #000;
+  text-decoration: none;
+  position: relative;
 }
 
 div.First-Part {
@@ -82,7 +87,7 @@ button {
   font-size: 15px;
   transition: all 0.5s ease;
   position: relative;
-  margin: 3%;
+  margin: 5%;
 }
 
 /*Pseudo class */
@@ -112,9 +117,9 @@ button:hover::before {
 }
 
 li a:hover {
-  background-color: #9c9c9c;
+  background-color: #a9a9a9;
   color: white;
-  max-width: 10%;
+  background: (0deg, rgba(184, 238, 255, 0.32), rgba(184, 238, 255, 0.32));
 }
 
 button:hover {
