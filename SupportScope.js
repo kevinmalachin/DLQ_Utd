@@ -5,10 +5,10 @@ const checkButton = document.querySelector(".Check");
 // check button function
 checkButton.addEventListener("click", function (e) {
   e.preventDefault();
-  calcolaDifferenza();
+  checkDifferences();
 });
 
-function calcolaDifferenza() {
+function checkDifferences() {
   let allAppsTextarea = document.querySelector(".AllApps").value.toLowerCase();
   let supportScopeTextarea = document
     .querySelector(".SupportScope")
