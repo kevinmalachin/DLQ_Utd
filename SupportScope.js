@@ -1,6 +1,10 @@
 // DOM Elements
 const textareaList = document.querySelectorAll("textarea");
 const checkButton = document.querySelector(".Check");
+const allAppsTextarea = document.querySelector(".AllApps");
+const supportScopeTextarea = document.querySelector(".SupportScope");
+ const differenceTextarea = document.querySelector(".Difference");
+ const totalAppsCountElement = document.querySelector("#totalAppsCount");
 
 // check button function
 checkButton.addEventListener("click", function (e) {
@@ -13,10 +17,10 @@ function formattaApp(textareaValue) {
 }
 
 function calcolaDifferenza() {
-  const allAppsTextarea = document.querySelector(".AllApps").value;
-  const supportScopeTextarea = document.querySelector(".SupportScope").value;
-  const differenceTextarea = document.querySelector(".Difference");
-  const totalAppsCountElement = document.querySelector("#totalAppsCount");
+  allAppsTextarea.value;
+  supportScopeTextarea.value;
+  differenceTextarea = document.querySelector(".Difference");
+  totalAppsCountElement = document.querySelector("#totalAppsCount");
 
   // Formatta le app da entrambe le textarea
   const allAppsList = formattaApp(allAppsTextarea);
