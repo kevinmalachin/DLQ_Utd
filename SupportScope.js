@@ -22,17 +22,33 @@ function calcolaDifferenza() {
   const allAppsText = allAppsTextarea.value;
   const supportScopeText = supportScopeTextarea.value;
 
-  // Estrai parole dalla prima textarea
+  // Dividi le parole della prima textarea
   const paroleNellaPrimaTextarea = formattaApp(allAppsText);
 
-  // Estrai parole dalla seconda textarea
+  // Dividi le parole della seconda textarea
   const paroleNellaSecondaTextarea = formattaApp(supportScopeText);
 
+  // Escape characters speciali nell'elenco delle parole
+  const paroleNellaPrimaTextareaEscaped = paroleNellaPrimaTextarea.map(
+    (parola) => parola.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  );
+
+  // Costruisci un'espressione regolare usando le parole della seconda textarea
+  const regex = new RegExp(
+    paroleNellaSecondaTextarea
+      .map((parola) =>
+        paroleNellaPrimaTextareaEscaped.includes(parola)
+          ? parola
+          : parola.replace(/x/g, "x?")
+      )
+      .join("|"),
+    "g"
+  );
+
   // Trova le parole nella seconda textarea che non sono presenti nella prima
-  const paroleNonTrovate = paroleNellaSecondaTextarea.filter((parola) => {
-    const regex = new RegExp(`\\b${parola}\\b`, "i"); // Considera la parola come parola intera
-    return !regex.test(paroleNellaPrimaTextarea.join(" "));
-  });
+  const paroleNonTrovate = paroleNellaSecondaTextarea.filter(
+    (parola) => !paroleNellaPrimaTextarea.includes(parola)
+  );
 
   // Aggiorna il risultato nella terza textarea
   differenceTextarea.value = `App non trovate:\n\n${paroleNonTrovate.join(
