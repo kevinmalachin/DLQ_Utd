@@ -28,18 +28,21 @@ function calcolaDifferenza() {
   // Dividi le parole della seconda textarea
   const paroleNellaSecondaTextarea = formattaApp(supportScopeText);
 
-  // Escape characters speciali nell'elenco delle parole
+  // Escape characters speciali nell'elenco delle parole della prima textarea
   const paroleNellaPrimaTextareaEscaped = paroleNellaPrimaTextarea.map(
+    (parola) => parola.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  );
+
+  // Escape characters speciali nell'elenco delle parole della seconda textarea
+  const paroleNellaSecondaTextareaEscaped = paroleNellaSecondaTextarea.map(
     (parola) => parola.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   );
 
   // Costruisci un'espressione regolare usando le parole della seconda textarea
   const regex = new RegExp(
-    paroleNellaSecondaTextarea
+    paroleNellaSecondaTextareaEscaped
       .map((parola) =>
-        paroleNellaPrimaTextareaEscaped.includes(parola)
-          ? parola
-          : parola.replace(/x/g, "x?")
+        paroleNellaPrimaTextareaEscaped.includes(parola) ? parola : parola
       )
       .join("|"),
     "g"
