@@ -13,7 +13,8 @@ checkButton.addEventListener("click", function (e) {
 });
 
 function formattaApp(textareaValue) {
-  return textareaValue.match(/\S+/g) || []; // Estrai parole utilizzando espressione regolare
+  // Estrai parole utilizzando espressione regolare avanzata
+  return textareaValue.match(/[^\s]+/g) || [];
 }
 
 function calcolaDifferenza() {
@@ -21,16 +22,17 @@ function calcolaDifferenza() {
   const allAppsText = allAppsTextarea.value;
   const supportScopeText = supportScopeTextarea.value;
 
-  // Dividi le parole della prima textarea
+  // Estrai parole dalla prima textarea
   const paroleNellaPrimaTextarea = formattaApp(allAppsText);
 
-  // Dividi le parole della seconda textarea
+  // Estrai parole dalla seconda textarea
   const paroleNellaSecondaTextarea = formattaApp(supportScopeText);
 
   // Trova le parole nella seconda textarea che non sono presenti nella prima
-  const paroleNonTrovate = paroleNellaSecondaTextarea.filter(
-    (parola) => !paroleNellaPrimaTextarea.includes(parola)
-  );
+  const paroleNonTrovate = paroleNellaSecondaTextarea.filter((parola) => {
+    const regex = new RegExp(`\\b${parola}\\b`, "i"); // Considera la parola come parola intera
+    return !regex.test(paroleNellaPrimaTextarea.join(" "));
+  });
 
   // Aggiorna il risultato nella terza textarea
   differenceTextarea.value = `App non trovate:\n\n${paroleNonTrovate.join(
