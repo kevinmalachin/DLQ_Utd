@@ -3,8 +3,8 @@ const textareaList = document.querySelectorAll("textarea");
 const checkButton = document.querySelector(".Check");
 const allAppsTextarea = document.querySelector(".AllApps");
 const supportScopeTextarea = document.querySelector(".SupportScope");
- const differenceTextarea = document.querySelector(".Difference");
- const totalAppsCountElement = document.querySelector("#totalAppsCount");
+const differenceTextarea = document.querySelector(".Difference");
+const totalAppsCountElement = document.querySelector("#totalAppsCount");
 
 // check button function
 checkButton.addEventListener("click", function (e) {
@@ -13,36 +13,29 @@ checkButton.addEventListener("click", function (e) {
 });
 
 function formattaApp(textareaValue) {
-  return textareaValue.split(/\r?\n/).filter((line) => line.trim() !== ""); // Rimuovi righe vuote o contenenti solo spazi
+  return textareaValue.match(/\S+/g) || []; // Estrai parole utilizzando espressione regolare
 }
 
 function calcolaDifferenza() {
-  allAppsTextarea.value;
-  supportScopeTextarea.value;
-  differenceTextarea = document.querySelector(".Difference");
-  totalAppsCountElement = document.querySelector("#totalAppsCount");
+  // Ottieni il testo originale dalle textarea
+  const allAppsText = allAppsTextarea.value;
+  const supportScopeText = supportScopeTextarea.value;
 
-  // Formatta le app da entrambe le textarea
-  const allAppsList = formattaApp(allAppsTextarea);
-  const supportScopeList = formattaApp(supportScopeTextarea);
+  // Dividi le parole della prima textarea
+  const paroleNellaPrimaTextarea = formattaApp(allAppsText);
 
-  console.log("All Apps List:", allAppsList);
-  console.log("Support Scope List:", supportScopeList);
+  // Dividi le parole della seconda textarea
+  const paroleNellaSecondaTextarea = formattaApp(supportScopeText);
 
-  // Trova le app presenti nella seconda textarea ma non nella prima
-  const differenza = supportScopeList.filter(
-    (app) => !allAppsList.includes(app)
+  // Trova le parole nella seconda textarea che non sono presenti nella prima
+  const paroleNonTrovate = paroleNellaSecondaTextarea.filter(
+    (parola) => !paroleNellaPrimaTextarea.includes(parola)
   );
 
-  console.log("Difference:", differenza);
-
   // Aggiorna il risultato nella terza textarea
-  differenceTextarea.value = `Totale app mancanti: ${
-    differenza.length
-  }\n\n${differenza.join("\n")}`;
-
-  // Visualizza il conteggio totale delle app nella terza textarea
-  totalAppsCountElement.textContent = `Totale app non presenti: ${differenza.length}`;
+  differenceTextarea.value = `App non trovate:\n\n${paroleNonTrovate.join(
+    "\n"
+  )}`;
 }
 
 // Rimuovi il segnaposto quando clicchi nella textarea
