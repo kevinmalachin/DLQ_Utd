@@ -5,14 +5,12 @@ body {
 
 .container {
   margin: 2%;
-  /* display: flex; */
-  flex-direction: column;
-  align-items: center;
+  display: flex;
+  justify-content: space-around;
 }
 
 .first-part {
   display: flex;
-  justify-content: space-between;
 }
 
 textarea {
@@ -20,6 +18,8 @@ textarea {
 }
 
 .second-part {
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
 }
 
