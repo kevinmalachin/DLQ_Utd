@@ -5,28 +5,22 @@ body {
 
 .container {
   margin: 2%;
-  display: flex;
-  justify-content: space-around;
-}
-
-textarea {
-  position: relative;
-  top: 40px;
-}
-
-.first-part {
-  position: relative;
-  display: flex;
-  padding: 10px;
-  justify-content: space-around;
+  /* display: flex; */
+  flex-direction: column;
   align-items: center;
 }
 
-.second-part {
+.first-part {
   display: flex;
-  justify-content: center;
-  margin: 100px;
-  padding: 50px;
+  justify-content: space-between;
+}
+
+textarea {
+  margin: 10px;
+}
+
+.second-part {
+  margin-top: 20px;
 }
 
 button {
@@ -45,8 +39,7 @@ button {
   outline: none;
 }
 
-/* Pseudo class */
-
+/*Pseudo class */
 button:hover {
   background-color: #23c483;
   box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
