@@ -8,7 +8,7 @@ check the results in the third textarea
 
 Support scope check
 
-ctrl+a to take all the runtime magaer content
+ctrl+a to take all the runtime manager content
 copy in the first textarea
 take the column from the Support scope with all the application and paste in the second textarea
 check

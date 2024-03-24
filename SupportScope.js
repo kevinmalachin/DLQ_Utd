@@ -1,65 +1,42 @@
 // DOM Elements
-const textareaList = document.querySelectorAll("textarea");
-const checkButton = document.querySelector(".Check");
-const allAppsTextarea = document.querySelector(".AllApps");
-const supportScopeTextarea = document.querySelector(".SupportScope");
-const differenceTextarea = document.querySelector(".Difference");
-const totalAppsCountElement = document.querySelector("#totalAppsCount");
+const checkButton = document.getElementById("checkButton");
+const allAppsTextarea = document.getElementById("allAppsTextarea");
+const supportScopeTextarea = document.getElementById("supportScopeTextarea");
+const differenceTextarea = document.getElementById("differenceTextarea");
+const totalAppsCountElement = document.getElementById("totalAppsCount");
 
-// check button function
+// Event listener for the check button
 checkButton.addEventListener("click", function (e) {
   e.preventDefault();
-  calcolaDifferenza();
+  calculateDifference();
 });
 
-function formattaApp(textareaValue) {
-  // Estrai parole utilizzando espressione regolare avanzata
+// Function to format the input text
+function formatInputText(textareaValue) {
   return textareaValue.match(/[^\s]+/g) || [];
 }
 
-function calcolaDifferenza() {
-  // Ottieni il testo originale dalle textarea
+// Function to calculate the difference between texts
+function calculateDifference() {
+  // Get text from the textareas
   const allAppsText = allAppsTextarea.value;
   const supportScopeText = supportScopeTextarea.value;
 
-  // Dividi le parole della prima textarea
-  const paroleNellaPrimaTextarea = formattaApp(allAppsText);
+  // Split words from the first textarea
+  const wordsInFirstTextarea = formatInputText(allAppsText);
 
-  // Dividi le parole della seconda textarea
-  const paroleNellaSecondaTextarea = formattaApp(supportScopeText);
+  // Split words from the second textarea
+  const wordsInSecondTextarea = formatInputText(supportScopeText);
 
-  // Escape characters speciali nell'elenco delle parole della prima textarea
-  const paroleNellaPrimaTextareaEscaped = paroleNellaPrimaTextarea.map(
-    (parola) => parola.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  );
+  // Find words in the second textarea that are not present in the first one
+  const missingWords = wordsInSecondTextarea.filter(word => !wordsInFirstTextarea.includes(word));
 
-  // Escape characters speciali nell'elenco delle parole della seconda textarea
-  const paroleNellaSecondaTextareaEscaped = paroleNellaSecondaTextarea.map(
-    (parola) => parola.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  );
-
-  // Costruisci un'espressione regolare usando le parole della seconda textarea
-  const regex = new RegExp(
-    paroleNellaSecondaTextareaEscaped
-      .map((parola) =>
-        paroleNellaPrimaTextareaEscaped.includes(parola) ? parola : parola
-      )
-      .join("|"),
-    "g"
-  );
-
-  // Trova le parole nella seconda textarea che non sono presenti nella prima
-  const paroleNonTrovate = paroleNellaSecondaTextarea.filter(
-    (parola) => !paroleNellaPrimaTextarea.includes(parola)
-  );
-
-  // Aggiorna il risultato nella terza textarea
-  differenceTextarea.value = `App non trovate:\n\n${paroleNonTrovate.join(
-    "\n"
-  )}`;
+  // Update the result in the third textarea
+  differenceTextarea.value = `Apps not found:\n\n${missingWords.join("\n")}`;
 }
 
-// Rimuovi il segnaposto quando clicchi nella textarea
+// Remove placeholder when clicking on textarea
+const textareaList = document.querySelectorAll("textarea");
 textareaList.forEach(function (textarea) {
   textarea.addEventListener("click", function () {
     this.removeAttribute("placeholder");

@@ -14,11 +14,7 @@ textarea {
   top: 40px;
 }
 
-div.First-Part {
-  display: flex;
-}
-
-.First-Part {
+.first-part {
   position: relative;
   display: flex;
   padding: 10px;
@@ -26,7 +22,7 @@ div.First-Part {
   align-items: center;
 }
 
-.Second-Part {
+.second-part {
   display: flex;
   justify-content: center;
   margin: 100px;
@@ -49,7 +45,7 @@ button {
   outline: none;
 }
 
-/*Pseudo class */
+/* Pseudo class */
 
 button:hover {
   background-color: #23c483;
