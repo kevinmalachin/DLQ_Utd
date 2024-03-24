@@ -17,7 +17,6 @@ function formatInputText(textareaValue) {
     .filter(line => !/\d{4}-\d{2}-\d{2}/.test(line)) || [];
 }
 
-
 // Function to calculate the difference between texts
 function calculateDifference() {
   // Get text from the textareas
