@@ -1,42 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Support scope</title>
-    <link href="SupportScope.css" rel="stylesheet" />
-    <script src="SupportScope.js" defer></script>
-  </head>
-  <body>
-    <div class="Container">
-      <div class="First-Part">
-        <textarea
-          id="allAppsTextarea"
-          class="AllApps"
-          cols="60"
-          rows="40"
-          placeholder="Insert all the apps here!"
-        ></textarea>
-        <textarea
-          id="supportScopeTextarea"
-          class="SupportScope"
-          cols="60"
-          rows="40"
-          placeholder="Insert the support scope content here!"
-        ></textarea>
-        <textarea
-          id="differenceTextarea"
-          class="Difference"
-          cols="50"
-          rows="30"
-        ></textarea>
-      </div>
-      <div class="Second-Part">
-        <button class="Check">Check</button>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support scope</title>
+  <link href="SupportScope.css" rel="stylesheet" />
+  <script src="SupportScope.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <div class="first-part">
+      <textarea id="allAppsTextarea" class="all-apps" cols="60" rows="40" placeholder="Insert all the apps here!"></textarea>
+      <textarea id="supportScopeTextarea" class="support-scope" cols="60" rows="40" placeholder="Insert the support scope content here!"></textarea>
+      <textarea id="differenceTextarea" class="difference" cols="50" rows="30"></textarea>
     </div>
-    <div class="Total-Apps-Count">
-      <p>Total apps not present: <span id="totalAppsCount">0</span></p>
+    <div class="second-part">
+      <button id="checkButton" class="check">Check</button>
     </div>
-  </body>
+  </div>
+  <div class="total-apps-count">
+    <p>Total apps not present: <span id="totalAppsCount">0</span></p>
+  </div>
+</body>
 </html>

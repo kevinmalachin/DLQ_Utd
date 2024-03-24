@@ -3,7 +3,6 @@ const checkButton = document.getElementById("checkButton");
 const allAppsTextarea = document.getElementById("allAppsTextarea");
 const supportScopeTextarea = document.getElementById("supportScopeTextarea");
 const differenceTextarea = document.getElementById("differenceTextarea");
-const totalAppsCountElement = document.getElementById("totalAppsCount");
 
 // Event listener for the check button
 checkButton.addEventListener("click", function (e) {
@@ -28,8 +27,8 @@ function calculateDifference() {
   // Split words from the second textarea
   const wordsInSecondTextarea = formatInputText(supportScopeText);
 
-  // Find words in the second textarea that are not present in the first one
-  const missingWords = wordsInSecondTextarea.filter(word => !wordsInFirstTextarea.includes(word));
+  // Find words in the first textarea that are not present in the second one
+  const missingWords = wordsInFirstTextarea.filter(word => !wordsInSecondTextarea.includes(word));
 
   // Update the result in the third textarea
   differenceTextarea.value = `Apps not found:\n\n${missingWords.join("\n")}`;
