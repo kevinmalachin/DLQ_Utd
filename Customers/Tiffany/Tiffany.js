@@ -12,8 +12,8 @@ checkButton.addEventListener("click", function (e) {
 
 // Function to format the input text
 function formatInputText(textareaValue) {
-  // Extract only lines starting with the specified format and excluding dates
-  const matches = textareaValue.match(/^\w{4}-\w+.*$/gm);
+  // Extract only lines matching the specified conditions and excluding dates
+  const matches = textareaValue.match(/(\b[a-z]{3}-[A-Za-z0-9-]+|\b[a-z]{4}-[A-Za-z0-9-]+|\b[a-z]+api\b|\btrdmservice\b|\btcoordercaptureservice\b|\bsearchorderservicebeanservice\b|\brichrelevance\b|\breservations\b|\brepair\b|\bproductprocessapisf\b|\bpostricklepoll\b|\bivrauthtoken\b|\binventorytpm\b|\bimage\b|\bgooglemaps\b|\begc\b|\badobecampaign\b)/g);
   return matches
     ? matches.filter((line) => !/\d{4}-\d{2}-\d{2}/.test(line))
     : [];
