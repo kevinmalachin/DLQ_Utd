@@ -16,4 +16,3 @@ So in the third text area will appear those apps that are in the runtime (1) but
 To avoid the dates (format YYYY-MM-DD) to appear in the third one the RegExp has a special filter that excludes the date format.
 
 STILL TESTING
-because for LVMH and Bouygues is working fine but not for other customers with different naming convention for the application.

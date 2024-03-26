@@ -13,9 +13,9 @@ checkButton.addEventListener("click", function (e) {
 // Function to format the input text
 function formatInputText(textareaValue) {
   // Extract only lines starting with the specified format and excluding dates
-  const matches = textareaValue.match(/(\b[A-Za-z]{4}-[A-Za-z0-9-]+|\b[A-Za-z]{2,3}-[A-Za-z0-9-]+)/g);
+  const matches = textareaValue.match(/^\w{4}-\w+.*$/gm);
   return matches
-    ? matches.filter((line) => line !== "bycn-private-space-prd" && !/\d{4}-\d{2}-\d{2}/.test(line))
+    ? matches.filter((line) => !/\d{4}-\d{2}-\d{2}/.test(line))
     : [];
 }
 
@@ -36,11 +36,8 @@ function calculateDifference() {
     (word) => !wordsInSecondTextarea.includes(word)
   );
 
-  // Join missing words with a newline character
-  const missingWordsFormatted = missingWords.join("\n");
-
   // Update the result in the third textarea
-  differenceTextarea.value = `Apps not found:\n\n${missingWordsFormatted}`;
+  differenceTextarea.value = `Apps not found:\n\n${missingWords.join("\n")}`;
 }
 
 // Remove placeholder when clicking on textarea
