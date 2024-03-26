@@ -13,11 +13,12 @@ checkButton.addEventListener("click", function (e) {
 // Function to format the input text
 function formatInputText(textareaValue) {
   // Extract only lines starting with the specified format and excluding dates
-  const matches = textareaValue.match(/^\w{4}-\w+.*$/gm);
+  const matches = textareaValue.match(/(\b[A-Za-z]{2,}-[A-Za-z0-9-]+|\b[A-Za-z]{2,}-[A-Za-z0-9-]+-[A-Za-z0-9-]+)/g);
   return matches
     ? matches.filter((line) => !/\d{4}-\d{2}-\d{2}/.test(line))
     : [];
 }
+
 
 // Function to calculate the difference between texts
 function calculateDifference() {
