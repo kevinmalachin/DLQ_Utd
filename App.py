@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/scrape', methods=['GET'])
 def scrape():
-    file_path = '/Users/kevin.malachin/Documents/SupportScopeSheets&HTML/Bouygues.html'
+    file_path = '/Users/kevin.malachin/Documents/SupportScopeSheets&HTML/Dior.html'
     
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
