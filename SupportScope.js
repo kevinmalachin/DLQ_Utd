@@ -50,10 +50,35 @@ textareaList.forEach(function (textarea) {
   });
 });
 
-
 // function for the menu -> submenu appear when clicking on the "menu" button
 $(document).ready(function () {
   $("#menuButton").click(function () {
     $("#menu").slideToggle();
   });
 });
+
+// Function to fetch scraping results and display them
+async function fetchScrapingResults() {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/scrape'); // Sostituisci con l'URL del tuo backend Flask
+    const data = await response.json();
+
+    const resultContainer = document.getElementById('scrapingResults');
+    resultContainer.innerHTML = '';
+
+    if (data.error) {
+      resultContainer.innerHTML = `<p>Error: ${data.error}</p>`;
+    } else {
+      data.forEach(result => {
+        const p = document.createElement('p');
+        p.textContent = result;
+        resultContainer.appendChild(p);
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching scraping results:', error);
+  }
+}
+
+// Call fetchScrapingResults when the document is fully loaded
+document.addEventListener('DOMContentLoaded', fetchScrapingResults);

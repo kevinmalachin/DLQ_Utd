@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> LVMH Support scope</title>
+  <title>LVMH Support scope</title>
   <link href="SupportScope.css" rel="stylesheet" />
-  <script src="SupportScope.js" defer></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="SupportScope.js" defer></script>
 </head>
 <body>
-  <h3>This is the Support Scope check for LVMH </h3>
+  <h3>This is the Support Scope check for LVMH</h3>
   <nav>
     <button id="menuButton">Customers</button>
     <div id="menu">
       <ul>
-          <li><a href="./Customers/DIOR/DIOR.html" target="_blank">DIOR</a></li>
-          <li><a href="./Customers/Tiffany/Tiffany.html" target="_blank">Tiffany</a></li>
-          <li><a href="./Customers/Fast Retailing/Fast Retailing.html" target="_blank">Fast Retailing</a></li>
-          <li><a href="./Customers/MSC/MSC.html" target="_blank">MSC</a></li>
-          <li><a href="./Customers/Bouygues/Bouygues.html" target="_blank">Bouygues</a></li>
-          <li><a href="./Customers/Poclain/Poclain.html" target="_blank">Poclain</a></li>
+        <li><a href="./Customers/DIOR/DIOR.html" target="_blank">DIOR</a></li>
+        <li><a href="./Customers/Tiffany/Tiffany.html" target="_blank">Tiffany</a></li>
+        <li><a href="./Customers/Fast Retailing/Fast Retailing.html" target="_blank">Fast Retailing</a></li>
+        <li><a href="./Customers/MSC/MSC.html" target="_blank">MSC</a></li>
+        <li><a href="./Customers/Bouygues/Bouygues.html" target="_blank">Bouygues</a></li>
+        <li><a href="./Customers/Poclain/Poclain.html" target="_blank">Poclain</a></li>
       </ul>
-    </nav>
+    </div>
+  </nav>
   <div class="container">
     <div class="first-part">
       <textarea id="allAppsTextarea" class="all-apps" cols="50" rows="30" placeholder="Insert Runtime copied here!"></textarea>
@@ -29,8 +30,11 @@
       <textarea id="differenceTextarea" class="difference" cols="30" rows="20"></textarea>
     </div>
   </div>
-    <div class="Second-part">
-      <button id="checkButton" class="check">Check</button>
-    </div>
+  <div class="Second-part">
+    <button id="checkButton" class="check">Check</button>
+  </div>
+
+  <!-- Aggiunta dell'area per visualizzare i risultati dello scraping -->
+  <div id="scrapingResults"></div>
 </body>
 </html>
