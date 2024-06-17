@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,4 +38,86 @@
   <!-- Aggiunta dell'area per visualizzare i risultati dello scraping -->
   <div id="scrapingResults"></div>
 </body>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parser</title>
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+      /* Additional custom CSS can go here */
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <nav class="bg-gray-800 text-white p-4 text-center">
+      <h1>Parser</h1>
+    </nav>
+    <main class="container mx-auto p-4">
+      <div class="mb-4">
+        <select id="regexSelect" class="p-2 rounded">
+          <option value="">Select a regex pattern</option>
+          <option value="pattern1">BYCN</option>
+          <option value="pattern2">DIOR</option>
+          <option value="pattern3">FSTR</option>
+          <option value="pattern4">PCLN</option>
+          <option value="pattern5">TFNY</option>
+          <option value="pattern6">MSC</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label for="htmlFileInput" class="block mb-2">Carica file HTML:</label>
+        <input
+          type="file"
+          id="htmlFileInput"
+          accept=".html"
+          class="p-2 rounded bg-white"
+        />
+      </div>
+      <div class="mb-4">
+        <label for="excelFileInput" class="block mb-2"
+          >Carica file Excel:</label
+        >
+        <input
+          type="file"
+          id="excelFileInput"
+          accept=".xlsx, .xls"
+          class="p-2 rounded bg-white"
+        />
+      </div>
+      <div class="mb-4">
+        <button
+          id="compareBtn"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-150"
+          disabled
+        >
+          Confronta
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <textarea
+          id="htmlContent"
+          class="w-full h-24 p-2"
+          placeholder="Contenuto HTML caricato"
+          readonly
+        ></textarea>
+        <textarea
+          id="excelContent"
+          class="w-full h-24 p-2"
+          placeholder="Contenuto Excel caricato"
+          readonly
+        ></textarea>
+      </div>
+      <textarea
+        id="result"
+        class="w-full h-96 p-2"
+        placeholder="Risultati del confronto"
+        readonly
+      ></textarea>
+    </main>
+    <script src="SupportScope.js"></script>
+  </body>
+>>>>>>> a38c376 (Changing strategy)
 </html>
