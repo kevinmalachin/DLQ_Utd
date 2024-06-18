@@ -58,7 +58,7 @@ function compareFiles() {
 
   // Read keyword from input
   const keyword = document
-    .getElementById("regexSelect")
+    .getElementById("keywordInput")
     .value.toLowerCase()
     .trim();
 
@@ -87,6 +87,8 @@ function extractApplicationsFromHtml(htmlContent, className) {
 
 function extractApplicationsFromExcel(excelContent, keyword) {
   const applications = new Set();
+
+  // Assume that the first row is the header
   const headers = excelContent[0].map((header) => header.toLowerCase().trim());
 
   // Log per visualizzare i nomi delle colonne
@@ -104,10 +106,21 @@ function extractApplicationsFromExcel(excelContent, keyword) {
   for (let i = 1; i < excelContent.length; i++) {
     const row = excelContent[i];
     const cell = row[apiNameIndex];
-    if (typeof cell === "string") {
-      const cellValue = cell.trim().toLowerCase();
-      if (!keyword || cellValue.includes(keyword)) {
-        applications.add(cellValue);
+
+    // If keyword is provided, filter by keyword
+    if (keyword) {
+      const rowContainsKeyword = row.some(
+        (cell) =>
+          typeof cell === "string" && cell.toLowerCase().includes(keyword)
+      );
+
+      if (rowContainsKeyword && typeof cell === "string") {
+        applications.add(cell.trim().toLowerCase());
+      }
+    } else {
+      // If no keyword is provided, add all applications
+      if (typeof cell === "string") {
+        applications.add(cell.trim().toLowerCase());
       }
     }
   }
