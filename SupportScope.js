@@ -28,15 +28,20 @@ function handleExcelFile(event) {
   reader.onload = function (event) {
     const data = new Uint8Array(event.target.result);
     const workbook = XLSX.read(data, { type: "array" });
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
-    excelContent = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-    document.getElementById("excelContent").textContent = JSON.stringify(
-      excelContent,
-      null,
-      2
-    );
-    enableCompareButton();
+
+    // Leggi i dati dal secondo foglio denominato "APIs Scope"
+    const worksheet = workbook.Sheets["APIs Scope"];
+    if (worksheet) {
+      excelContent = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      document.getElementById("excelContent").textContent = JSON.stringify(
+        excelContent,
+        null,
+        2
+      );
+      enableCompareButton();
+    } else {
+      console.error("Foglio 'APIs Scope' non trovato nel file Excel");
+    }
   };
   reader.readAsArrayBuffer(file);
 }
@@ -50,7 +55,16 @@ function enableCompareButton() {
 function compareFiles() {
   const className = "sc-csuQGl fgtqry"; // Adjust this to the actual class name
   const htmlApps = extractApplicationsFromHtml(htmlContent, className);
-  const excelApps = extractApplicationsFromExcel(excelContent);
+
+  // Read keyword from input
+  const keyword = document
+    .getElementById("regexSelect")
+    .value.toLowerCase()
+    .trim();
+
+  // Extract applications from Excel based on the keyword
+  const excelApps = extractApplicationsFromExcel(excelContent, keyword);
+
   const { htmlOnly, excelOnly } = findDiscrepancies(excelApps, htmlApps);
 
   displayResults(htmlOnly, excelOnly);
@@ -66,17 +80,19 @@ function extractApplicationsFromHtml(htmlContent, className) {
     applications.add(element.textContent.trim().toLowerCase());
   });
 
+  console.log("HTML Applications:", applications); // Debug log
+
   return applications;
 }
 
-function extractApplicationsFromExcel(excelContent) {
+function extractApplicationsFromExcel(excelContent, keyword) {
   const applications = new Set();
-  const keyword = document.getElementById("regexSelect").value.toLowerCase();
+  const headers = excelContent[0].map((header) => header.toLowerCase().trim());
 
-  // Assume that the first row is the header
-  const headers = excelContent[0].map((header) => header.toLowerCase());
+  // Log per visualizzare i nomi delle colonne
+  console.log("Excel Headers:", headers);
 
-  // Find the index of the column named 'APIs Name'
+  // Find the index of the column named 'apis name'
   const apiNameIndex = headers.indexOf("apis name");
 
   if (apiNameIndex === -1) {
@@ -88,10 +104,15 @@ function extractApplicationsFromExcel(excelContent) {
   for (let i = 1; i < excelContent.length; i++) {
     const row = excelContent[i];
     const cell = row[apiNameIndex];
-    if (typeof cell === "string" && cell.toLowerCase().includes(keyword)) {
-      applications.add(cell.trim().toLowerCase());
+    if (typeof cell === "string") {
+      const cellValue = cell.trim().toLowerCase();
+      if (!keyword || cellValue.includes(keyword)) {
+        applications.add(cellValue);
+      }
     }
   }
+
+  console.log("Excel Applications:", applications); // Debug log
 
   return applications;
 }
@@ -110,6 +131,9 @@ function findDiscrepancies(excelApps, htmlApps) {
   const excelOnly = new Set(
     [...normalizedExcelApps].filter((app) => !normalizedHtmlApps.has(app))
   );
+
+  console.log("HTML Only Applications:", htmlOnly); // Debug log
+  console.log("Excel Only Applications:", excelOnly); // Debug log
 
   return { htmlOnly, excelOnly };
 }
