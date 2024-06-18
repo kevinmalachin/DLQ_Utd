@@ -11,3 +11,8 @@ Support scope check
 STILL TESTING
 
 FSTR OK
+Bouygues OK
+MSC OK
+LVMH NO
+DIOR NO
+Tiffany NO
