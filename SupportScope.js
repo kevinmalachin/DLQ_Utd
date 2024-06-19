@@ -29,10 +29,11 @@ function handleExcelFile(event) {
     const data = new Uint8Array(event.target.result);
     const workbook = XLSX.read(data, { type: "array" });
 
-    // Leggi i dati dal secondo foglio denominato "APIs Scope"
+    // Read data from the second sheet named "APIs Scope"
     const worksheet = workbook.Sheets["APIs Scope"];
     if (worksheet) {
       excelContent = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      console.log("Excel Content:", excelContent); // Debug log
       document.getElementById("excelContent").textContent = JSON.stringify(
         excelContent,
         null,
@@ -40,7 +41,7 @@ function handleExcelFile(event) {
       );
       enableCompareButton();
     } else {
-      console.error("Foglio 'APIs Scope' non trovato nel file Excel");
+      console.error("Sheet 'APIs Scope' not found in the Excel file");
     }
   };
   reader.readAsArrayBuffer(file);
@@ -88,40 +89,42 @@ function extractApplicationsFromHtml(htmlContent, className) {
 function extractApplicationsFromExcel(excelContent, keyword) {
   const applications = new Set();
 
+  // Check if excelContent is an array and not empty
+  if (!Array.isArray(excelContent) || excelContent.length === 0) {
+    console.error("No data found in excelContent");
+    return applications;
+  }
+
   // Assume that the first row is the header
   const headers = excelContent[0].map((header) => header.toLowerCase().trim());
 
-  // Log per visualizzare i nomi delle colonne
-  console.log("Excel Headers:", headers);
-
-  // Find the index of the column named 'apis name'
+  // Find the index of the columns named 'apis name' and 'project'
   const apiNameIndex = headers.indexOf("apis name");
+  const projectIndex = headers.indexOf("project");
 
-  if (apiNameIndex === -1) {
-    console.error("Colonna 'APIs Name' non trovata nell'Excel");
-    return applications;
+  if (apiNameIndex === -1 || projectIndex === -1) {
+    console.error("Columns 'APIs Name' or 'Project' not found in the Excel");
+    return applications; // Early return if headers are not found
   }
 
   // Iterate over the rows starting from the second row
   for (let i = 1; i < excelContent.length; i++) {
     const row = excelContent[i];
-    const cell = row[apiNameIndex];
+    const apiNameCell = row[apiNameIndex];
+    const projectCell = row[projectIndex];
 
-    // If keyword is provided, filter by keyword
-    if (keyword) {
-      const rowContainsKeyword = row.some(
-        (cell) =>
-          typeof cell === "string" && cell.toLowerCase().includes(keyword)
-      );
+    // Check if apiNameCell and projectCell are strings before calling toLowerCase()
+    const apiNameLowerCase =
+      typeof apiNameCell === "string" ? apiNameCell.toLowerCase().trim() : "";
+    const projectLowerCase =
+      typeof projectCell === "string" ? projectCell.toLowerCase().trim() : "";
 
-      if (rowContainsKeyword && typeof cell === "string") {
-        applications.add(cell.trim().toLowerCase());
-      }
-    } else {
-      // If no keyword is provided, add all applications
-      if (typeof cell === "string") {
-        applications.add(cell.trim().toLowerCase());
-      }
+    // Check if the keyword is present in the apiName or project
+    if (
+      apiNameLowerCase.includes(keyword) ||
+      projectLowerCase.includes(keyword)
+    ) {
+      applications.add(apiNameLowerCase);
     }
   }
 
@@ -131,19 +134,8 @@ function extractApplicationsFromExcel(excelContent, keyword) {
 }
 
 function findDiscrepancies(excelApps, htmlApps) {
-  const normalizedExcelApps = new Set(
-    Array.from(excelApps).map((app) => app.trim().toLowerCase())
-  );
-  const normalizedHtmlApps = new Set(
-    Array.from(htmlApps).map((app) => app.trim().toLowerCase())
-  );
-
-  const htmlOnly = new Set(
-    [...normalizedHtmlApps].filter((app) => !normalizedExcelApps.has(app))
-  );
-  const excelOnly = new Set(
-    [...normalizedExcelApps].filter((app) => !normalizedHtmlApps.has(app))
-  );
+  const htmlOnly = new Set([...htmlApps].filter((app) => !excelApps.has(app)));
+  const excelOnly = new Set([...excelApps].filter((app) => !htmlApps.has(app)));
 
   console.log("HTML Only Applications:", htmlOnly); // Debug log
   console.log("Excel Only Applications:", excelOnly); // Debug log
