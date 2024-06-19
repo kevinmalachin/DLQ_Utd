@@ -1,72 +1,84 @@
 body {
   margin: 0;
-  background-color: lightslategrey;
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
 }
 
 nav {
-  z-index: 500;
-  position: relative;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1em;
 }
 
 #menu {
   display: none;
-  position: relative;
-  bottom: 80px;
-  /* height: 50px; */
 }
 
 #menuButton {
-  padding: 1em 5em;
+  padding: 1em 2em;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  letter-spacing: 5px;
-  text-transform: uppercase;
   color: #2c9caf;
-  transition: all 1000ms;
-  font-size: 15px;
-  position: relative;
-  overflow: hidden;
-  outline: 2px solid #2c9caf;
+  background: transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+#menuButton:hover {
+  color: #ffffff;
+  background-color: #2c9caf;
 }
 
 ul {
   list-style-type: none;
-  position: relative;
+  padding: 0;
+  margin: 0;
 }
 
 li {
-  position: relative;
-  left: 55px;
+  margin: 0.5em 0;
 }
 
 li a {
-  color: #000;
+  color: #2c9caf;
   text-decoration: none;
-  position: relative;
+  transition: color 0.3s ease;
 }
 
-div.First-Part {
-  display: flex;
+li a:hover {
+  color: #1a6d7a;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2em auto;
+  padding: 1em;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
 .First-Part {
-  position: relative;
-  padding: 10px;
-  background-color: #cfe3ff;
-  justify-content: space-around;
-  align-items: center;
+  display: flex;
+  gap: 1em;
+  margin-bottom: 1em;
 }
 
 textarea {
-  background-color: white;
-  /* max-width: 300px;
-  height: 200px; */
-  padding: 10px;
-  /* text-align: center; */
-  border: 2px solid white;
+  width: 100%;
+  padding: 1em;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  box-shadow: 3px 3px 2px rgb(249, 255, 85);
+  font-size: 1em;
+  resize: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+textarea:focus {
+  border-color: #2c9caf;
+  outline: none;
 }
 
 .Second-Part {
@@ -75,27 +87,26 @@ textarea {
 }
 
 button {
-  padding: 20px 60px;
+  padding: 0.75em 2em;
   border-radius: 50px;
   cursor: pointer;
   border: 0;
-  background-color: white;
-  box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-size: 15px;
-  transition: all 0.5s ease;
-  position: relative;
-  margin: 5%;
+  background-color: #2c9caf;
+  color: #ffffff;
+  font-size: 1em;
+  transition: all 0.3s ease;
 }
 
-/*Pseudo class */
+button:hover {
+  background-color: #1a6d7a;
+}
 
-#menuButton:hover {
-  color: #ffffff;
-  transform: scale(1.1);
-  outline: 2px solid #70bdca;
-  box-shadow: 4px 5px 17px -4px #268391;
+button:active {
+  transform: scale(0.95);
+}
+
+button:focus {
+  outline: none;
 }
 
 #menuButton::before {
@@ -108,34 +119,9 @@ button {
   background-color: #2c9caf;
   transform: skewX(45deg);
   z-index: -1;
-  transition: width 1000ms;
+  transition: width 0.3s ease;
 }
 
 button:hover::before {
   width: 250%;
-}
-
-li a:hover {
-  background-color: #a9a9a9;
-  color: white;
-  background: (0deg, rgba(184, 238, 255, 0.32), rgba(184, 238, 255, 0.32));
-  transform: scale(1.1);
-  box-shadow: 4px 5px 17px -4px #268391;
-  padding: 8px 16px;
-}
-
-button:hover {
-  letter-spacing: 3px;
-  background-color: hsl(261deg 80% 48%);
-  color: hsl(0, 0%, 100%);
-  box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
-}
-
-button:active {
-  letter-spacing: 3px;
-  background-color: hsl(261deg 80% 48%);
-  color: hsl(0, 0%, 100%);
-  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
-  transform: translateY(10px);
-  transition: 100ms;
 }
