@@ -1,169 +1,108 @@
 body {
   margin: 0;
-  background-color: antiquewhite;
+  background-color: #f0f0f0; /* Colore di sfondo leggermente grigio */
+  font-family: "Arial", sans-serif; /* Font principale */
 }
 
 nav {
-  z-index: 500;
-  position: relative;
-}
-
-/* .menu {
-  display: none;
-  position: absolute;
-  top: 40px;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-} */
-
-/* .menu a {
-  padding: 12px 16px;
-  display: block;
-  color: black;
-  text-decoration: none;
-} */
-
-#menu {
-  display: none;
-  position: relative;
- /*  bottom: 80px; */
-  /* height: 50px; */
-}
-
-#menuButton {
-  padding: 1em 5em;
-  /* border: none; */
-  border-radius: 5px;
-  font-weight: bold;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: #2c9caf;
-  transition: all 1000ms;
-  font-size: 15px;
-  position: relative;
-  overflow: hidden;
-  outline: 2px solid #2c9caf;
-}
-
-/* .menu a:hover {
-  background-color: #f1f1f1;
-} */
-
-ul {
-  list-style-type: none;
-  position: relative;
-}
-
-li {
-  position: relative;
-  left: 55px;
-}
-
-li a {
-  color: #000;
-  text-decoration: none;
-  position: relative;
+  background-color: #333; /* Colore di sfondo della barra di navigazione */
+  color: white; /* Testo bianco */
+  padding: 1rem; /* Padding interno */
 }
 
 .container {
   margin: 2%;
   display: flex;
-  justify-content: space-around;
+  flex-direction: column; /* Layout in colonna per il contenuto */
+  align-items: center; /* Centratura degli elementi */
 }
 
-
-.First-Part {
-  position: relative;
-  padding: 10px;
-  background-color: #cfe3ff;
-  justify-content: space-around;
-  align-items: center;
+.mb-4 {
+  margin-bottom: 1.5rem; /* Margin bottom uniforme */
 }
 
-.first-part {
-  display: flex;
+.input-field,
+.select-field {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc; /* Bordo sottile grigio */
+  border-radius: 5px; /* Angoli arrotondati */
+  background-color: #fff; /* Sfondo bianco */
+  font-size: 1rem; /* Dimensione del testo */
+  transition: border-color 0.3s ease; /* Transizione per il cambio colore del bordo */
 }
 
-textarea {
-  margin: 10px;
+.input-field:focus,
+.select-field:focus {
+  outline: none; /* Rimuove l'outline al focus */
+  border-color: #1e88e5; /* Colore del bordo al focus */
 }
 
-.Second-part {
-  display: flex;
-  justify-content: center;
-  /* margin-top: 20px; */
-}
-
-button {
+#compareBtn {
+  margin-top: 1rem; /* Spazio superiore */
   padding: 1.3em 3em;
-  font-size: 12px;
+  font-size: 1rem; /* Dimensione del testo */
   text-transform: uppercase;
-  letter-spacing: 2.5px;
+  letter-spacing: 2px;
   font-weight: 500;
-  color: #000;
-  background-color: #fff;
-  border: none;
-  border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease 0s;
-  cursor: pointer;
-  outline: none;
+  color: #fff; /* Testo bianco */
+  background-color: #23c483; /* Colore di sfondo verde */
+  border: none; /* Rimuove il bordo */
+  border-radius: 45px; /* Angoli arrotondati */
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Ombra leggera */
+  transition: all 0.3s ease; /* Transizione generale */
+  cursor: pointer; /* Cursore puntatore */
+  outline: none; /* Rimuove l'outline al focus */
 }
 
-/* Pseudo class */
+#compareBtn:hover {
+  background-color: #1aa56e; /* Colore di sfondo al passaggio del mouse */
+  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4); /* Ombra più intensa */
+  transform: translateY(-3px); /* Sposta in su al passaggio del mouse */
+}
 
-#menuButton::before {
-  content: "";
+#compareBtn:active {
+  transform: translateY(-1px); /* Effetto di pressione */
+}
+
+/* Stile per le select */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem; /* Spazio inferiore uniforme */
+}
+
+.select-wrapper::before {
+  content: "\25BC"; /* Triangolo giù */
+  font-size: 0.8em; /* Dimensione del carattere */
   position: absolute;
-  left: -50px;
-  top: 0;
-  width: 0;
-  height: 100%;
-  background-color: #2c9caf;
-  transform: skewX(45deg);
-  z-index: -1;
-  transition: width 1000ms;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none; /* Non intercetta eventi del mouse */
+  color: #666; /* Colore del triangolo */
 }
 
-
-button:hover {
-  background-color: #23c483;
-  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-  color: #fff;
-  transform: translateY(-7px);
+.select-field {
+  appearance: none; /* Nasconde l'aspetto predefinito */
+  -webkit-appearance: none; /* Supporto per WebKit (Safari, Chrome) */
+  -moz-appearance: none; /* Supporto per Mozilla (Firefox) */
 }
 
-button:active {
-  transform: translateY(-1px);
+/* Colori di highlight per il select */
+#customerSelect,
+#keywordSelect {
+  border-color: #ccc; /* Bordo sottile grigio */
+  background-color: #fff; /* Sfondo bianco */
+  font-size: 1rem; /* Dimensione del testo */
+  color: #333; /* Colore del testo */
+  padding: 0.8rem 2rem 0.8rem 0.8rem; /* Padding */
+  border-radius: 5px; /* Angoli arrotondati */
+  transition: border-color 0.3s ease; /* Transizione per il cambio colore del bordo */
 }
 
-button:hover::before {
-  width: 250%;
-}
-
-/* li a:hover {
-  background-color: #a9a9a9;
-  color: white;
-  background: (0deg, rgba(184, 238, 255, 0.32), rgba(184, 238, 255, 0.32));
-  transform: scale(1.1);
-  box-shadow: 4px 5px 17px -4px #268391;
-  padding: 8px 16px;
-} */
-
-button:hover {
-  letter-spacing: 3px;
-  background-color: hsl(261deg 80% 48%);
-  color: hsl(0, 0%, 100%);
-  box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
-}
-
-button:active {
-  letter-spacing: 3px;
-  background-color: hsl(261deg 80% 48%);
-  color: hsl(0, 0%, 100%);
-  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
-  transform: translateY(10px);
-  transition: 100ms;
+#customerSelect:focus,
+#keywordSelect:focus {
+  outline: none; /* Rimuove l'outline al focus */
+  border-color: #23c483; /* Colore del bordo al focus */
 }
