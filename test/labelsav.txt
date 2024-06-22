@@ -1,0 +1,165 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 .SFNS-Regular_wdth_opsz110000_GRAD_wght1F40000;\f2\fnil\fcharset0 .SFNS-Regular_wdth_opsz110000_GRAD_wght2580000;
+\f3\fnil\fcharset0 HelveticaNeue-Bold;}
+{\colortbl;\red255\green255\blue255;\red52\green52\blue52;\red74\green74\blue74;\red234\green241\blue255;
+\red0\green0\blue0;\red17\green141\blue215;\red0\green0\blue233;\red255\green255\blue255;\red19\green112\blue105;
+\red35\green35\blue35;\red0\green0\blue0;\red234\green234\blue234;}
+{\*\expandedcolortbl;;\cssrgb\c26667\c26667\c26667;\cssrgb\c36078\c36078\c36078;\cssrgb\c93333\c95686\c100000;
+\cssrgb\c0\c0\c0\c84706;\cssrgb\c0\c62745\c87451;\cssrgb\c0\c0\c93333;\cssrgb\c100000\c100000\c100000;\cssrgb\c4314\c50980\c48627;
+\cssrgb\c18039\c18039\c18039;\cssrgb\c0\c0\c0\c60000;\cssrgb\c93333\c93333\c93333;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs28 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\fs22 \cf3 \strokec3 \
+\pard\pardeftab720\partightenfactor0
+\cf3 \cb4 Salesforce\cb1 \
+\pard\pardeftab720\qc\partightenfactor0
+\cf5 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://anypoint.mulesoft.com/mq/"}}{\fldrslt 
+\fs28 \cf6 \strokec6 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs32 \cf7 \strokec7 MQ\
+}}\pard\pardeftab720\partightenfactor0
+
+\f1\fs28 \cf2 \strokec2 \
+Christian Dior Couture\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf8 \cb9 \strokec8 Profile:\cb1 \
+\cb9 KM
+\f0 \cf2 \cb1 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+\cf10 \cb11 \strokec10 \
+\pard\pardeftab720\partightenfactor0
+\cf10 \cb1 PROD\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://anypoint.mulesoft.com/mq/organizations/925519b8-dc8b-4891-b731-c54b94885361/environments/9f80688d-0639-45c0-89d6-b121536233ca/destinations/"}}{\fldrslt \cf10 \
+Destinations}}\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0\cf10 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}{\field{\*\fldinst{HYPERLINK "https://anypoint.mulesoft.com/mq/organizations/925519b8-dc8b-4891-b731-c54b94885361/environments/9f80688d-0639-45c0-89d6-b121536233ca/destinations/eu-west-1/manage-queue/prod.orderlifecycle.createLabelSAV.DLQ/settings"}}{\fldrslt \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec10 \uc0\u8232 Queue Settings}}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec10 \
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}{\field{\*\fldinst{HYPERLINK "https://anypoint.mulesoft.com/mq/organizations/925519b8-dc8b-4891-b731-c54b94885361/environments/9f80688d-0639-45c0-89d6-b121536233ca/destinations/eu-west-1/manage-queue/prod.orderlifecycle.createLabelSAV.DLQ/messages/send"}}{\fldrslt \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec10 \uc0\u8232 Message Sender}}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec10 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0
+\f2\b \cf10 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}{\field{\*\fldinst{HYPERLINK "https://anypoint.mulesoft.com/mq/organizations/925519b8-dc8b-4891-b731-c54b94885361/environments/9f80688d-0639-45c0-89d6-b121536233ca/destinations/eu-west-1/manage-queue/prod.orderlifecycle.createLabelSAV.DLQ/messages/list"}}{\fldrslt \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec10 \uc0\u8232 Message Browser}}
+\f0\b0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec10 \
+\pard\pardeftab720\sa200\partightenfactor0
+
+\fs56 \cf10 prod.orderlifecycle.createLabelSAV.DLQ\
+\pard\pardeftab720\qc\partightenfactor0
+
+\f1\fs28 \cf10 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf10 \
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+
+\f3\b \cf10 ID\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 Payload Type\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 Payload\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 Date Created\cell \lastrow\row
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf10 \
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 1cb46e14-a0c9-4dfe-b1ed-57390600d325\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 application/java; charset=UTF-8\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 \{"id":"313bf364-2d84-11ef-8405-9be2736399b6","name":"SendCreateLabelSAV","accountId":"CDPROD","retailerId":"1","entityRef":"EC01748800-R1713","entityType":"RETURN_ORDER","entitySubtype":"LOCAL","entityStatus":"CREATED","type":"NORMAL","attributes":\{"subTotalAmount":\{"amount":241.67000000000002\},"returnItems":[\{"orderItemRef":"R1009DVOCY301M","unitQuantity":\{"quantity":1\},"returnReason":\{"label":"Aftersales","value":"E18"\},"subReturnReason":\{"label":"Aftersales","value":"E18-a"\},"returnReasonComment":"C-361226 EC01748800"\}],"dropoffLocation":\{"dropoffAddress":\{"street":"LEYLAND ROAD","city":"PRESTON","name":"ONE STOP","country":"GB","postcode":"PR1 9"\},"geoPoint":\{"latitude":53.74676132,"longitude":-2.7134571\},"openingTimes":[\{"day":1,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":2,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":3,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":4,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":5,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":6,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":7,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\}]\},"services":[\{"code":"AFTERSALES","type":"REFUND"\}],"type":"LOCAL","rootEntityId":"6019619","rootEntityRef":"EC01748800-R1713","totalTax":\{"amount":48.33\},"totalAmount":\{"amount":290.0\},"ref":"EC01748800-R1713","rootEntityType":"ORDER","returnOrderRef":"EC01748800-R1713","attributes":\{"pickup_mode":"drop_off","carrierName":"UPS","externalShipmentIdentifier":"EC01748800-6189256-8837-Rtrn-Afs"\}\},"meta":\{"simulation":false,"models":[]\},"trailLogs":[],"errorLogs":[],"rootEntityType":"ORDER","rootEntityRef":"EC01748800-R1713"\}\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 2024-06-22T11:25:31\cell \lastrow\row
+\pard\pardeftab720\partightenfactor0
+\cf10 \
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 ceea0f48-dc6f-4524-be9d-6918f149ad02\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 application/java; charset=UTF-8\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 \{"id":"e79e1fa2-2d5e-11ef-9682-4de7428dfaea","name":"SendCreateLabelSAV","accountId":"CDPROD","retailerId":"1","entityRef":"EC01748800-R3135","entityType":"RETURN_ORDER","entitySubtype":"LOCAL","entityStatus":"CREATED","type":"NORMAL","attributes":\{"subTotalAmount":\{"amount":241.67000000000002\},"returnItems":[\{"orderItemRef":"R1009DVOCY301M","unitQuantity":\{"quantity":1\},"returnReason":\{"label":"Aftersales","value":"E18"\},"subReturnReason":\{"label":"Aftersales","value":"E18-a"\},"returnReasonComment":"EC01748800 C-361226"\}],"dropoffLocation":\{"dropoffAddress":\{"street":"LEYLAND ROAD","city":"PRESTON","name":"ONE STOP","country":"GB","postcode":"PR1 9"\},"geoPoint":\{"latitude":53.74676132,"longitude":-2.7134571\},"openingTimes":[\{"day":1,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":2,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":3,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":4,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":5,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":6,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\},\{"day":7,"openHours":[\{"openingTime":"08:00","closingTime":"22:00"\}]\}]\},"services":[\{"code":"AFTERSALES","type":"REFUND"\}],"type":"LOCAL","rootEntityId":"6019619","rootEntityRef":"EC01748800-R3135","totalTax":\{"amount":48.33\},"totalAmount":\{"amount":290.0\},"ref":"EC01748800-R3135","rootEntityType":"ORDER","returnOrderRef":"EC01748800-R3135","attributes":\{"pickup_mode":"drop_off","carrierName":"UPS","externalShipmentIdentifier":"EC01748800-6189256-1145-Rtrn-Afs"\}\},"meta":\{"simulation":false,"models":[]\},"trailLogs":[],"errorLogs":[],"rootEntityType":"ORDER","rootEntityRef":"EC01748800-R3135"\}\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 2024-06-22T11:25:31\cell \lastrow\row
+\pard\pardeftab720\partightenfactor0
+\cf10 \
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 e9415c49-c82d-4f9f-810d-049f2169ddb0\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 application/java; charset=UTF-8\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 \{"id":"fb0233ea-2e58-11ef-a9f2-dd80a78cd7a0","name":"SendCreateLabelSAV","accountId":"CDPROD","retailerId":"1","entityRef":"EC01209569-R3210","entityType":"RETURN_ORDER","entitySubtype":"DEFAULT","entityStatus":"CREATED","type":"NORMAL","attributes":\{"declared":true,"subTotalAmount":\{"amount":291.67\},"returnItems":[\{"unitQuantity":\{"quantity":1\},"returnReason":\{"label":"Apr\'e8s-vente","value":"E18"\},"subReturnReason":\{"label":" Apr\'e8s-vente","value":"E18-a"\},"returnReasonComment":"CLAIM 399696_ECH_EC01209569","orderItemRef":"E1715CDLCY102U"\}],"custom.exchangeOriginalId":"6497370","dropoffLocation":\{"geoPoint":\{"latitude":46.0559616,"longitude":3.016974925\},"openingTimes":[\{"day":1,"openHours":[\{"closingTime":"12:30","openingTime":"09:00"\}]\},\{"day":2,"openHours":[\{"closingTime":"12:30","openingTime":"09:00"\}]\},\{"day":3,"openHours":[]\},\{"day":4,"openHours":[\{"closingTime":"12:30","openingTime":"09:00"\}]\},\{"day":5,"openHours":[\{"closingTime":"12:30","openingTime":"09:00"\}]\},\{"day":6,"openHours":[\{"closingTime":"12:30","openingTime":"09:00"\}]\},\{"day":7,"openHours":[]\}],"dropoffAddress":\{"city":"SAINT PARDOUX","name":"LA MANDRAGORA","street":"37 GRANDE RUE","country":"FR","postcode":"63440"\}\},"source":"externalAPI","services":[\{"code":"AFTERSALES","type":"EXCHANGE"\}],"type":"DEFAULT","custom.isExchangeOrder":true,"attributes.carrierName":"UPS","rootEntityId":"724879","rootEntityRef":"EC01209569-R3210","totalTax":\{"amount":58.33\},"totalAmount":\{"amount":350.0\},"ref":"EC01209569-R3210","custom.exchangeOriginalOrderNumber":"EC02599519","rootEntityType":"ORDER","returnOrderRef":"EC01209569-R3210","currency":\{"alphabeticCode":"EUR"\},"attributes.pickup_mode":"drop_off","taxType":\{\},"returnType":"RTV"\},"meta":\{"simulation":false,"models":[]\},"trailLogs":[],"errorLogs":[],"rootEntityType":"ORDER","rootEntityRef":"EC01209569-R3210"\}\cell \lastrow\row
+
+\itap1\trowd \taflags4 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth37200\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf10 2024-06-22T11:25:31\cell \lastrow\row
+\pard\pardeftab720\partightenfactor0
+\cf10 \
+\pard\pardeftab720\partightenfactor0
+\cf10 \cb12 \
+\pard\pardeftab720\partightenfactor0
+\cf10 \cb1 \
+\
+}
