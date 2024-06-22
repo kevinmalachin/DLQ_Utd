@@ -1,0 +1,160 @@
+
+Salesforce
+
+MQ
+Christian Dior Couture
+Profile:KM
+PROD
+Destinations
+Queue Settings
+Message Sender
+Message Browser
+prod.orderlifecycle.sendpartialrefund.DLQ
+ID
+Payload Type
+Payload
+Date Created
+409f6cf8-d0ba-48ee-9f14-cd2dcfeb5092
+application/java; charset=UTF-8
+{"id":"68697938-2d79-11ef-a0d2-5d7e478baa56","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01884923-R0373_17187184862811","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"1828f56b-7422-429b-8b03-0bd8bb712ea6","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718718493161,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"1828f56b-7422-429b-8b03-0bd8bb712ea6"}
+2024-06-18T13:48:14
+f8531200-2b61-4fec-b2c3-98148bd6ef82
+application/java; charset=UTF-8
+{"id":"24237a74-2e2f-11ef-86fb-3bae9316c84b","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01655033-R9294_17187965451161","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"ac353433-8098-4a2a-9273-bd54f00f9a79","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718796547187,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"ac353433-8098-4a2a-9273-bd54f00f9a79"}
+2024-06-19T11:29:07
+98eb551c-d1e0-4558-bbe9-98f5ee443fb3
+application/java; charset=UTF-8
+{"id":"9813a652-2cd7-11ef-8803-d1147b50a36b","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"2","entityRef":"CM_EC01767935-R4237_17186489927031","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"4ecdada7-3c5e-4fe1-9fcf-69386145448e","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718648994984,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"4ecdada7-3c5e-4fe1-9fcf-69386145448e"}
+2024-06-17T18:29:55
+0780c832-27a5-4e02-af25-5b1aabb6ab79
+application/java; charset=UTF-8
+{"id":"9ad90aa3-2d7a-11ef-bf60-65ba3d1f8032","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01830081-R4475_17187190052921","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"095e388a-b229-4377-a477-68c03c0af67d","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718719007569,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"095e388a-b229-4377-a477-68c03c0af67d"}
+2024-06-18T13:56:48
+2f09930a-90cc-46b8-bbfa-c1abe10aa7a4
+application/java; charset=UTF-8
+{"id":"9a5dbdf9-2d90-11ef-a846-656d64226a2f","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"2","entityRef":"CM_EC02096796-R1936_17187284521941","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"0c8dee10-692f-44fe-b1c3-7c21d6483ef5","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718728455532,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"0c8dee10-692f-44fe-b1c3-7c21d6483ef5"}
+2024-06-18T16:34:16
+e5586afa-ee56-4472-a774-bb3608cdacb6
+application/java; charset=UTF-8
+{"id":"773ed9fc-2f33-11ef-9333-a9a827083a05","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"3","entityRef":"CM_EC02102351-R7471_17189083527931","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"9aed055d-1d83-4d15-8dfe-aa20d7a513c2","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718908355882,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"9aed055d-1d83-4d15-8dfe-aa20d7a513c2"}
+2024-06-20T18:32:36
+2d5322fa-2b28-4a64-a5f5-3daeebd01a16
+application/java; charset=UTF-8
+{"id":"3de4855a-2fbf-11ef-b9ab-53955b13d485","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01814211-R8272_17189683862891","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"9f80efb4-092f-40b1-9980-6bdd388f89b7","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718968389079,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"9f80efb4-092f-40b1-9980-6bdd388f89b7"}
+2024-06-21T11:13:09
+c837d00c-6b22-4eb6-9d63-950e41cab50c
+application/java; charset=UTF-8
+{"id":"60e03512-2fbf-11ef-bc4e-1d1ecec89e2c","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01823655-R6792_17189684451151","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"55e4a550-0093-4df7-99a2-a11326280d6c","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718968447715,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"55e4a550-0093-4df7-99a2-a11326280d6c"}
+2024-06-21T11:14:08
+85029fc3-9a4e-40e3-8eeb-c1fb38af20aa
+application/java; charset=UTF-8
+{"id":"c6554da1-2fc0-11ef-8746-fdf3eacf83ca","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01834238-R4163_17189690448531","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"6928edb8-f16a-45fa-9c1f-e1c170a5d6ae","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718969047514,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"6928edb8-f16a-45fa-9c1f-e1c170a5d6ae"}
+2024-06-21T11:24:08
+6cd7e2fb-7318-4897-b7a6-f374c72b2a7e
+application/java; charset=UTF-8
+{"id":"018a1617-2e51-11ef-a9f2-d724e3b15526","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC02080534-R5575_17188110892681","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"42f38ecb-e3bd-4f01-8648-b8c18fcd5841","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718811092115,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"42f38ecb-e3bd-4f01-8648-b8c18fcd5841"}
+2024-06-19T15:31:32
+de248ff9-8874-49f7-bb2d-e4bef89445ae
+application/java; charset=UTF-8
+{"id":"de15075f-2d78-11ef-9fde-096320d759d9","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01779565-R0373_17187182587091","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"97fef1c1-fe72-408c-957d-56a769eb1a5a","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718718261381,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"97fef1c1-fe72-408c-957d-56a769eb1a5a"}
+2024-06-18T13:44:21
+bc649fbe-0f47-4310-ad68-73c08cd0857f
+application/java; charset=UTF-8
+{"id":"37a039ce-2d6c-11ef-9682-ad514033b365","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01494406-R5492_17187128259751","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"d6564c55-7864-4143-abc0-908e5ecbc6db","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718712828081,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"d6564c55-7864-4143-abc0-908e5ecbc6db"}
+2024-06-18T12:13:48
+727a7f0e-d35d-469c-9441-bd671a5c20a7
+application/java; charset=UTF-8
+{"id":"bdaa6b3d-2e48-11ef-a706-33958940245a","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01793864-R8294_17188075398111","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"a4ff92e7-4a61-49ae-a2a1-0206ca46c41e","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718807542255,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"a4ff92e7-4a61-49ae-a2a1-0206ca46c41e"}
+2024-06-19T14:32:22
+24a18a67-fc24-4509-bd36-876b383ad420
+application/java; charset=UTF-8
+{"id":"e77dc990-2d62-11ef-ae35-d10cbc0ca75b","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01707263-R7294_17187088256921","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"7b26a7c4-ed35-4744-950a-92571cdcee15","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718708828191,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"7b26a7c4-ed35-4744-950a-92571cdcee15"}
+2024-06-18T11:07:08
+85ea0a29-e9ad-4393-accb-5557c80c9519
+application/java; charset=UTF-8
+{"id":"61c4387e-2ef1-11ef-9f88-b745f6b3d195","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01893637-R9141_17188799708441","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"337ab839-e784-4507-ab34-a2bdccc53800","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718879972978,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"337ab839-e784-4507-ab34-a2bdccc53800"}
+2024-06-20T10:39:33
+8c5b806f-87dc-485c-ab69-99e717fa1aa7
+application/java; charset=UTF-8
+{"id":"38360331-2fb3-11ef-b9ab-4586123d3325","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"5","entityRef":"CM_EC01936768-R7537_17189632226921","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"4647d731-b195-4bae-a325-556b832adf71","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718963225662,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"4647d731-b195-4bae-a325-556b832adf71"}
+2024-06-21T09:47:06
+46172141-be35-4fbb-834c-b978d1bada72
+application/java; charset=UTF-8
+{"id":"696c706c-2ff2-11ef-bdad-e9475dc2705a","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"2","entityRef":"CM_EC01258449-R5057_17189903635501","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"c1bfaefb-d697-491b-aef3-91e00a957552","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718990366458,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"c1bfaefb-d697-491b-aef3-91e00a957552"}
+2024-06-21T17:19:27
+226ed2a7-767b-4cdf-9990-de44dcae9e86
+application/java; charset=UTF-8
+{"id":"a3616a16-2d62-11ef-ae35-47cd49475b83","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01572355-R3753_17187087116941","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"a8e18cd9-ddc5-40ca-87b9-5896056fef55","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718708713895,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"a8e18cd9-ddc5-40ca-87b9-5896056fef55"}
+2024-06-18T11:05:14
+f77a6e54-6886-4f52-bcd9-7938df657bfb
+application/java; charset=UTF-8
+{"id":"f603cb10-2fbe-11ef-b9ab-e3f744995647","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01965511-R1452_17189682655471","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"dc2303a6-dc87-49b9-a5c5-701137f7eba1","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718968268479,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"dc2303a6-dc87-49b9-a5c5-701137f7eba1"}
+2024-06-21T11:11:09
+16b9d639-0a4f-4184-8988-b87b00078658
+application/java; charset=UTF-8
+{"id":"b25e3ff5-3007-11ef-8746-33efa1175918","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"2","entityRef":"CM_EC01903223-R7106_17189995058681","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"00d75ff6-dd2e-497d-ab3f-3226f4f0b298","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718999508351,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"00d75ff6-dd2e-497d-ab3f-3226f4f0b298"}
+2024-06-21T19:51:48
+df8466df-4520-42c3-8602-67309de186f6
+application/java; charset=UTF-8
+{"id":"5a22e8a3-2cb3-11ef-b0cc-edb3a9e6da2b","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC02051050-R6293_17186334268601","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"a93a5779-1147-4be1-996f-de79383633dc","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718633429186,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"a93a5779-1147-4be1-996f-de79383633dc"}
+2024-06-17T14:10:29
+075b7e60-e0a0-4e74-a014-415e274bc565
+application/java; charset=UTF-8
+{"id":"a6a202f5-2cb6-11ef-802b-1943df3bf628","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC02107021-R1711_17186348435261","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"03bfbe39-1915-40a7-9c84-8295c650df61","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718634845889,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"03bfbe39-1915-40a7-9c84-8295c650df61"}
+2024-06-17T14:34:06
+c3c93a02-1390-44a5-99ed-c46ecb03dfcc
+application/java; charset=UTF-8
+{"id":"2dc7e307-2cb2-11ef-9628-f1841c135157","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01896894-R4140_17186329229411","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"3cea9221-e50b-4dd1-ac1a-356674606f19","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718632925141,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"3cea9221-e50b-4dd1-ac1a-356674606f19"}
+2024-06-17T14:02:05
+ef4adc2b-ede2-4b11-bfe7-58f53b55cb7f
+application/java; charset=UTF-8
+{"id":"f7868068-2d82-11ef-8a05-f9eeb562f984","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"2","entityRef":"CM_EC01599030-R5858_17187225966691","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"302a1833-f53e-4a00-b78f-0d1642d1c439","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718722598955,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"302a1833-f53e-4a00-b78f-0d1642d1c439"}
+2024-06-18T14:56:39
+a23cee9b-7934-4557-8ae2-f6befdd0696f
+application/java; charset=UTF-8
+{"id":"d684457c-2d79-11ef-a7c1-7f44d4759bc7","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01788605-R4122_17187186751951","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"21bb9ff6-f334-44a0-b350-011ec5a22499","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718718678129,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"21bb9ff6-f334-44a0-b350-011ec5a22499"}
+2024-06-18T13:51:18
+7dd624b0-8bdb-4663-a6ae-4a5ec50cc3bd
+application/java; charset=UTF-8
+{"id":"336ea90e-2d6d-11ef-a7c1-43693314567f","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01848859-R1115_17187132484161","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"3eaf9684-17ea-4941-a728-da77ef4eabca","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718713250550,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"3eaf9684-17ea-4941-a728-da77ef4eabca"}
+2024-06-18T12:20:51
+340ba7af-8b74-4dc1-803c-0f05bc505bed
+application/java; charset=UTF-8
+{"id":"a3bbba64-2fc0-11ef-8746-2d25d2af6697","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC02092015-R7604_17189689873231","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"15a3d01a-d882-44bb-80cb-958d79e32680","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718968989518,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"15a3d01a-d882-44bb-80cb-958d79e32680"}
+2024-06-21T11:23:10
+e0275c0f-36bf-4904-bc05-e9ac6c1de13f
+application/java; charset=UTF-8
+{"id":"e2b03742-2e2d-11ef-86fb-57b9efd1211e","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01909628-R4254_17187960059081","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"4a266027-aa86-4ed9-956c-5a5f2872c252","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718796007926,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"4a266027-aa86-4ed9-956c-5a5f2872c252"}
+2024-06-19T11:20:08
+b7b1e411-f23a-4315-9cd2-ca3884d6acaa
+application/java; charset=UTF-8
+{"id":"e9e9ffbd-2ca4-11ef-b05c-ede1c4d77d8b","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01903192-R7864_17186272256191","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"ef5bb3f4-1c3c-4616-9f43-f0dc0157175d","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718627227951,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"ef5bb3f4-1c3c-4616-9f43-f0dc0157175d"}
+2024-06-17T12:27:08
+103b791f-43ed-4a16-92ad-2ba3b9d35213
+application/java; charset=UTF-8
+{"id":"6ed535fb-2fd9-11ef-8871-6956a2d246fd","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC02101072-R5967_17189796358561","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"884785dc-ecc7-4377-ae95-9837eac94fad","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718979638193,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"884785dc-ecc7-4377-ae95-9837eac94fad"}
+2024-06-21T14:20:38
+d9903443-c152-4ab7-9e9e-43503cd59303
+application/java; charset=UTF-8
+{"id":"6a24ca7c-2d59-11ef-bcc5-31127ed224f7","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01595510-R0918_17187047500001","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"a15ef8cf-f9e1-49d8-8533-1a7c8e7032d2","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718704752358,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"a15ef8cf-f9e1-49d8-8533-1a7c8e7032d2"}
+2024-06-18T09:59:13
+cbb19f05-f4fc-4cb8-b339-3168cc7e8195
+application/java; charset=UTF-8
+{"id":"085a304e-2e34-11ef-a97a-f3c3601356bb","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01827734-R2383_17187986458411","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"80d2ad58-9548-4370-a4c1-f9a7f8702144","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718798648052,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"80d2ad58-9548-4370-a4c1-f9a7f8702144"}
+2024-06-19T12:04:08
+7554dd0b-a9af-45b4-b081-82887e5eaa04
+application/java; charset=UTF-8
+{"id":"0fb150d3-2cbb-11ef-802b-35cabaeddb17","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01675957-R6059_17186367371131","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"40a28658-34c6-47b9-948c-b5d9fc3410df","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718636740101,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"40a28658-34c6-47b9-948c-b5d9fc3410df"}
+2024-06-17T15:05:40
+28e58102-639b-4e63-b258-deb409c9276a
+application/java; charset=UTF-8
+{"id":"134f7dbd-2ca4-11ef-b0cc-851415b5bac4","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01706822-R2519_17186268654841","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"52d90e73-acf2-467e-8994-e90aac29b5cb","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718626867775,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"52d90e73-acf2-467e-8994-e90aac29b5cb"}
+2024-06-17T12:21:08
+db3f1d2a-8fc2-4006-89c5-0fb64a91b0fb
+application/java; charset=UTF-8
+{"id":"d0b06e48-2d58-11ef-bcc5-bf6587e84ff8","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01670400-R7633_17187044928051","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"f4f11a1f-cf58-420e-b25a-668d7a1bd0fc","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718704494921,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"f4f11a1f-cf58-420e-b25a-668d7a1bd0fc"}
+2024-06-18T09:54:55
+1a08175c-b397-43a2-97e5-187d211ce63e
+application/java; charset=UTF-8
+{"id":"2d60a0cf-2e3b-11ef-aa6e-fbc6bfbe5948","name":"SendRiskifiedPartialRefundWebhook","accountId":"CDPROD","retailerId":"1","entityRef":"CM_EC01717005-R8016_17188017141821","entityType":"CREDIT_MEMO","entityStatus":"REFUND_REQUESTED","type":"NORMAL","attributes":{"rootEntityRef":"f4308dfc-e7e1-4ad3-b4fc-229796662334","rootEntityType":"BILLING_ACCOUNT"},"scheduledOn":1718801716649,"meta":{"simulation":false,"models":[]},"trailLogs":[],"errorLogs":[],"rootEntityType":"BILLING_ACCOUNT","rootEntityRef":"f4308dfc-e7e1-4ad3-b4fc-229796662334"}
+2024-06-19T12:55:17
