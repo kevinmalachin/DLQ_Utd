@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parser</title>
+    <title>SupportScope</title>
     <link href="style.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -12,16 +12,20 @@
       /* Additional custom CSS can go here */
     </style>
   </head>
+
   <body class="bg-gray-100">
     <nav class="bg-gray-800 text-white p-4 text-center">
-      <h1>SupportScope</h1>
+      <h1 class="text-xl font-bold">SupportScope</h1>
     </nav>
     <main class="container mx-auto p-4">
       <div class="mb-4">
         <label for="customerSelect" class="block mb-2"
           >Seleziona Cliente:</label
         >
-        <select id="customerSelect" class="p-2 rounded bg-white w-full">
+        <select
+          id="customerSelect"
+          class="p-2 rounded bg-white w-full border border-gray-300 shadow-sm"
+        >
           <option value="">Seleziona un cliente</option>
           <!-- Aggiungi qui le opzioni per i clienti -->
           <option value="Bouygues">Bouygues</option>
@@ -36,7 +40,10 @@
         <label for="projectSelect" class="block mb-2"
           >Seleziona Project/Business group:</label
         >
-        <select id="projectSelect" class="p-2 rounded bg-white w-full">
+        <select
+          id="projectSelect"
+          class="p-2 rounded bg-white w-full border border-gray-300 shadow-sm"
+        >
           <option value="">Seleziona un Project/Business group</option>
           <!-- Aggiungi qui le opzioni per le keyword -->
           <option value="CRM">CRM</option>
@@ -62,7 +69,7 @@
           type="file"
           id="htmlFileInput"
           accept=".html"
-          class="p-2 rounded bg-white"
+          class="p-2 rounded bg-white border border-gray-300 shadow-sm"
         />
       </div>
       <div class="mb-4">
@@ -73,7 +80,7 @@
           type="file"
           id="excelFileInput"
           accept=".xlsx, .xls"
-          class="p-2 rounded bg-white"
+          class="p-2 rounded bg-white border border-gray-300 shadow-sm"
         />
       </div>
       <div class="mb-4">
@@ -88,20 +95,20 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <textarea
           id="htmlContent"
-          class="w-full h-24 p-2"
+          class="w-full h-24 p-2 border border-gray-300 rounded shadow-sm"
           placeholder="Contenuto HTML caricato"
           readonly
         ></textarea>
         <textarea
           id="excelContent"
-          class="w-full h-24 p-2"
+          class="w-full h-24 p-2 border border-gray-300 rounded shadow-sm"
           placeholder="Contenuto Excel caricato"
           readonly
         ></textarea>
       </div>
       <textarea
         id="result"
-        class="w-full h-96 p-2"
+        class="w-full h-96 p-2 border border-gray-300 rounded shadow-sm"
         placeholder="Risultati del confronto"
         readonly
       ></textarea>
