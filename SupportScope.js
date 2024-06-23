@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const htmlFileInput = document.getElementById("htmlFileInput");
   const excelFileInput = document.getElementById("excelFileInput");
   const compareBtn = document.getElementById("compareBtn");
-  const keywordSelect = document.getElementById("keywordSelect");
+  const projectSelect = document.getElementById("projectSelect");
   const customerSelect = document.getElementById("customerSelect");
 
   let htmlContent = "";
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Handle keyword selection change
-  keywordSelect.addEventListener("change", function () {
+  projectSelect.addEventListener("change", function () {
     enableCompareButton();
   });
 
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // Clear current options
-    keywordSelect.innerHTML =
+    projectSelect.innerHTML =
       '<option value="">Seleziona un Project/Business group</option>';
 
     // Add options based on selected customer
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const option = document.createElement("option");
         option.value = keyword;
         option.textContent = keyword;
-        keywordSelect.appendChild(option);
+        projectSelect.appendChild(option);
       });
     }
 
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to enable Compare button when conditions are met
   function enableCompareButton() {
-    const selectedKeyword = keywordSelect.value;
+    const selectedKeyword = projectSelect.value;
     const selectedCustomer = customerSelect.value;
     compareBtn.disabled = !(
       selectedCustomer &&
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to compare HTML and Excel files based on selected keyword
   function compareFiles() {
-    const selectedKeyword = keywordSelect.value.toLowerCase().trim();
+    const selectedKeyword = projectSelect.value.toLowerCase().trim();
     const className = "sc-csuQGl fgtqry"; // Adjust this to the actual class name
     const htmlApps = extractApplicationsFromHtml(htmlContent, className);
     const excelApps = extractApplicationsFromExcel(

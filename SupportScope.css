@@ -173,3 +173,35 @@ button:focus {
   outline: none; /* Rimuove l'outline al focus */
   box-shadow: 0 0 0 3px rgba(35, 196, 131, 0.4); /* Effetto outline al focus */
 }
+
+/* Colori speciali per i tasti "Seleziona Cliente" e "Seleziona Progetto" */
+#customerSelect,
+#projectSelect {
+  padding: 0.8em 2em;
+  border: 2px solid #2c9caf; /* Bordo più spesso */
+  background-color: #ffffff;
+  color: #2c9caf;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+#customerSelect:hover,
+#projectSelect:hover {
+  background-color: #2c9caf; /* Cambio colore al passaggio del mouse */
+  color: #ffffff;
+}
+
+#customerSelect:focus,
+#projectSelect:focus {
+  outline: none; /* Rimuove l'outline al focus */
+  border-color: #1a6d7a; /* Cambio colore bordo al focus */
+}
+
+#customerSelect::after,
+#projectSelect::after {
+  content: "\25BC"; /* Triangolo giù */
+  margin-left: 0.5em;
+}
