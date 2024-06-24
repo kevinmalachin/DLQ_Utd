@@ -7,9 +7,31 @@ document
 document
   .getElementById("compareBtn")
   .addEventListener("click", compareFiles, false);
+document
+  .getElementById("customerSelect")
+  .addEventListener("change", updateProjectOptions, false);
 
 let htmlContent = "";
 let excelContent = [];
+
+const customerProjects = {
+  Bouygues: [
+    "CRM",
+    "Corporate",
+    "Business",
+    "BYES360",
+    "FM",
+    "Losinger",
+    "Commerce",
+    "KAM",
+  ],
+  MSC: ["MSC Cruises", "Digital Channels", "SAP"],
+  LVMH: ["Group IT EAME", "Group IT US", "LVMH (Root)"],
+  // Customers without specific projects
+  FSTR: [],
+  DIOR: [],
+  Tiffany: [],
+};
 
 function handleHtmlFile(event) {
   const file = event.target.files[0];
@@ -51,6 +73,22 @@ function enableCompareButton() {
   }
 }
 
+function updateProjectOptions() {
+  const customer = document.getElementById("customerSelect").value;
+  const projectSelect = document.getElementById("projectSelect");
+  projectSelect.innerHTML =
+    '<option value="">Seleziona un Project/Business group</option>';
+
+  if (customerProjects[customer]) {
+    customerProjects[customer].forEach((project) => {
+      const option = document.createElement("option");
+      option.value = project;
+      option.textContent = project;
+      projectSelect.appendChild(option);
+    });
+  }
+}
+
 function compareFiles() {
   const className = "sc-csuQGl fgtqry"; // Adjust this to the actual class name
   const htmlApps = extractApplicationsFromHtml(htmlContent, className);
@@ -59,7 +97,12 @@ function compareFiles() {
     .getElementById("projectSelect")
     .value.toLowerCase()
     .trim();
-  const excelApps = extractApplicationsFromExcel(excelContent, keyword);
+  const customer = document.getElementById("customerSelect").value;
+
+  const excelApps =
+    customerProjects[customer].length === 0
+      ? extractApplicationsFromExcel(excelContent, "")
+      : extractApplicationsFromExcel(excelContent, keyword);
 
   const { htmlOnly, excelOnly } = findDiscrepancies(excelApps, htmlApps);
 
