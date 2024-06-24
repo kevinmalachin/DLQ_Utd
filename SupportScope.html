@@ -12,22 +12,22 @@
       /* Additional custom CSS can go here */
     </style>
   </head>
-
   <body class="bg-gray-100">
     <nav class="bg-gray-800 text-white p-4 text-center">
-      <h1 class="text-xl font-bold">SupportScope</h1>
+      <h1 class="text-2xl font-bold">SupportScope</h1>
     </nav>
-    <main class="container mx-auto p-4">
-      <div class="mb-4">
-        <label for="customerSelect" class="block mb-2"
+    <main class="container mx-auto p-4 bg-white shadow-md rounded-lg">
+      <div class="mb-6">
+        <label
+          for="customerSelect"
+          class="block mb-2 text-lg font-medium text-gray-700"
           >Seleziona Cliente:</label
         >
         <select
           id="customerSelect"
-          class="p-2 rounded bg-white w-full border border-gray-300 shadow-sm"
+          class="p-2 rounded bg-white w-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400"
         >
           <option value="">Seleziona un cliente</option>
-          <!-- Aggiungi qui le opzioni per i clienti -->
           <option value="Bouygues">Bouygues</option>
           <option value="MSC">MSC</option>
           <option value="FSTR">FSTR</option>
@@ -36,62 +36,55 @@
           <option value="Tiffany">Tiffany</option>
         </select>
       </div>
-      <div class="mb-4">
-        <label for="projectSelect" class="block mb-2"
+      <div class="mb-6">
+        <label
+          for="projectSelect"
+          class="block mb-2 text-lg font-medium text-gray-700"
           >Seleziona Project/Business group:</label
         >
         <select
           id="projectSelect"
-          class="p-2 rounded bg-white w-full border border-gray-300 shadow-sm"
+          class="p-2 rounded bg-white w-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400"
         >
           <option value="">Seleziona un Project/Business group</option>
-          <!-- Aggiungi qui le opzioni per le keyword -->
-          <option value="CRM">CRM</option>
-          <option value="Corporate">Corporate</option>
-          <option value="Business">Business</option>
-          <option value="BYES360">BYES360</option>
-          <option value="FM">FM</option>
-          <option value="Losinger">Losinger</option>
-          <option value="Commerce">Commerce</option>
-          <option value="KAM">KAM</option>
-          <option value="MSC Cruises">MSC Cruises</option>
-          <option value="Digital Channels">Digital Channels</option>
-          <option value="SAP">SAP</option>
-          <option value="Group IT EAME">Group IT EAME</option>
-          <option value="Group IT US">Group IT US</option>
-          <option value="LVMH (Root)">LVMH (Root)</option>
         </select>
       </div>
-      <div class="mb-4">
-        <label for="htmlFileInput" class="block mb-2">Carica file HTML:</label>
+      <div class="mb-6">
+        <label
+          for="htmlFileInput"
+          class="block mb-2 text-lg font-medium text-gray-700"
+          >Carica file HTML:</label
+        >
         <input
           type="file"
           id="htmlFileInput"
           accept=".html"
-          class="p-2 rounded bg-white border border-gray-300 shadow-sm"
+          class="p-2 rounded bg-white border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400"
         />
       </div>
-      <div class="mb-4">
-        <label for="excelFileInput" class="block mb-2"
+      <div class="mb-6">
+        <label
+          for="excelFileInput"
+          class="block mb-2 text-lg font-medium text-gray-700"
           >Carica file Excel:</label
         >
         <input
           type="file"
           id="excelFileInput"
           accept=".xlsx, .xls"
-          class="p-2 rounded bg-white border border-gray-300 shadow-sm"
+          class="p-2 rounded bg-white border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400"
         />
       </div>
-      <div class="mb-4">
+      <div class="mb-6 text-center">
         <button
           id="compareBtn"
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-150"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-150 disabled:opacity-50"
           disabled
         >
           Confronta
         </button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <textarea
           id="htmlContent"
           class="w-full h-24 p-2 border border-gray-300 rounded shadow-sm"

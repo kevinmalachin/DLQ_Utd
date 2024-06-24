@@ -27,7 +27,6 @@ const customerProjects = {
   ],
   MSC: ["MSC Cruises", "Digital Channels", "SAP"],
   LVMH: ["Group IT EAME", "Group IT US", "LVMH (Root)"],
-  // Customers without specific projects
   FSTR: [],
   DIOR: [],
   Tiffany: [],
@@ -40,6 +39,7 @@ function handleHtmlFile(event) {
     htmlContent = event.target.result;
     document.getElementById("htmlContent").textContent = htmlContent;
     enableCompareButton();
+    showFeedback("htmlFileInput");
   };
   reader.readAsText(file);
 }
@@ -60,6 +60,7 @@ function handleExcelFile(event) {
         2
       );
       enableCompareButton();
+      showFeedback("excelFileInput");
     } else {
       console.error("Sheet 'APIs Scope' not found in the Excel file");
     }
@@ -87,6 +88,7 @@ function updateProjectOptions() {
       projectSelect.appendChild(option);
     });
   }
+  showFeedback("customerSelect");
 }
 
 function compareFiles() {
@@ -107,6 +109,7 @@ function compareFiles() {
   const { htmlOnly, excelOnly } = findDiscrepancies(excelApps, htmlApps);
 
   displayResults(htmlOnly, excelOnly);
+  showFeedback("compareBtn");
 }
 
 function extractApplicationsFromHtml(htmlContent, className) {
@@ -174,4 +177,12 @@ function displayResults(htmlOnly, excelOnly) {
       "\n"
     )}\n\n` +
     `Applicazioni trovate solo nell'Excel:\n${[...excelOnly].join("\n")}`;
+}
+
+function showFeedback(elementId) {
+  const element = document.getElementById(elementId);
+  element.classList.add("border-green-500", "ring-2", "ring-green-300");
+  setTimeout(() => {
+    element.classList.remove("border-green-500", "ring-2", "ring-green-300");
+  }, 2000);
 }
