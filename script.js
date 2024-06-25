@@ -42,6 +42,12 @@ check.addEventListener("click", (e) => {
     (match) => match[1]
   );
 
+  // Regex per trovare tutte le reference nella forma internalReference
+  const internalReferences = Array.from(
+    dlqText.matchAll(/"internalReference":"(EC0\d{8})"/g),
+    (match) => match[1]
+  );
+
   // Regex per trovare tutte le reference nella forma externalReference
   const externalReferences = Array.from(
     dlqText.matchAll(/"externalReference":"(EC0\d{8})"/g),
@@ -58,6 +64,7 @@ check.addEventListener("click", (e) => {
   const combinedReferences = [
     ...filteredReferences,
     ...rootEntityRefs,
+    ...internalReferences,
     ...externalReferences,
   ];
 
@@ -82,6 +89,17 @@ check.addEventListener("click", (e) => {
     }
   });
 
+  // Funzione per verificare se una reference è trovata dopo rootEntityRef, internalReference o externalReference
+  const isSpecialReference = (text, ref) => {
+    const specialPatterns = [
+      new RegExp(`"rootEntityRef":"${ref}"`),
+      new RegExp(`"internalReference":"${ref}"`),
+      new RegExp(`"externalReference":"${ref}"`),
+      new RegExp(`"entityRef":"${ref}"`),
+    ];
+    return specialPatterns.some((pattern) => pattern.test(text));
+  };
+
   // Debug: mostra le reference trovate e il conteggio dei duplicati
   console.log("Unique references found:", Object.values(uniqueReferences));
   console.log("Reference counts:", referenceCounts);
@@ -99,7 +117,11 @@ check.addEventListener("click", (e) => {
   // Aggiunta del conteggio dei duplicati nel testo di output
   outputText += "Duplicate counts:\n";
   for (const ref in referenceCounts) {
-    if (referenceCounts.hasOwnProperty(ref) && referenceCounts[ref] > 1) {
+    if (
+      referenceCounts.hasOwnProperty(ref) &&
+      referenceCounts[ref] > 1 &&
+      isSpecialReference(dlqText, ref)
+    ) {
       outputText += `${ref}: ${referenceCounts[ref]}\n`;
     }
   }
