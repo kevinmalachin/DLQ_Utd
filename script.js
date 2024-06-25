@@ -25,34 +25,18 @@ check.addEventListener("click", (e) => {
   // Regex per trovare tutte le reference che iniziano con EC0 o CM_EC0
   const allReferences = Array.from(
     dlqText.matchAll(
-      /\b(EC0\d{5,}(?:-\w+)*|CM_EC0\d+(?:-\w+)*(?:_\w+)*(?:_\d+)*(?:-\w+)*)\b/g
+      /\b(EC0\d+(?:-\w+)*|CM_EC0\d+(?:-\w+)*(?:_\w+)*(?:_\d+)*(?:-\w+)*)\b/g
     ),
     (match) => match[0]
   );
 
   // Filtra le reference per escludere quelle che terminano con -STD o che non corrispondono al pattern specifico
   const filteredReferences = allReferences.filter((ref) => {
-    // Esclude le reference che terminano con -STD
-    if (ref.endsWith("-STD")) {
+    // Esclude le reference che terminano con -solo lettere
+    if (ref.match(/^EC0\d+-[a-zA-Z]+$/)) {
       return false;
     }
-    // Esclude le reference nella forma EC0XXXXX-sole lettere
-    if (ref.match(/^EC0\d{5,}-[a-zA-Z]+$/)) {
-      return false;
-    }
-    // Reference nella forma EC0XXXXX
-    if (ref.match(/^EC0\d{5,}$/)) {
-      return true;
-    }
-    // Reference nella forma EC0XXXXX-lettere+numeri
-    if (ref.match(/^EC0\d{5,}-\w*\d+$/)) {
-      return true;
-    }
-    // Reference nella forma CM_EC0XXXXX
-    if (ref.match(/^CM_EC0\d+/)) {
-      return true;
-    }
-    return false;
+    return true;
   });
 
   // Rimuovi i duplicati ma preferisci le reference più complete
