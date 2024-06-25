@@ -42,6 +42,12 @@ check.addEventListener("click", (e) => {
     (match) => match[1]
   );
 
+  // Regex per trovare tutte le reference nella forma externalReference
+  const externalReferences = Array.from(
+    dlqText.matchAll(/"externalReference":"(EC0\d{8})"/g),
+    (match) => match[1]
+  );
+
   // Filtra le reference per escludere quelle che terminano con -solo lettere
   const filteredReferences = allReferences.filter((ref) => {
     // Esclude le reference nella forma EC0XXXXX-sole lettere
@@ -49,7 +55,17 @@ check.addEventListener("click", (e) => {
   });
 
   // Combina tutte le reference trovate
-  const combinedReferences = [...filteredReferences, ...rootEntityRefs];
+  const combinedReferences = [
+    ...filteredReferences,
+    ...rootEntityRefs,
+    ...externalReferences,
+  ];
+
+  // Contatore delle occorrenze delle reference
+  const referenceCounts = combinedReferences.reduce((acc, ref) => {
+    acc[ref] = (acc[ref] || 0) + 1;
+    return acc;
+  }, {});
 
   // Rimuovi i duplicati ma preferisci le reference più complete
   const uniqueReferences = {};
@@ -66,14 +82,8 @@ check.addEventListener("click", (e) => {
     }
   });
 
-  // Usa un Set per contare le occorrenze
-  const referenceCounts = {};
-  Object.values(uniqueReferences).forEach((ref) => {
-    referenceCounts[ref] = (referenceCounts[ref] || 0) + 1;
-  });
-
   // Debug: mostra le reference trovate e il conteggio dei duplicati
-  console.log("References found:", Object.values(uniqueReferences));
+  console.log("Unique references found:", Object.values(uniqueReferences));
   console.log("Reference counts:", referenceCounts);
 
   // Creazione del testo per l'output dei risultati
@@ -93,6 +103,9 @@ check.addEventListener("click", (e) => {
       outputText += `${ref}: ${referenceCounts[ref]}\n`;
     }
   }
+
+  // Debug: mostra il testo di output
+  console.log("Output text:", outputText);
 
   // Invia i risultati nella terza textarea
   results.textContent = outputText;
