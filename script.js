@@ -36,6 +36,10 @@ check.addEventListener("click", (e) => {
     if (ref.endsWith("-STD")) {
       return false;
     }
+    // Esclude le reference nella forma EC0XXXXX-sole lettere
+    if (ref.match(/^EC0\d{5,}-[a-zA-Z]+$/)) {
+      return false;
+    }
     // Reference nella forma EC0XXXXX
     if (ref.match(/^EC0\d{5,}$/)) {
       return true;
