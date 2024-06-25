@@ -30,13 +30,16 @@ check.addEventListener("click", (e) => {
     (match) => match[0]
   );
 
-  // Filtra le reference per escludere quelle che terminano con -STD o che non corrispondono al pattern specifico
+  // Regex per trovare tutti i valori di asnId
+  const allAsnIds = Array.from(
+    dlqText.matchAll(/"asnId":\s*"(\d+)"/g),
+    (match) => match[1]
+  );
+
+  // Filtra le reference per escludere quelle che terminano con -solo lettere
   const filteredReferences = allReferences.filter((ref) => {
-    // Esclude le reference che terminano con -solo lettere
-    if (ref.match(/^EC0\d+-[a-zA-Z]+$/)) {
-      return false;
-    }
-    return true;
+    // Esclude le reference nella forma EC0XXXXX-sole lettere
+    return !ref.match(/^EC0\d+-[a-zA-Z]+$/);
   });
 
   // Rimuovi i duplicati ma preferisci le reference più complete
@@ -69,6 +72,10 @@ check.addEventListener("click", (e) => {
     Object.values(uniqueReferences).length
   }\n`;
   outputText += Object.values(uniqueReferences).join(", ") + "\n\n";
+
+  // Aggiunta dei valori di asnId trovati
+  outputText += `asnId values found: ${allAsnIds.length}\n`;
+  outputText += allAsnIds.join(", ") + "\n\n";
 
   // Aggiunta del conteggio dei duplicati nel testo di output
   outputText += "Duplicate counts:\n";
