@@ -36,15 +36,24 @@ check.addEventListener("click", (e) => {
     (match) => match[1]
   );
 
+  // Regex per trovare tutte le reference nella forma rootEntityRef
+  const rootEntityRefs = Array.from(
+    dlqText.matchAll(/"rootEntityRef":"(1ZECO\d+)"/g),
+    (match) => match[1]
+  );
+
   // Filtra le reference per escludere quelle che terminano con -solo lettere
   const filteredReferences = allReferences.filter((ref) => {
     // Esclude le reference nella forma EC0XXXXX-sole lettere
     return !ref.match(/^EC0\d+-[a-zA-Z]+$/);
   });
 
+  // Combina tutte le reference trovate
+  const combinedReferences = [...filteredReferences, ...rootEntityRefs];
+
   // Rimuovi i duplicati ma preferisci le reference più complete
   const uniqueReferences = {};
-  filteredReferences.forEach((ref) => {
+  combinedReferences.forEach((ref) => {
     const baseRef = ref.split("-")[0];
     if (ref.startsWith("CM_")) {
       // Se la reference inizia con CM_, sostituisce qualsiasi EC0XXXXX corrispondente
