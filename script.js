@@ -25,7 +25,7 @@ check.addEventListener("click", (e) => {
   // Regex per trovare tutte le reference che iniziano con EC0 o CM_EC0
   const allReferences = Array.from(
     dlqText.matchAll(
-      /\b(EC0\d+(?:-\w+)*|CM_EC0\d+(?:-\w+)*(?:_\w+)*(?:_\d+)*(?:-\w+)*)\b/g
+      /\b(EC0\d+(?:-\w+)*|CM_EC0\d+(?:-\w+)*(?:_\w+)*(?:_\d+)*(?:-\w+)*|FR\d{9})\b/g
     ),
     (match) => match[0]
   );
