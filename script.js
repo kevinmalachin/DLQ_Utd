@@ -22,10 +22,10 @@ check.addEventListener("click", (e) => {
   // Debug: mostra il contenuto del testo
   console.log("DLQtext value:", dlqText);
 
-  // Regex per trovare tutte le reference che iniziano con EC0 o CM_EC0
+  // Regex per trovare tutte le reference che iniziano con EC0, CM_EC0, o due lettere seguite da cifre
   const allReferences = Array.from(
     dlqText.matchAll(
-      /\b(EC0\d+(?:-\w+)*|CM_EC0\d+(?:-\w+)*(?:_\w+)*(?:_\d+)*(?:-\w+)*|FR\d{9})\b/g
+      /\b(EC0\d+(?:-\w+)*|CM_EC0\d+(?:-\w+)*(?:_\w+)*(?:_\d+)*(?:-\w+)*|[A-Z]{2}\d{9})\b/g
     ),
     (match) => match[0]
   );
