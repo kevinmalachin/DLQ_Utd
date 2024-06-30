@@ -37,30 +37,48 @@ check.addEventListener("click", (e) => {
   );
 
   // Filtra le reference per escludere quelle nel formato UUID
-  const filteredReferences = combinedReferences.filter(ref => !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(ref));
+  const filteredReferences = combinedReferences.filter(ref => 
+    !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(ref)
+  );
+
+  // Filtra le reference per escludere quelle che hanno la forma EC0XXXXX-STD (solo lettere dopo il trattino)
+  const furtherFilteredReferences = filteredReferences.filter(ref => 
+    !/^EC0\d{5}-[A-Z]+$/.test(ref)
+  );
 
   // Contatore delle occorrenze delle reference
-  const referenceCounts = filteredReferences.reduce((acc, ref) => {
+  const referenceCounts = furtherFilteredReferences.reduce((acc, ref) => {
     acc[ref] = (acc[ref] || 0) + 1;
     return acc;
   }, {});
 
   // Rimuovi i duplicati mantenendo solo la versione più completa
   const uniqueReferences = {};
-  filteredReferences.forEach((ref) => {
+  furtherFilteredReferences.forEach((ref) => {
     const baseRef = ref.split("-")[0];
     if (!uniqueReferences[baseRef] || ref.length > uniqueReferences[baseRef].length) {
       uniqueReferences[baseRef] = ref;
     }
   });
 
+  // Estrai solo le reference uniche
+  const uniqueReferenceValues = Object.values(uniqueReferences);
+
+  // Verifica se ci sono reference nella forma CM_
+  const hasCMReferences = uniqueReferenceValues.some(ref => ref.startsWith("CM_"));
+
+  // Filtra per mantenere solo le reference CM_ se ce ne sono
+  const finalReferences = hasCMReferences
+    ? furtherFilteredReferences.filter(ref => ref.startsWith("CM_"))
+    : uniqueReferenceValues;
+
   // Debug: mostra le reference trovate e il conteggio dei duplicati
-  console.log("Unique references found:", Object.values(uniqueReferences));
+  console.log("Unique references found:", finalReferences);
   console.log("Reference counts:", referenceCounts);
 
   // Creazione del testo per l'output dei risultati
-  let outputText = `References found: ${Object.values(uniqueReferences).length}\n`;
-  outputText += Object.values(uniqueReferences).join(", ") + "\n\n";
+  let outputText = `References found: ${finalReferences.length}\n`;
+  outputText += finalReferences.join(", ") + "\n\n";
 
   // Aggiunta del conteggio dei duplicati nel testo di output
   outputText += "Duplicate counts:\n";
