@@ -171,12 +171,17 @@ function findDiscrepancies(excelApps, htmlApps) {
 }
 
 function displayResults(htmlOnly, excelOnly) {
+  const discrepancies = new Set([...htmlOnly, ...excelOnly]);
   const resultArea = document.getElementById("result");
+
+  const discrepanciesList = [...discrepancies].join("\n");
+  const htmlOnlyList = [...htmlOnly].join("\n");
+  const excelOnlyList = [...excelOnly].join("\n");
+
   resultArea.textContent =
-    `Applicazioni trovate solo nell'HTML (Runtime):\n${[...htmlOnly].join(
-      "\n"
-    )}\n\n` +
-    `Applicazioni trovate solo nell'Excel:\n${[...excelOnly].join("\n")}`;
+    `Discrepanze tra HTML ed Excel:\n${discrepanciesList}\n\n` +
+    `Applicazioni trovate solo nell'HTML (Runtime):\n${htmlOnlyList}\n\n` +
+    `Applicazioni trovate solo nell'Excel:\n${excelOnlyList}`;
 }
 
 function showFeedback(elementId) {
