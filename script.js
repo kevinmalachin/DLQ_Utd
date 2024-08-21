@@ -22,9 +22,6 @@ check.addEventListener("click", (e) => {
   // Debug: mostra il contenuto del testo
   console.log("DLQtext value:", dlqText);
 
-  // Dividi il testo in righe
-  const lines = dlqText.split("\n");
-
   // Regex per trovare tutte le reference che seguono i vari formati
   const patterns = [
     /"internalReference":\s*"([^"]+)"/g,
@@ -34,16 +31,15 @@ check.addEventListener("click", (e) => {
     /"asnId":\s*"([^"]+)"/g
   ];
 
-  // Combina tutte le reference trovate dalle righe
+  // Combina tutte le reference trovate con matchAll
   let combinedReferences = [];
-  lines.forEach(line => {
-    patterns.forEach(pattern => {
-      let match;
-      while ((match = pattern.exec(line)) !== null) {
-        combinedReferences.push(match[1]);
-      }
-    });
+  patterns.forEach(pattern => {
+    const matches = [...dlqText.matchAll(pattern)];
+    combinedReferences.push(...matches.map(match => match[1]));
   });
+
+  // Debug: mostra tutte le reference estratte
+  console.log("All extracted references:", combinedReferences);
 
   // Filtra le reference per escludere quelle nel formato UUID
   const filteredReferences = combinedReferences.filter(ref => 
