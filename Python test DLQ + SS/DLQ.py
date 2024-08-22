@@ -7,14 +7,18 @@ def extract_filtered_references(text):
         r'"entityRef":\s*"([^"]+)"',
         r'"rootEntityRef":\s*"([^"]+)"',
         r'"ref":\s*"([^"]+)"',
-        r'"asnId":\s*"([^"]+)"'
+        r'"asnType":\s*"(\w+)"\s*,\s*"asnId":\s*"([^"]+)"'  # Pattern per asnType e asnId insieme
     ]
 
     # Combina tutte le reference trovate
     combined_references = []
     for pattern in patterns:
         matches = re.findall(pattern, text)
-        combined_references.extend(matches)
+        if pattern == patterns[-1]:  # Se è il pattern per asnType e asnId
+            # Aggiunge asnId con asnType formattato tra parentesi quadre
+            combined_references.extend([f"{asn_id} [{asn_type}]" for asn_type, asn_id in matches])
+        else:
+            combined_references.extend(matches)
 
     # Filtra le reference per escludere quelle nel formato UUID
     filtered_references = [
