@@ -59,7 +59,7 @@ def extract_references(text):
 
 if __name__ == "__main__":
     # Inserisci qui il testo da analizzare
-    with open("input.txt", "r") as file:
+    with open("Python test DLQ + SS/input.txt", "r") as file:
         text = file.read()
 
     result = extract_references(text)
