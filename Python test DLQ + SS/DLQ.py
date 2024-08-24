@@ -13,7 +13,7 @@ def extract_filtered_references(text):
     combined_references = []
     for pattern in patterns:
         matches = re.findall(pattern, text)
-        print(f"Testing pattern: {pattern} | Matches found: {matches}")  # Debug
+        # print(f"Testing pattern: {pattern} | Matches found: {matches}")  # Debug
         if matches:
             if pattern == patterns[3]:  # Caso 4: asnType e asnId
                 # Aggiunge asnId con asnType formattato tra parentesi quadre
