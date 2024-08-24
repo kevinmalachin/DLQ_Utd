@@ -44,20 +44,25 @@ def extract_filtered_references(text):
         if not unique_references.get(base_ref) or len(ref) > len(unique_references[base_ref]):
             unique_references[base_ref] = ref
 
-    # Estrai solo le reference uniche
-    unique_reference_values = list(unique_references.values())
+    # Filtraggio per reference CM_
+    final_references = list(unique_references.values())
+    cm_references = [ref for ref in final_references if ref.startswith("CM_")]
+    if cm_references:
+        # Se ci sono reference che iniziano con CM_, si tengono solo quelle
+        final_references = cm_references
 
-    # Verifica se ci sono reference nella forma CM_
-    has_cm_references = any(ref.startswith("CM_") for ref in unique_reference_values)
-    if has_cm_references:
-        unique_reference_values = [ref for ref in unique_reference_values if ref.startswith("CM_")]
+    # Rimozione delle reference con formato "INVOICE-UUID"
+    final_references = [
+        ref for ref in final_references
+        if not re.match(r'^INVOICE-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$', ref)
+    ]
 
     # Creazione del testo per l'output dei risultati con una reference per riga
-    output_text = f"References found: {len(unique_reference_values)}\n"
-    output_text += "\n".join(unique_reference_values) + "\n\n"
+    output_text = f"References found: {len(final_references)}\n"
+    output_text += "\n".join(sorted(final_references)) + "\n\n"
     output_text += "Duplicate counts:\n"
     for ref, count in reference_counts.items():
-        if count > 1:
+        if count > 1 and ref in final_references:  # Conteggio solo delle reference finali
             output_text += f"{ref}: {count}\n"
 
     return output_text
