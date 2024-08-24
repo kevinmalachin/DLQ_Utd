@@ -1,29 +1,31 @@
 import re
 
 def extract_filtered_references(text):
-    # Regex per trovare tutte le reference che seguono vari formati
+    # Definisci le regex in ordine di priorità
     patterns = [
-        r'"internalReference":\s*"([^"]+)"',
-        r'"entityRef":\s*"([^"]+)"',
-        r'"rootEntityRef":\s*"([^"]+)"',
-        r'"ref":\s*"([^"]+)"',
-        r'"asnType":\s*"(\w+)"\s*,\s*"asnId":\s*"([^"]+)"'  # Pattern per asnType e asnId insieme
+        r'"entityRef":\s*"CM_[^"]+"',          # Caso 1: entityRef con CM_
+        r'"internalReference":\s*"([^"]+)"',  # Caso 2: internalReference
+        r'"ref":\s*"CM_[^"]+"',               # Caso 3: CM_ reference
+        r'"asnType":\s*"(\w+)"\s*,\s*"asnId":\s*"([^"]+)"',  # Caso 4: asnType e asnId
+        r'"rootEntityRef":\s*"([^"]+)"'       # Caso 5: rootEntityRef
     ]
 
-    # Combina tutte le reference trovate
     combined_references = []
     for pattern in patterns:
         matches = re.findall(pattern, text)
-        if pattern == patterns[-1]:  # Se è il pattern per asnType e asnId
-            # Aggiunge asnId con asnType formattato tra parentesi quadre
-            combined_references.extend([f"{asn_id} [{asn_type}]" for asn_type, asn_id in matches])
-        else:
-            combined_references.extend(matches)
+        print(f"Testing pattern: {pattern} | Matches found: {matches}")  # Debug
+        if matches:
+            if pattern == patterns[3]:  # Caso 4: asnType e asnId
+                # Aggiunge asnId con asnType formattato tra parentesi quadre
+                combined_references.extend([f"{asn_id} [{asn_type}]" for asn_type, asn_id in matches])
+            else:
+                combined_references.extend(matches)
+            break  # Se trovi una corrispondenza, fermati e non testare altre regex
 
     # Filtra le reference per escludere quelle nel formato UUID
     filtered_references = [
         ref for ref in combined_references
-        if not re.match(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$', ref)
+        if isinstance(ref, str) and not re.match(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$', ref)
     ]
 
     # Filtra le reference per escludere quelle che hanno la forma EC0XXXXX-STD (solo lettere dopo il trattino)
