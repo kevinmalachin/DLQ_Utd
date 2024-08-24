@@ -51,9 +51,21 @@ function handleExcelFile(event) {
     const data = new Uint8Array(event.target.result);
     const workbook = XLSX.read(data, { type: "array" });
 
-    let worksheet = workbook.Sheets["APIs Scope"];
-    if (!worksheet) {
-      worksheet = workbook.Sheets["API Names"];
+    let worksheet;
+    const customer = document.getElementById("customerSelect").value;
+
+    if (customer === "DIOR") {
+      // Cerca il foglio corretto tra i fogli di DIOR
+      const diorSheets = ["PROD", "AMER-PRD", "APAC-PRD", "EMEA-PRD"];
+      for (const sheetName of diorSheets) {
+        if (workbook.Sheets[sheetName]) {
+          worksheet = workbook.Sheets[sheetName];
+          break;
+        }
+      }
+    } else {
+      // Per gli altri clienti, cerca nei fogli standard
+      worksheet = workbook.Sheets["APIs Scope"] || workbook.Sheets["API Names"];
     }
 
     if (worksheet) {
