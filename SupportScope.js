@@ -28,7 +28,7 @@ const customerProjects = {
   MSC: ["MSC Cruises", "Digital Channels", "SAP"],
   LVMH: ["Group IT EAME", "Group IT US", "LVMH (Root)"],
   FSTR: [],
-  DIOR: [],
+  DIOR: ["PROD", "AMER-PRD", "APAC-PRD", "EMEA-PRD"],
   Tiffany: [],
 };
 
@@ -51,7 +51,11 @@ function handleExcelFile(event) {
     const data = new Uint8Array(event.target.result);
     const workbook = XLSX.read(data, { type: "array" });
 
-    const worksheet = workbook.Sheets["APIs Scope"];
+    let worksheet = workbook.Sheets["APIs Scope"];
+    if (!worksheet) {
+      worksheet = workbook.Sheets["API Names"];
+    }
+
     if (worksheet) {
       excelContent = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       document.getElementById("excelContent").textContent = JSON.stringify(
@@ -62,7 +66,7 @@ function handleExcelFile(event) {
       enableCompareButton();
       showFeedback("excelFileInput");
     } else {
-      console.error("Sheet 'APIs Scope' not found in the Excel file");
+      console.error("No appropriate sheet found in the Excel file");
     }
   };
   reader.readAsArrayBuffer(file);
