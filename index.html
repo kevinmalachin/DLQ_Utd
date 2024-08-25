@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DLQ</title>
+    <title>DLQ and Support Scope</title>
     <link href="style.css" rel="stylesheet" />
     <script src="script.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -11,10 +11,13 @@
   <body>
     <nav>
       <button id="menuButton">Menu</button>
-      <div id="menu">
+      <div id="menu" class="hidden">
         <ul>
           <li>
             <a href="./SupportScope.html" target="_blank">Support Scope</a>
+          </li>
+          <li>
+            <a href="#" id="runPythonScript">Run Python Script</a>
           </li>
         </ul>
       </div>
@@ -33,5 +36,51 @@
         <button class="Check">Check</button>
       </div>
     </div>
+
+    <script>
+      // Script per il menu toggle
+      document.getElementById("menuButton").addEventListener("click", function () {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle("hidden");
+      });
+
+      // Simulazione di esecuzione dello script Python
+      document.getElementById("runPythonScript").addEventListener("click", function () {
+        alert("Esecuzione dello script Python avviata! (da configurare con il backend)");
+        // Codice aggiuntivo per chiamare uno script Python tramite un server Flask o Django
+        // Dovresti configurare una richiesta POST/GET per eseguire il Python nel server
+      });
+    </script>
+
+    <style>
+      /* Stile di base per il menu */
+      #menu {
+        display: none;
+        background-color: #f9f9f9;
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      #menu.hidden {
+        display: none;
+      }
+      #menu ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      #menu ul li {
+        margin: 5px 0;
+      }
+      #menu ul li a {
+        text-decoration: none;
+        color: #007bff;
+      }
+      #menu ul li a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </body>
 </html>

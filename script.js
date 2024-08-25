@@ -112,3 +112,15 @@ $(document).ready(function () {
     $("#menu").slideToggle();
   });
 });
+
+
+// call flask to use the Flask server
+
+document.getElementById("runPythonScript").addEventListener("click", function () {
+  fetch('/run-script', {
+    method: 'POST',
+  })
+    .then(response => response.json())
+    .then(data => alert(`Script output: ${data.output}`))
+    .catch(error => console.error('Error:', error));
+});
