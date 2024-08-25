@@ -38,6 +38,14 @@ def read_excel_file(file_path):
         engines = ['openpyxl', 'xlrd', 'odf', 'pyxlsb']
         for engine in engines:
             try:
+                customer = "DIOR"
+                if customer == "DIOR":
+                    for sheet in ["PROD", "AMER-PRD", "APAC-PRD", "EMEA-PRD"]:
+                        try:
+                            return pd.read_excel(file_path, sheet_name=sheet, engine=engine)
+                        except Exception as e:
+                            print(f"Errore con il motore {engine} nel foglio {sheet}: {e}")
+
                 return pd.read_excel(file_path, sheet_name='APIs Scope', engine=engine)
             except Exception as e:
                 print(f"Errore con il motore {engine}: {e}")
@@ -56,8 +64,17 @@ def search_keyword_in_excel(df, keyword):
             print(f"Keyword '{keyword}' non trovato in nessuna riga.")
             return set()
 
-        # Prendi i valori dalla colonna 'APIs Name'
-        api_names = matching_rows['APIs Name'].dropna().str.strip().str.lower()
+        api_name_column = None
+        for col in df.columns:
+            if col.strip().lower() in ["apis name", "api names"]:
+                api_name_column = col
+                break
+
+        if not api_name_column:
+            print("Colonna 'APIs Name' o 'API Names' non trovata nel file Excel.")
+            return set()
+
+        api_names = matching_rows[api_name_column].dropna().str.strip().str.lower()
         return set(api_names)
     except Exception as e:
         print(f"Errore durante la ricerca della parola chiave nei dati Excel: {e}")
@@ -68,14 +85,6 @@ def normalize_string(s):
 
 def find_discrepancies(excel_apps, html_apps):
     try:
-        print("Applicazioni normalizzate dall'Excel:")
-        for app in excel_apps:
-            print(normalize_string(app))
-
-        print("\nApplicazioni normalizzate dall'HTML:")
-        for app in html_apps:
-            print(normalize_string(app))
-
         normalized_excel_apps = {normalize_string(app) for app in excel_apps}
         normalized_html_apps = {normalize_string(app) for app in html_apps}
 
@@ -87,34 +96,27 @@ def find_discrepancies(excel_apps, html_apps):
         print(f"Errore durante la ricerca delle discrepanze: {e}")
         return set(), set()
 
-def generate_report(output_file_path, keyword, excel_apps, html_only, excel_only):
+def generate_report_excel(output_file_path, html_only, excel_only):
     try:
-        with open(output_file_path, 'w', encoding='utf-8') as file:
-            file.write(f"Rapporto di controllo per il keyword '{keyword if keyword else 'Non specificato'}'\n\n")
-            file.write("Nomi delle applicazioni:\n")
-            for name in sorted(excel_apps):
-                file.write(f"{name}\n")
+        data = []
+        for app in html_only:
+            data.append({"Application": app, "Discrepancy": "Present in HTML only"})
+        for app in excel_only:
+            data.append({"Application": app, "Discrepancy": "Present in Excel only"})
 
-            file.write("\nDiscrepanze tra HTML ed Excel:\n")
-            file.write("Applicazioni trovate solo nell'HTML (Runtime):\n")
-            for name in sorted(html_only):
-                file.write(f"{name}\n")
-
-            file.write("\nApplicazioni trovate solo nell'Excel:\n")
-            for name in sorted(excel_only):
-                file.write(f"{name}\n")
-
-        print(f"Rapporto generato con successo: {output_file_path}")
+        df = pd.DataFrame(data)
+        df.to_excel(output_file_path, index=False)
+        print(f"Rapporto generato con successo in Excel: {output_file_path}")
 
     except Exception as e:
-        print(f"Errore durante la generazione del rapporto: {e}")
+        print(f"Errore durante la generazione del rapporto Excel: {e}")
 
 def main():
     try:
-        html_file_path = r'C:\Users\kevin\Documents\Automatizzazioni\LVMH_EAME_PROD.html'
-        excel_file_path = r'C:\Users\kevin\Documents\Automatizzazioni\LVMH.xlsx'
-        output_file_path = r'C:\Users\kevin\Desktop\OutputScope\SupportScopeReport.txt'
-        class_name = 'sc-csuQGl fgtqry'  # Classe HTML corretta per i nomi delle applicazioni
+        html_file_path = r'C:\Users\kevin\Documents\Automatizzazioni\Script lavoro\DIOR_PROD[singlefile].html'
+        excel_file_path = r'C:\Users\kevin\Documents\Automatizzazioni\Script lavoro\DIOR.xlsx'
+        output_file_path = r'C:\Users\kevin\Desktop\OutputScope\SupportScopeReport.xlsx'
+        class_name = 'sc-csuQGl fgtqry'
 
         keyword = input("Inserisci il keyword per il filtro (es. KAM) o premi invio per saltare il filtro: ").strip()
 
@@ -139,7 +141,7 @@ def main():
 
         html_only, excel_only = find_discrepancies(excel_apps, html_apps)
 
-        generate_report(output_file_path, keyword, excel_apps, html_only, excel_only)
+        generate_report_excel(output_file_path, html_only, excel_only)
 
     except Exception as e:
         print(f"Errore durante l'esecuzione del programma: {e}")
