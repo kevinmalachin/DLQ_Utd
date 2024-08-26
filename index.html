@@ -1,79 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DLQ and Support Scope</title>
     <link href="style.css" rel="stylesheet" />
     <script src="script.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <nav>
-      <button id="menuButton">Menu</button>
-      <div id="menu" class="hidden">
-        <ul>
-          <li>
-            <a href="./SupportScope.html" target="_blank">Support Scope</a>
-          </li>
-        </ul>
-      </div>
+        <button id="menuButton">Menu</button>
+        <div id="menu" class="hidden">
+            <ul>
+                <li><a href="./SupportScope.html" target="_blank">Support Scope</a></li>
+            </ul>
+        </div>
     </nav>
     <div class="container">
-      <div class="First-Part">
-        <textarea
-          class="DLQtext"
-          cols="60"
-          rows="15"
-          placeholder="Insert the content of the DLQ"
-        ></textarea>
-        <textarea class="Results" cols="60" rows="15" readonly></textarea>
-      </div>
-      <div class="Second-Part">
-        <button class="Check">Check</button>
-      </div>
+        <div class="First-Part">
+            <textarea class="DLQtext" cols="60" rows="15" placeholder="Insert the content of the DLQ"></textarea>
+            <textarea class="Results" cols="60" rows="15" readonly></textarea>
+        </div>
+        <div class="Second-Part">
+            <button class="Check">Check</button>
+            <!-- Aggiungi il pulsante per eseguire lo scraping -->
+            <button id="scrapeJira">Scrape Jira</button>
+        </div>
     </div>
 
     <script>
-      // Script per il menu toggle
-      document.getElementById("menuButton").addEventListener("click", function () {
-        const menu = document.getElementById("menu");
-        menu.classList.toggle("hidden");
-      });
-
-
-
+        // Script per il menu toggle
+        document.getElementById("menuButton").addEventListener("click", function () {
+            const menu = document.getElementById("menu");
+            menu.classList.toggle("hidden");
+        });
     </script>
-
-    <style>
-      /* Stile di base per il menu */
-      #menu {
-        display: none;
-        background-color: #f9f9f9;
-        position: absolute;
-        top: 50px;
-        left: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
-      #menu.hidden {
-        display: none;
-      }
-      #menu ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      #menu ul li {
-        margin: 5px 0;
-      }
-      #menu ul li a {
-        text-decoration: none;
-        color: #007bff;
-      }
-      #menu ul li a:hover {
-        text-decoration: underline;
-      }
-    </style>
-  </body>
+</body>
 </html>
