@@ -3,124 +3,84 @@
 const DLQtext = document.querySelector(".DLQtext");
 const results = document.querySelector(".Results");
 const check = document.querySelector(".Check");
-const textareaList = document.querySelectorAll("textarea");
 
-// Debug: Verifica che gli elementi siano trovati
-console.log("DLQtext:", DLQtext);
-console.log("Results:", results);
-console.log("Check:", check);
+// Verifica che gli elementi siano trovati
+if (!DLQtext || !results || !check) {
+    console.error("Elementi non trovati nella pagina.");
+} else {
+    check.addEventListener("click", async (e) => {
+        e.preventDefault();
 
-check.addEventListener("click", (e) => {
-  e.preventDefault();
+        // Prendi il valore dalla textarea
+        const dlqText = DLQtext.value;
 
-  // Debug: Verifica se il click è stato registrato
-  console.log("Check button clicked");
+        // Regex per trovare tutte le reference
+        const patterns = [
+            /"internalReference":\s*"([^"]+)"/g,
+            /"entityRef":\s*"([^"]+)"/g,
+            /"rootEntityRef":\s*"([^"]+)"/g,
+            /"ref":\s*"([^"]+)"/g,
+            /"asnId":\s*"([^"]+)"/g
+        ];
 
-  // Prende il valore dalla prima textarea e lo memorizza in una variabile
-  const dlqText = DLQtext.value;
+        // Combina tutte le reference trovate
+        let combinedReferences = [];
+        patterns.forEach(pattern => {
+            const matches = [...dlqText.matchAll(pattern)];
+            combinedReferences.push(...matches.map(match => match[1]));
+        });
 
-  // Debug: mostra il contenuto del testo
-  console.log("DLQtext value:", dlqText);
+        // Filtra le reference
+        const filteredReferences = combinedReferences.filter(ref => 
+            !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(ref) &&
+            !/^EC0\d{5}-[A-Z]+$/.test(ref)
+        );
 
-  // Regex per trovare tutte le reference che seguono i vari formati
-  const patterns = [
-    /"internalReference":\s*"([^"]+)"/g,
-    /"entityRef":\s*"([^"]+)"/g,
-    /"rootEntityRef":\s*"([^"]+)"/g,
-    /"ref":\s*"([^"]+)"/g,
-    /"asnId":\s*"([^"]+)"/g
-  ];
+        const uniqueReferences = {};
+        filteredReferences.forEach((ref) => {
+            const baseRef = ref.split("-")[0];
+            if (!uniqueReferences[baseRef] || ref.length > uniqueReferences[baseRef].length) {
+                uniqueReferences[baseRef] = ref;
+            }
+        });
 
-  // Combina tutte le reference trovate con matchAll
-  let combinedReferences = [];
-  patterns.forEach(pattern => {
-    const matches = [...dlqText.matchAll(pattern)];
-    combinedReferences.push(...matches.map(match => match[1]));
-  });
+        const uniqueReferenceValues = Object.values(uniqueReferences);
 
-  // Debug: mostra tutte le reference estratte
-  console.log("All extracted references:", combinedReferences);
+        // Fai la chiamata al server per lo scraping
+        try {
+            const response = await fetch('http://localhost:5000/run-script', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ references: uniqueReferenceValues }),
+            });
 
-  // Filtra le reference per escludere quelle nel formato UUID
-  const filteredReferences = combinedReferences.filter(ref => 
-    !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(ref)
-  );
+            const data = await response.json();
+            const { output } = data;
 
-  // Filtra le reference per escludere quelle che hanno la forma EC0XXXXX-STD (solo lettere dopo il trattino)
-  const furtherFilteredReferences = filteredReferences.filter(ref => 
-    !/^EC0\d{5}-[A-Z]+$/.test(ref)
-  );
+            // Organizza le reference per incident
+            let incidentGroups = {};
+            output.forEach(item => {
+                const incident = item.incident || "NOT REPORTED";
+                if (!incidentGroups[incident]) {
+                    incidentGroups[incident] = [];
+                }
+                incidentGroups[incident].push(item.reference);
+            });
 
-  // Contatore delle occorrenze delle reference
-  const referenceCounts = furtherFilteredReferences.reduce((acc, ref) => {
-    acc[ref] = (acc[ref] || 0) + 1;
-    return acc;
-  }, {});
+            // Genera l'output finale
+            let outputText = "Reference riportate:\n";
+            for (const [incident, refs] of Object.entries(incidentGroups)) {
+                outputText += `- ${incident}\n`;
+                refs.forEach(ref => outputText += `  - ${ref}\n`);
+            }
 
-  // Rimuovi i duplicati mantenendo solo la versione più completa
-  const uniqueReferences = {};
-  furtherFilteredReferences.forEach((ref) => {
-    const baseRef = ref.split("-")[0];
-    if (!uniqueReferences[baseRef] || ref.length > uniqueReferences[baseRef].length) {
-      uniqueReferences[baseRef] = ref;
-    }
-  });
-
-  // Estrai solo le reference uniche
-  const uniqueReferenceValues = Object.values(uniqueReferences);
-
-  // Verifica se ci sono reference nella forma CM_
-  const hasCMReferences = uniqueReferenceValues.some(ref => ref.startsWith("CM_"));
-
-  // Filtra per mantenere solo le reference CM_ se ce ne sono
-  const finalReferences = hasCMReferences
-    ? furtherFilteredReferences.filter(ref => ref.startsWith("CM_"))
-    : uniqueReferenceValues;
-
-  // Debug: mostra le reference trovate e il conteggio dei duplicati
-  console.log("Unique references found:", finalReferences);
-  console.log("Reference counts:", referenceCounts);
-
-  // Creazione del testo per l'output dei risultati
-  let outputText = `References found: ${finalReferences.length}\n`;
-  outputText += finalReferences.join(", ") + "\n\n";
-
-  // Aggiunta del conteggio dei duplicati nel testo di output
-  outputText += "Duplicate counts:\n";
-  for (const ref in referenceCounts) {
-    if (referenceCounts.hasOwnProperty(ref) && referenceCounts[ref] > 1) {
-      outputText += `${ref}: ${referenceCounts[ref]}\n`;
-    }
-  }
-
-  // Debug: mostra il testo di output
-  console.log("Output text:", outputText);
-
-  // Invia i risultati nella terza textarea
-  results.textContent = outputText;
-});
-
-// Rimuove il placeholder quando si clicca
-textareaList.forEach(function (textarea) {
-  textarea.addEventListener("click", function () {
-    this.removeAttribute("placeholder");
-  });
-});
-
-$(document).ready(function () {
-  $("#menuButton").click(function () {
-    $("#menu").slideToggle();
-  });
-});
-
-
-// call flask to use the Flask server
-
-document.getElementById("runPythonScript").addEventListener("click", function () {
-  fetch('/run-script', {
-    method: 'POST',
-  })
-    .then(response => response.json())
-    .then(data => alert(`Script output: ${data.output}`))
-    .catch(error => console.error('Error:', error));
-});
+            // Mostra l'output
+            results.textContent = outputText;
+        } catch (error) {
+            console.error('Errore durante la chiamata al server:', error);
+            results.textContent = "Errore durante la chiamata al server.";
+        }
+    });
+}
