@@ -60,24 +60,21 @@ if (!DLQtext || !results || !check) {
             const { output } = data;
 
             // Organizza le reference per incident
-            let incidentGroups = {};
-            output.forEach(item => {
-                const incident = item.incident || "NOT REPORTED";
-                if (!incidentGroups[incident]) {
-                    incidentGroups[incident] = [];
-                }
-                incidentGroups[incident].push(item.reference);
+            let nonReportedText = "Reference non riportate:\n";
+            output.non_reported.forEach(ref => {
+                nonReportedText += `- ${ref}\n`;
             });
 
-            // Genera l'output finale
-            let outputText = "Reference riportate:\n";
-            for (const [incident, refs] of Object.entries(incidentGroups)) {
-                outputText += `- ${incident}\n`;
-                refs.forEach(ref => outputText += `  - ${ref}\n`);
+            let reportedText = "\nReference riportate:\n";
+            for (const [incident, refs] of Object.entries(output.reported)) {
+                reportedText += `**${incident}**\n`;
+                refs.forEach(ref => {
+                    reportedText += `  - ${ref.reference} | ${ref.task_name} | ${ref.task_link}\n`;
+                });
             }
 
             // Mostra l'output
-            results.textContent = outputText;
+            results.textContent = nonReportedText + reportedText;
         } catch (error) {
             console.error('Errore durante la chiamata al server:', error);
             results.textContent = "Errore durante la chiamata al server.";

@@ -15,7 +15,6 @@ def run_script():
 
     jira_url = "https://cap4cloud.atlassian.net/jira/core/projects/IMSL1GEN/list?sortBy=key&direction=ASC"
     
-    # Usa variabili d'ambiente per le credenziali
     username = os.getenv('JIRA_USERNAME', 'kevin.malachin@cap4lab.com')
     password = os.getenv('JIRA_PASSWORD', '@Lilier24per')
 
@@ -28,19 +27,62 @@ def run_script():
     soup = BeautifulSoup(response.text, 'html.parser')
     results = []
 
-    # Cerca ogni reference nel contenuto della pagina Jira
     for ref in references:
+        # Cerca il div che contiene la reference specificata
         incident_div = soup.find('div', text=ref)
         if incident_div:
+            # Trova l'incidente associato, se disponibile
             incident = incident_div.find_next('div', {'data-testid': 'issue.views.field.single-line-text-inline-edit.read-view.customfield_10111'})
-            if incident and incident.text.startswith('INC'):
-                results.append({"reference": ref, "incident": incident.text})
-            else:
-                results.append({"reference": ref, "incident": "NOT REPORTED"})
-        else:
-            results.append({"reference": ref, "incident": "NOT REPORTED"})
+            
+            # Trova il nome della task Jira associata
+            task_name_element = incident_div.find_next('span', class_='css-1gd7hga')
+            task_name = task_name_element.text if task_name_element else "Task Not Found"
+            
+            # Costruisci l'URL della task Jira
+            task_link = f"https://cap4cloud.atlassian.net/browse/{task_name}" if task_name != "Task Not Found" else None
 
-    return jsonify(output=results)
+            if incident and incident.text.startswith('INC'):
+                results.append({
+                    "reference": ref,
+                    "incident": incident.text,
+                    "task_name": task_name,
+                    "task_link": task_link
+                })
+            else:
+                results.append({
+                    "reference": ref,
+                    "incident": "NOT REPORTED",
+                    "task_name": "N/A",
+                    "task_link": None
+                })
+        else:
+            results.append({
+                "reference": ref,
+                "incident": "NOT REPORTED",
+                "task_name": "N/A",
+                "task_link": None
+            })
+
+    # Organizza l'output come richiesto
+    output = {
+        "non_reported": [],
+        "reported": {}
+    }
+
+    for result in results:
+        if result["incident"] == "NOT REPORTED":
+            output["non_reported"].append(result["reference"])
+        else:
+            incident_key = result["incident"]
+            if incident_key not in output["reported"]:
+                output["reported"][incident_key] = []
+            output["reported"][incident_key].append({
+                "reference": result["reference"],
+                "task_name": result["task_name"],
+                "task_link": result["task_link"]
+            })
+
+    return jsonify(output=output)
 
 if __name__ == '__main__':
     app.run(debug=True)
