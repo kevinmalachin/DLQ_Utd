@@ -50,6 +50,9 @@ def run_script():
             # Estrazione della description per trovare le references
             description = data.get("fields", {}).get("description", {})
 
+            # Debug: Mostra la descrizione per verifica
+            print(f"DEBUG: Description for {issue_key}: {description}")
+
             # Trova la reference nella descrizione
             found = False
             for content in description.get("content", []):
@@ -57,6 +60,7 @@ def run_script():
                     for item in content.get("content", []):
                         if item.get("type") == "text":
                             text = item.get("text", "")
+                            print(f"DEBUG: Text content: {text}")  # Debug per il testo
                             if ref in text:
                                 found = True
                                 break
