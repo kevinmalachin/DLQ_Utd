@@ -1,3 +1,5 @@
 node_modules
 test/
 Python test DLQ + SS/input.txt
+cred.env
+venv
