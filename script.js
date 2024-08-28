@@ -4,17 +4,14 @@ const DLQtext = document.querySelector(".DLQtext");
 const results = document.querySelector(".Results");
 const check = document.querySelector(".Check");
 
-// Verifica che gli elementi siano trovati
 if (!DLQtext || !results || !check) {
     console.error("Elementi non trovati nella pagina.");
 } else {
     check.addEventListener("click", async (e) => {
         e.preventDefault();
 
-        // Prendi il valore dalla textarea
         const dlqText = DLQtext.value;
 
-        // Regex per trovare tutte le reference
         const patterns = [
             /"internalReference":\s*"([^"]+)"/g,
             /"entityRef":\s*"([^"]+)"/g,
@@ -23,14 +20,12 @@ if (!DLQtext || !results || !check) {
             /"asnId":\s*"([^"]+)"/g
         ];
 
-        // Combina tutte le reference trovate
         let combinedReferences = [];
         patterns.forEach(pattern => {
             const matches = [...dlqText.matchAll(pattern)];
             combinedReferences.push(...matches.map(match => match[1]));
         });
 
-        // Filtra le reference
         const filteredReferences = combinedReferences.filter(ref => 
             !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(ref) &&
             !/^EC0\d{5}-[A-Z]+$/.test(ref)
@@ -46,7 +41,6 @@ if (!DLQtext || !results || !check) {
 
         const uniqueReferenceValues = Object.values(uniqueReferences);
 
-        // Fai la chiamata al server per lo scraping
         try {
             const response = await fetch('http://localhost:5000/run-script', {
                 method: 'POST',
@@ -59,9 +53,21 @@ if (!DLQtext || !results || !check) {
             const data = await response.json();
             const { output } = data;
 
-            // Organizza le reference per incident
+            // Creazione di set per evitare duplicati
+            const reportedRefs = new Set();
+            const nonReportedRefs = new Set(output.non_reported);
+
+            // Inserisci le referenze riportate in un set per evitare duplicati e conflitti
+            for (const [incident, refs] of Object.entries(output.reported)) {
+                refs.forEach(ref => reportedRefs.add(ref.reference));
+            }
+
+            // Rimuovi referenze riportate dal set delle non riportate
+            reportedRefs.forEach(ref => nonReportedRefs.delete(ref));
+
+            // Organizza le referenze
             let nonReportedText = "Reference non riportate:\n";
-            output.non_reported.forEach(ref => {
+            nonReportedRefs.forEach(ref => {
                 nonReportedText += `- ${ref}\n`;
             });
 
@@ -73,7 +79,6 @@ if (!DLQtext || !results || !check) {
                 });
             }
 
-            // Mostra l'output
             results.textContent = nonReportedText + reportedText;
         } catch (error) {
             console.error('Errore durante la chiamata al server:', error);

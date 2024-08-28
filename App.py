@@ -15,8 +15,9 @@ def run_script():
 
     search_url = "https://cap4cloud.atlassian.net/rest/api/3/search"
 
-    username = os.getenv('JIRA_USERNAME')
-    password = os.getenv('JIRA_PASSWORD')
+    # Credenziali: username dovrebbe essere l'email, password l'API token
+    username = os.getenv('JIRA_USERNAME')  # L'email dell'utente
+    password = os.getenv('JIRA_PASSWORD')  # L'API token
 
     if not username or not password:
         return jsonify(error="JIRA_USERNAME and JIRA_PASSWORD environment variables are required"), 500
@@ -24,16 +25,37 @@ def run_script():
     results = []
 
     for ref in references:
-        jql_query = f"description ~ \"{ref}\""
+        # Query JQL per cercare nel campo description
+        jql_query = f'description ~ "{ref}"'
         search_params = {
             'jql': jql_query,
             'fields': 'key,summary,customfield_10111,description'
         }
 
         try:
-            response = requests.get(search_url, headers={"Accept": "application/json"}, params=search_params, auth=HTTPBasicAuth(username, password))
-            response.raise_for_status()
-            issues = response.json().get("issues", [])
+            # Esecuzione della richiesta GET a Jira con autenticazione
+            response = requests.get(
+                search_url,
+                headers={"Accept": "application/json"},
+                params=search_params,
+                auth=HTTPBasicAuth(username, password)  # Autenticazione tramite username e API token
+            )
+
+            # Stampa per debug
+            print(f"Request URL: {response.url}")
+            print(f"Response Status Code: {response.status_code}")
+
+            # Contenuto della risposta
+            response_json = response.json()
+            print(f"Response Content: {response_json}")
+
+            # Gestisci errori specifici nel messaggio
+            if response.status_code == 400 and 'Field' in response_json.get('errorMessages', [])[0]:
+                return jsonify(error="Error: Ensure the field 'description' exists and is accessible with current permissions."), 400
+
+            response.raise_for_status()  # Lancia un errore per status diversi da 200 OK
+
+            issues = response_json.get("issues", [])
 
             if not issues:
                 results.append({
@@ -51,6 +73,7 @@ def run_script():
                 description = issue.get("fields", {}).get("description", {})
                 found = False
 
+                # Verifica che description sia un dizionario valido e cerca la reference al suo interno
                 if isinstance(description, dict):
                     for content in description.get("content", []):
                         if content.get("type") == "paragraph":
@@ -60,7 +83,7 @@ def run_script():
                                     break
                         if found:
                             break
-                
+
                 results.append({
                     "reference": ref,
                     "incident": incident_number if found else "NOT REPORTED",
@@ -77,6 +100,7 @@ def run_script():
                 "task_link": None
             })
 
+    # Preparazione dell'output finale
     output = {
         "non_reported": [],
         "reported": {}
