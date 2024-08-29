@@ -73,10 +73,15 @@ if (!DLQtext || !results || !check) {
 
             let reportedText = "\nReference riportate:\n";
             for (const [incident, refs] of Object.entries(output.reported)) {
-                reportedText += `**${incident}**\n`;
-                refs.forEach(ref => {
-                    reportedText += `  - ${ref.reference} | ${ref.task_name} | ${ref.task_link}\n`;
-                });
+                if (refs.length > 0) {
+                    // Intestazione del task
+                    reportedText += `**${refs[0].task_name} (${incident})**\n`;
+                    // Elenco delle referenze
+                    refs.forEach(ref => {
+                        reportedText += `  - ${ref.reference}\n`;
+                    });
+                    reportedText += `  Task link: ${refs[0].task_link}\n`;
+                }
             }
 
             results.textContent = nonReportedText + reportedText;
