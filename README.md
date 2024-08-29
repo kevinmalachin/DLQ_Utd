@@ -39,9 +39,18 @@ ________________________________________________________________________________
 
 # to install libraries and dependencies
 
+macOs
+
 brew install python
 
+- For Windows, download and install Python from python.org
+
+# Verify pip installation
+
 pip --version
+
+If installed
+
 
 pip install beautifulsoup4
 pip install requests
@@ -53,7 +62,7 @@ python3 -m venv venv
 
 # Attivare l'ambiente virtuale
 source venv/bin/activate  # On macOS/Linux
-      # On Windows
+.\venv\Scripts\activate      # On Windows
 
 # Installare Flask e Flask-CORS all'interno dell'ambiente virtuale
 pip install flask flask-cors
