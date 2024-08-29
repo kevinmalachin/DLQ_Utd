@@ -70,20 +70,21 @@ if (!DLQtext || !results || !check) {
             reportedRefs.forEach(ref => nonReportedRefs.delete(ref));
 
             // Organize the references in the output
-            let nonReportedText = "Non-reported References:\n";
+            let nonReportedText = "Non-reported References:\n<ul>";
             nonReportedRefs.forEach(ref => {
-                nonReportedText += `- ${ref}\n`;
+                nonReportedText += `<li>${ref}</li>`;
             });
+            nonReportedText += "</ul>";
 
             let reportedText = "\nReported References:\n";
             for (const [incident, refs] of Object.entries(output.reported)) {
                 if (refs.length > 0) {
-                    // Add task header and references under the same task
-                    reportedText += `**${refs[0].task_name} (${incident})**\n`;
+                    // Make the task name a clickable link
+                    reportedText += `<p><a href="${refs[0].task_link}" target="_blank"><strong>${refs[0].task_name} (${incident})</strong></a></p><ul>`;
                     refs.forEach(ref => {
-                        reportedText += `  - ${ref.reference}\n`;
+                        reportedText += `<li>${ref.reference}</li>`;
                     });
-                    reportedText += `  <a href="${refs[0].task_link}" target="_blank">Task link</a>\n`;  // Make the task link clickable
+                    reportedText += "</ul>";
                 }
             }
 
