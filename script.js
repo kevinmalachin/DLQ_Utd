@@ -64,30 +64,31 @@ if (!DLQtext || !results || !check) {
             const nonReportedRefs = new Set(output.non_reported);
 
             // Add reported references to the set and remove them from non-reported
-            for (const [incident, refs] of Object.entries(output.reported)) {
-                refs.forEach(ref => reportedRefs.add(ref.reference));
+            for (const [incident, details] of Object.entries(output.reported)) {
+                details.references.forEach(ref => reportedRefs.add(ref));
             }
             reportedRefs.forEach(ref => nonReportedRefs.delete(ref));
 
             // Organize the references in the output
-            let nonReportedText = "Non-reported References:\n<ul>";
+            let nonReportedText = `Non-reported References (${output.non_reported_count}):<ul>`;
             nonReportedRefs.forEach(ref => {
                 nonReportedText += `<li>${ref}</li>`;
             });
             nonReportedText += "</ul>";
 
-            let reportedText = "\nReported References:\n";
-            for (const [incident, refs] of Object.entries(output.reported)) {
-                if (refs.length > 0) {
+            let reportedText = `Reported References (${output.reported_count}):<ul>`;
+            for (const [incident, details] of Object.entries(output.reported)) {
+                if (details.references_count > 0) {
                     // Make the task name a clickable link, include status and status category
-                    const { task_name, task_link, task_status, status_category } = refs[0];
-                    reportedText += `<p><a href="${task_link}" target="_blank"><strong>${task_name} (${incident})</strong></a> - Status: ${task_status} (${status_category})</p><ul>`;
-                    refs.forEach(ref => {
-                        reportedText += `<li>${ref.reference}</li>`;
+                    const { task_name, task_link, task_status, status_category } = details;
+                    reportedText += `<li><a href="${task_link}" target="_blank"><strong>${task_name} (${incident})</strong></a> - Status: ${task_status} (${status_category}) (${details.references_count})<ul>`;
+                    details.references.forEach(ref => {
+                        reportedText += `<li>${ref}</li>`;
                     });
-                    reportedText += "</ul>";
+                    reportedText += "</ul></li>";
                 }
             }
+            reportedText += "</ul>";
 
             // Update the HTML with the results
             results.innerHTML = nonReportedText + reportedText;
