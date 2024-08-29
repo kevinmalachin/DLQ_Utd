@@ -33,7 +33,7 @@ def run_script():
         jql_query = f'description ~ "{ref}"'
         search_params = {
             'jql': jql_query,
-            'fields': 'key,summary,customfield_10111,description'
+            'fields': 'key,summary,customfield_10111,description,status'  # Include status field
         }
 
         try:
@@ -77,6 +77,12 @@ def run_script():
                 incident_number = issue.get("fields", {}).get("customfield_10111", "NOT REPORTED")
                 task_link = f"https://cap4cloud.atlassian.net/browse/{task_name}"
                 description = issue.get("fields", {}).get("description", {})
+                status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")  # Retrieve task status
+                status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
+
+                # Debugging logs for status
+                print(f"Task Status: {status} - Category: {status_category}")
+
                 found = False
 
                 # Search for the reference in the issue's description
@@ -90,12 +96,14 @@ def run_script():
                         if found:
                             break
 
-                # Add the result to the list
+                # Add the result to the list, including the task status
                 results.append({
                     "reference": ref,
                     "incident": incident_number if found else "NOT REPORTED",
                     "task_name": task_name,
-                    "task_link": task_link
+                    "task_link": task_link,
+                    "task_status": status,  # Include task status in the result
+                    "status_category": status_category  # Include task status category in the result
                 })
 
         except requests.exceptions.RequestException as e:
@@ -124,7 +132,9 @@ def run_script():
             output["reported"][incident_key].append({
                 "reference": result["reference"],
                 "task_name": result["task_name"],
-                "task_link": result["task_link"]
+                "task_link": result["task_link"],
+                "task_status": result["task_status"],  # Include task status in the result
+                "status_category": result["status_category"]  # Include task status category in the result
             })
 
     return jsonify(output=output)

@@ -79,8 +79,9 @@ if (!DLQtext || !results || !check) {
             let reportedText = "\nReported References:\n";
             for (const [incident, refs] of Object.entries(output.reported)) {
                 if (refs.length > 0) {
-                    // Make the task name a clickable link
-                    reportedText += `<p><a href="${refs[0].task_link}" target="_blank"><strong>${refs[0].task_name} (${incident})</strong></a></p><ul>`;
+                    // Make the task name a clickable link, include status and status category
+                    const { task_name, task_link, task_status, status_category } = refs[0];
+                    reportedText += `<p><a href="${task_link}" target="_blank"><strong>${task_name} (${incident})</strong></a> - Status: ${task_status} (${status_category})</p><ul>`;
                     refs.forEach(ref => {
                         reportedText += `<li>${ref.reference}</li>`;
                     });
@@ -88,11 +89,11 @@ if (!DLQtext || !results || !check) {
                 }
             }
 
-            // Display the output
+            // Update the HTML with the results
             results.innerHTML = nonReportedText + reportedText;
+
         } catch (error) {
-            console.error('Error during server call:', error);
-            results.textContent = "Error during server call.";
+            console.error("Error fetching data:", error);
         }
     });
 }
