@@ -87,7 +87,7 @@ if (!DLQtext || !results || !check) {
             for (const [incident, details] of Object.entries(output.reported)) {
                 if (details.references_count > 0) {
                     const { task_name, task_link, task_status, status_category, references } = details;
-                    reportedText += `<li><strong>${incident} - ${task_name} - Status: ${task_status} (${status_category})</strong><ul>`;
+                    reportedText += `<li><strong><a href="${task_link}" target="_blank">${incident} - ${task_name}</a> - Status: ${task_status} (${status_category})</strong><ul>`;
                     references.forEach(ref => reportedText += `<li>${ref}</li>`);
                     reportedText += `</ul></li>`;
                 }
