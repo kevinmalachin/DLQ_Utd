@@ -103,3 +103,20 @@ if (!DLQtext || !results || !check) {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menuButton = document.getElementById('menuButton');
+    const menu = document.getElementById('menu');
+
+    menuButton.addEventListener('click', function () {
+        console.log('Menu button clicked'); // Debugging line
+        if (menu.classList.contains('hidden')) {
+            menu.classList.remove('hidden');
+            menu.classList.add('show');
+        } else {
+            menu.classList.remove('show');
+            menu.classList.add('hidden');
+        }
+        console.log('Menu visibility toggled'); // Debugging line
+    });
+});

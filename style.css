@@ -29,7 +29,6 @@ nav {
 }
 
 #menu {
-  display: none;
   position: absolute;
   top: 100%;
   left: 0;
@@ -162,7 +161,7 @@ nav {
 
 /* Regola la posizione del menu a tendina */
 #menu {
-  width: 200px;
+  width: 300px;
   padding: 0.5em 0;
 }
 
