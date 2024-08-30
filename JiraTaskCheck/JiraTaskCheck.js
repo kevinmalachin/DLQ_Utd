@@ -1,5 +1,3 @@
-// JiraTaskCheck.js
-
 document.getElementById("checkButton").addEventListener("click", async function () {
     // Disable the button and show the loading indicator
     this.disabled = true;
@@ -40,7 +38,7 @@ function displayResults(data) {
     // Checking and displaying tasks with values other than "N/A"
     if (data.reported_count > 0) {
         data.reported.forEach((incident) => {
-            if (incident.value !== "N/A") {
+            if (incident.incident !== "N/A") {
                 const resultItem = document.createElement("div");
                 resultItem.className = "result-item";
                 resultItem.innerHTML = `
@@ -48,7 +46,7 @@ function displayResults(data) {
                     <strong>Incident:</strong> ${incident.incident}<br>
                     <strong>Status:</strong> ${incident.task_status}<br>
                     <strong>Category:</strong> ${incident.status_category}<br>
-                    <strong>References:</strong> ${incident.references.join(", ")}<br>
+                    <strong>References:</strong> ${incident.references ? incident.references.join(", ") : "None"}<br>
                     <strong>Link:</strong> <a href="${incident.task_link}" target="_blank">${incident.task_link}</a>
                 `;
                 resultsContainer.appendChild(resultItem);
