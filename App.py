@@ -128,21 +128,14 @@ def run_script():
         else:
             incident_key = result["incident"]
             if incident_key not in output["reported"]:
-                output["reported"][incident_key] = {
-                    "task_name": result["task_name"],
-                    "task_link": result["task_link"],
-                    "task_status": result["task_status"],  # Include task status in the result
-                    "status_category": result["status_category"],  # Include task status category in the result
-                    "references": []
-                }
-            output["reported"][incident_key]["references"].append(result["reference"])
-
-    # Add counts to the output
-    output["non_reported_count"] = len(output["non_reported"])
-    output["reported_count"] = len(output["reported"])
-
-    for incident_key, details in output["reported"].items():
-        details["references_count"] = len(details["references"])
+                output["reported"][incident_key] = []
+            output["reported"][incident_key].append({
+                "reference": result["reference"],
+                "task_name": result["task_name"],
+                "task_link": result["task_link"],
+                "task_status": result["task_status"],  # Include task status in the result
+                "status_category": result["status_category"]  # Include task status category in the result
+            })
 
     return jsonify(output=output)
 
