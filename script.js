@@ -42,9 +42,6 @@ if (!DLQtext || !results || !check) {
 
         const uniqueReferenceValues = Object.values(uniqueReferences);
 
-        // Display total count of references found
-        let totalReferencesCountText = `<p>Total References Found: ${uniqueReferenceValues.length}</p>`;
-
         try {
             const response = await fetch('http://localhost:5000/run-script', {
                 method: 'POST',
@@ -57,6 +54,7 @@ if (!DLQtext || !results || !check) {
             const data = await response.json();
             const { output } = data;
 
+            // Calculate reported and non-reported counts
             const reportedRefs = new Set();
             const nonReportedRefs = new Set(output.non_reported);
 
@@ -65,7 +63,18 @@ if (!DLQtext || !results || !check) {
             }
             reportedRefs.forEach(ref => nonReportedRefs.delete(ref));
 
-            let nonReportedText = `Non-reported References (${output.non_reported.length}):<ul>`;
+            // Total counts
+            const totalReferencesCount = uniqueReferenceValues.length;
+            const reportedCount = reportedRefs.size;
+            const nonReportedCount = nonReportedRefs.size;
+
+            // Display counts
+            let totalReferencesCountText = `<p>Total References Found: ${totalReferencesCount}</p>`;
+            totalReferencesCountText += `<p>Non-reported References: ${nonReportedCount}</p>`;
+            totalReferencesCountText += `<p>Reported References: ${reportedCount}</p>`;
+
+            // Display non-reported references
+            let nonReportedText = `Non-reported References (${nonReportedCount}):<ul>`;
             console.log("Non-reported references received:", output.non_reported);
             console.log("Reported references received:", Object.keys(output.reported));
             nonReportedRefs.forEach(ref => {
@@ -73,7 +82,8 @@ if (!DLQtext || !results || !check) {
             });
             nonReportedText += "</ul>";
 
-            let reportedText = `Reported References (${Object.keys(output.reported).length}):<ul>`;
+            // Display reported references
+            let reportedText = `Reported References (${reportedCount}):<ul>`;
             for (const [incident, details] of Object.entries(output.reported)) {
                 if (details.references_count > 0) {
                     const { task_name, task_link, task_status, status_category, references } = details;
@@ -84,7 +94,7 @@ if (!DLQtext || !results || !check) {
             }
             reportedText += "</ul>";
 
-            // Display the results including the total count
+            // Display the results including the correct counts
             results.innerHTML = totalReferencesCountText + nonReportedText + reportedText;
 
         } catch (error) {
