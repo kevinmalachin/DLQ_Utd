@@ -1,58 +1,45 @@
-document.getElementById("checkButton").addEventListener("click", async function () {
-    // Disable the button and show the loading indicator
-    this.disabled = true;
-    document.getElementById("loading").classList.remove("hidden");
-    document.getElementById("resultsContainer").innerHTML = "";
-
-    try {
-        // Make the API call to your Flask backend
-        const response = await fetch("http://localhost:5000/run-script", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                references: ["Task 1", "Task 2"] // Example data, replace with actual references
-            })
-        });
-
-        // Parse the JSON response
-        const result = await response.json();
-        console.log("API Response:", result); // Debugging log
-
-        // Display the results
-        displayResults(result.output);
-    } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("resultsContainer").innerHTML = "<p>Error occurred while checking tasks.</p>";
-    } finally {
-        // Re-enable the button and hide the loading indicator
-        this.disabled = false;
-        document.getElementById("loading").classList.add("hidden");
-    }
-});
-
-function displayResults(data) {
+document.addEventListener("DOMContentLoaded", () => {
+    const checkButton = document.getElementById("checkButton");
+    const loading = document.getElementById("loading");
     const resultsContainer = document.getElementById("resultsContainer");
 
-    // Checking and displaying tasks with values other than "N/A"
-    if (data.reported_count > 0) {
-        data.reported.forEach((incident) => {
-            if (incident.incident !== "N/A") {
-                const resultItem = document.createElement("div");
-                resultItem.className = "result-item";
-                resultItem.innerHTML = `
-                    <strong>Task Name:</strong> ${incident.task_name}<br>
-                    <strong>Incident:</strong> ${incident.incident}<br>
-                    <strong>Status:</strong> ${incident.task_status}<br>
-                    <strong>Category:</strong> ${incident.status_category}<br>
-                    <strong>References:</strong> ${incident.references ? incident.references.join(", ") : "None"}<br>
-                    <strong>Link:</strong> <a href="${incident.task_link}" target="_blank">${incident.task_link}</a>
-                `;
-                resultsContainer.appendChild(resultItem);
+    checkButton.addEventListener("click", async () => {
+        loading.classList.remove("hidden");
+        resultsContainer.innerHTML = "";
+
+        try {
+            // Cambiato l'URL per puntare a /check-tasks e metodo GET
+            const response = await fetch('http://localhost:5000/check-tasks', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                resultsContainer.innerHTML = `<p>Error: ${data.error}</p>`;
+            } else {
+                if (data.results.length === 0) {
+                    resultsContainer.innerHTML = "<p>All tasks are correctly configured.</p>";
+                } else {
+                    data.results.forEach(task => {
+                        const taskBox = document.createElement("div");
+                        taskBox.classList.add("task-box");
+                        taskBox.innerHTML = `
+                            <p><strong>Task:</strong> <a href="${task.task_link}" target="_blank">${task.task_name}</a></p>
+                            <p><strong>Incident Number:</strong> ${task.incident_number}</p>
+                            <p><strong>Customer:</strong> ${task.customer}</p>
+                        `;
+                        resultsContainer.appendChild(taskBox);
+                    });
+                }
             }
-        });
-    } else {
-        resultsContainer.innerHTML = "<p>No tasks found with values other than 'N/A'.</p>";
-    }
-}
+        } catch (error) {
+            resultsContainer.innerHTML = `<p>Error: Unable to fetch tasks. Please try again later.</p>`;
+        } finally {
+            loading.classList.add("hidden");
+        }
+    });
+});

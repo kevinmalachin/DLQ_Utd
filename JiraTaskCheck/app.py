@@ -1,103 +1,141 @@
-from flask import Flask, jsonify, request
-from requests.auth import HTTPBasicAuth
 import requests
-import os
+from requests.auth import HTTPBasicAuth
+from flask import Flask, jsonify
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
+CORS(app)
 
-# Configura CORS in modo più specifico se necessario
-CORS(app, resources={r"/*": {"origins": "*"}})  # Permette richieste da qualsiasi origine
+@app.route('/check-tasks', methods=['GET'])
+def check_tasks():
+    search_url = "https://cap4cloud.atlassian.net/rest/api/3/search"
 
-@app.route('/run-script', methods=['POST'])
-def run_script():
+    # Recupero delle credenziali da variabili di ambiente
+    username = os.getenv('JIRA_USERNAME')
+    password = os.getenv('JIRA_PASSWORD')
+
+    if not username or not password:
+        return jsonify(error="JIRA_USERNAME and JIRA_PASSWORD environment variables are required"), 500
+
+    # JQL query: sostituire 'IMSL1GEN' con il project key corretto
+    jql_query = 'project = IMSL1GEN'  # Assicurati che questa sia la key corretta del progetto
+
+    # Impostazione dei parametri di ricerca
+    search_params = {
+        'jql': jql_query,
+        'fields': 'key,summary,customfield_10111'  # Campi necessari: chiave della task, sommario e incident number
+    }
+
     try:
-        references = request.json.get('references', [])
-        if not references:
-            return jsonify(error="No references provided"), 400
+        # Effettua la chiamata API a JIRA
+        response = requests.get(
+            search_url,
+            headers={"Accept": "application/json"},
+            params=search_params,
+            auth=HTTPBasicAuth(username, password)
+        )
 
-        search_url = "https://cap4cloud.atlassian.net/rest/api/3/search"
-        username = os.getenv('JIRA_USERNAME')
-        password = os.getenv('JIRA_PASSWORD')
+        # Controlla eventuali errori nella risposta
+        response.raise_for_status()
 
-        if not username or not password:
-            return jsonify(error="JIRA_USERNAME and JIRA_PASSWORD environment variables are required"), 500
+        # Recupera le issue dalla risposta
+        issues = response.json().get("issues", [])
+
+        # Se non ci sono issue, logghiamo un messaggio per confermare il risultato
+        if not issues:
+            return jsonify(message="No issues found for the specified project key."), 200
 
         results = []
 
-        for ref in references:
-            jql_query = f'description ~ "{ref}" AND "customfield_10112" = "MMS-ESCALATED-L3"'
-            search_params = {
-                'jql': jql_query,
-                'fields': 'key,summary,customfield_10111,customfield_10112,customfield_10141,customfield_10124,status'
-            }
+        # Controllo della validità dell'incident number in base al customer
+        for issue in issues:
+            task_key = issue.get("key", "Unknown Task")
+            task_link = f"https://cap4cloud.atlassian.net/browse/{task_key}"
+            incident_number = issue.get("fields", {}).get("customfield_10111", "N/A")
+            summary = issue.get("fields", {}).get("summary", "No Summary Available")
 
-            try:
-                response = requests.get(
-                    search_url,
-                    headers={"Accept": "application/json"},
-                    params=search_params,
-                    auth=HTTPBasicAuth(username, password)
-                )
+            # Determinazione del customer in base al sommario o altri criteri
+            customer = determine_customer(summary)
 
-                # Verifica se la risposta è valida
-                if response.status_code != 200:
-                    return jsonify(error="Error fetching data from JIRA API", status_code=response.status_code), response.status_code
+            # Check sulla validità dell'incident number
+            if not validate_incident_number(customer, incident_number):
+                results.append({
+                    "task_name": task_key,
+                    "task_link": task_link,
+                    "incident_number": incident_number,
+                    "customer": customer
+                })
 
-                issues = response.json().get("issues", [])
+        # Se nessun task è stato trovato con errori nell'incident number
+        if not results:
+            return jsonify(message="All tasks are correctly configured."), 200
 
-                if not issues:
-                    results.append({
-                        "reference": ref,
-                        "incident": "NOT REPORTED",
-                        "task_name": "N/A",
-                        "task_link": None
-                    })
-                    continue
+        return jsonify(results=results)
 
-                for issue in issues:
-                    task_name = issue.get("key", "Task Not Found")
-                    task_link = f"https://cap4cloud.atlassian.net/browse/{task_name}"
-                    incident_number = issue.get("fields", {}).get("customfield_10111", "N/A")
-                    status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
-                    status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
-                    customer_field = issue.get("fields", {}).get("customfield_10124", [])
-                    customer_names = [customer.get("value") for customer in customer_field if customer.get("value")]
-                    customer_name = customer_names[0] if customer_names else "Unknown Customer"
-                    
-                    # Aggiungi il controllo per customfield_10141
-                    escalation_value = issue.get("fields", {}).get("customfield_10141", {}).get("value", "N/A")
+    except requests.exceptions.HTTPError as http_err:
+        # Log del contenuto della risposta per capire cosa sta succedendo
+        error_details = response.json().get('errorMessages', ['Unknown error'])
+        return jsonify(error=f"HTTP error occurred: {http_err}, Details: {error_details}"), 500
+    except requests.exceptions.RequestException as e:
+        # Gestione degli errori di connessione e restituzione del messaggio d'errore
+        return jsonify(error=f"Failed to connect to JIRA: {e}"), 500
 
-                    # Evidenzia il task se incident_number o escalation_value sono "N/A"
-                    highlight = (incident_number == "N/A" or escalation_value == "N/A")
 
-                    results.append({
-                        "reference": ref,
-                        "incident": incident_number,
-                        "task_name": task_name,
-                        "task_link": task_link,
-                        "task_status": status,
-                        "status_category": status_category,
-                        "customer_name": customer_name,
-                        "highlight": highlight
-                    })
+def determine_customer(summary):
+    """
+    Determina il customer in base al sommario della task.
+    Per ora si basa solo su stringhe fisse, ma si può migliorare in futuro.
+    """
+    if "DIOR01MMS" in summary:
+        return "DIOR01MMS"
+    elif "TFNY01MMS" in summary:
+        return "TFNY01MMS"
+    elif "FSTR01MMS" in summary:
+        return "FSTR01MMS"
+    else:
+        return "Unknown"
 
-            except requests.exceptions.RequestException as e:
-                # Gestione dell'errore di richiesta con log dettagliato
-                return jsonify(error=f"Failed to fetch issues: {str(e)}"), 500
 
-        output = {
-            "reported": [result for result in results if result["highlight"]],
-            "non_reported": [result for result in results if not result["highlight"]],
-            "non_reported_count": sum(1 for result in results if not result["highlight"]),
-            "reported_count": sum(1 for result in results if result["highlight"])
-        }
+def validate_incident_number(customer, incident_number):
+    """
+    Valida la lunghezza del numero dell'incidente in base al customer.
+    """
+    if customer == "DIOR01MMS" and len(incident_number) != 9:
+        return False
+    elif customer == "TFNY01MMS" and len(incident_number) != 11:
+        return False
+    elif customer == "FSTR01MMS" and len(incident_number) != 12:
+        return False
+    return True
 
-        return jsonify(output=output)
 
-    except Exception as e:
-        # Logga errori inaspettati e restituisci un messaggio d'errore al client
-        return jsonify(error=f"An unexpected error occurred: {str(e)}"), 500
+def get_project_keys():
+    """
+    Recupera e stampa i project keys disponibili per il tuo account JIRA.
+    """
+    project_url = "https://cap4cloud.atlassian.net/rest/api/3/project"
+    username = os.getenv('JIRA_USERNAME')
+    password = os.getenv('JIRA_PASSWORD')
+
+    try:
+        response = requests.get(
+            project_url,
+            headers={"Accept": "application/json"},
+            auth=HTTPBasicAuth(username, password)
+        )
+
+        response.raise_for_status()
+        projects = response.json()
+        print("Available Projects and Keys:")
+        for project in projects:
+            print(f"Project Name: {project['name']}, Key: {project['key']}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching project keys: {e}")
+
 
 if __name__ == '__main__':
+    # Puoi chiamare questa funzione per verificare quali project key sono disponibili
+    # get_project_keys()
+
     app.run(host='0.0.0.0', port=5000, debug=True)
