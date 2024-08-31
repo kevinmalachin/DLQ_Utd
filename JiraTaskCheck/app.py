@@ -24,7 +24,7 @@ def check_tasks():
     # Impostazione dei parametri di ricerca
     search_params = {
         'jql': jql_query,
-        'fields': 'key,summary,customfield_10111'  # Campi necessari: chiave della task, sommario e incident number
+        'fields': 'key,summary,customfield_10111,customfield_10124'  # Aggiunto customfield_10124 per customer
     }
 
     try:
@@ -55,17 +55,20 @@ def check_tasks():
             incident_number = issue.get("fields", {}).get("customfield_10111", "N/A")
             summary = issue.get("fields", {}).get("summary", "No Summary Available")
 
-            # Determinazione del customer in base al sommario o altri criteri
-            customer = determine_customer(summary)
+            # Recupera il customer dal campo specifico (non usare il sommario per determinare il customer)
+            customer_field = issue.get("fields", {}).get("customfield_10124", [])
+            customer = customer_field[0].get("value", "Unknown") if customer_field else "Unknown"
 
-            # Check sulla validità dell'incident number
-            if not validate_incident_number(customer, incident_number):
-                results.append({
-                    "task_name": task_key,
-                    "task_link": task_link,
-                    "incident_number": incident_number,
-                    "customer": customer
-                })
+            # Report delle task con incident diverso da "N/A"
+            if incident_number != "N/A":
+                # Check sulla validità dell'incident number
+                if not validate_incident_number(customer, incident_number):
+                    results.append({
+                        "task_name": task_key,
+                        "task_link": task_link,
+                        "incident_number": incident_number,
+                        "customer": customer
+                    })
 
         # Se nessun task è stato trovato con errori nell'incident number
         if not results:
@@ -80,21 +83,6 @@ def check_tasks():
     except requests.exceptions.RequestException as e:
         # Gestione degli errori di connessione e restituzione del messaggio d'errore
         return jsonify(error=f"Failed to connect to JIRA: {e}"), 500
-
-
-def determine_customer(summary):
-    """
-    Determina il customer in base al sommario della task.
-    Per ora si basa solo su stringhe fisse, ma si può migliorare in futuro.
-    """
-    if "DIOR01MMS" in summary:
-        return "DIOR01MMS"
-    elif "TFNY01MMS" in summary:
-        return "TFNY01MMS"
-    elif "FSTR01MMS" in summary:
-        return "FSTR01MMS"
-    else:
-        return "Unknown"
 
 
 def validate_incident_number(customer, incident_number):
