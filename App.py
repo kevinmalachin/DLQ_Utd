@@ -14,7 +14,6 @@ def run_script():
         return jsonify(error="No references provided"), 400
 
     search_url = "https://cap4cloud.atlassian.net/rest/api/3/search"
-
     username = os.getenv('JIRA_USERNAME')
     password = os.getenv('JIRA_PASSWORD')
 
@@ -27,7 +26,7 @@ def run_script():
         jql_query = f'description ~ "{ref}"'
         search_params = {
             'jql': jql_query,
-            'fields': 'key,summary,customfield_10111,description,status'
+            'fields': 'key,summary,customfield_10111,description,status,customfield_10124'
         }
 
         try:
@@ -38,17 +37,7 @@ def run_script():
                 auth=HTTPBasicAuth(username, password)
             )
 
-            print(f"Request URL: {response.url}")
-            print(f"Response Status Code: {response.status_code}")
-
             response_json = response.json()
-            print(f"Response Content: {response_json}")
-
-            if response.status_code == 400 and 'Field' in response_json.get('errorMessages', [])[0]:
-                return jsonify(error="Error: Ensure the field 'description' exists and is accessible with current permissions."), 400
-
-            response.raise_for_status()
-
             issues = response_json.get("issues", [])
 
             if not issues:
@@ -67,9 +56,12 @@ def run_script():
                 description = issue.get("fields", {}).get("description", {})
                 status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
                 status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
-
+                
+                # Controlla il campo del customer
+                customer_field = issue.get("fields", {}).get("customfield_10124", [])
+                customer_value = customer_field[0].get("value", "Unknown Customer") if customer_field else "Unknown Customer"
+                
                 found = False
-
                 if isinstance(description, dict):
                     for content in description.get("content", []):
                         if content.get("type") == "paragraph":
@@ -80,17 +72,19 @@ def run_script():
                         if found:
                             break
 
-                results.append({
+                task_data = {
                     "reference": ref,
                     "incident": incident_number if found else "NOT REPORTED",
                     "task_name": task_name,
                     "task_link": task_link,
                     "task_status": status,
-                    "status_category": status_category
-                })
+                    "status_category": status_category,
+                    "customer": customer_value
+                }
+
+                results.append(task_data)
 
         except requests.exceptions.RequestException as e:
-            print(f"ERROR: Failed to fetch issues containing reference {ref}: {str(e)}")
             results.append({
                 "reference": ref,
                 "incident": "NOT REPORTED",
@@ -100,16 +94,13 @@ def run_script():
 
     output = {
         "non_reported": [],
-        "reported": {}
+        "reported": {},
+        "different_customers": []  # Per memorizzare i task con customer diverso
     }
 
-    reference_count = {}
     for result in results:
         if result["incident"] == "NOT REPORTED":
-            print(f"Adding to non_reported: {result['reference']}")
-            ref = result['reference']
-            reference_count[ref] = reference_count.get(ref, 0) + 1
-            output["non_reported"].append(ref)
+            output["non_reported"].append(result["reference"])
         else:
             incident_key = result["incident"]
             if incident_key not in output["reported"]:
@@ -122,14 +113,11 @@ def run_script():
                 }
             output["reported"][incident_key]["references"].append(result["reference"])
 
-    # Remove duplicates from non-reported references
-    reported_refs_set = set()
-    for details in output["reported"].values():
-        reported_refs_set.update(details["references"])
-    
-    # Filter non_reported references to ensure they aren't listed as reported
-    output["non_reported"] = list(set(output["non_reported"]) - reported_refs_set)
-    print(f"Final non-reported references: {output['non_reported']}")
+        # Controllo se il customer è diverso da DIOR01MMS
+        # Utilizza .get() con un valore predefinito se il campo non esiste
+        customer = result.get("customer", "Unknown Customer")
+        if customer != "DIOR01MMS":
+            output["different_customers"].append(result)
 
     output["non_reported_count"] = len(output["non_reported"])
     output["reported_count"] = len(output["reported"])

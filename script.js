@@ -117,8 +117,18 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             }
             reportedText += "</ul>";
 
-            // Mostra i risultati inclusi i conteggi corretti
-            results.innerHTML = totalReferencesCountText + nonReportedText + reportedText;
+            // Mostra avvisi per i task con customer diverso da "DIOR01MMS"
+            let differentCustomerText = "";
+            if (output.different_customers && output.different_customers.length > 0) {
+                differentCustomerText = `<div class="warning-box"><h3>Warning: Tasks with Different Customer</h3><ul>`;
+                output.different_customers.forEach((task) => {
+                    differentCustomerText += `<li><a href="${task.task_link}" target="_blank">${task.task_name}</a> - Customer: ${task.customer} - Status: ${task.task_status} (${task.status_category})</li>`;
+                });
+                differentCustomerText += `</ul></div>`;
+            }
+
+            // Mostra i risultati inclusi i conteggi corretti e gli avvisi per i customer diversi
+            results.innerHTML = totalReferencesCountText + nonReportedText + reportedText + differentCustomerText;
         } catch (error) {
             console.error(error);
             results.innerHTML = "Error: Failed to connect to server.";
