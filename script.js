@@ -7,6 +7,7 @@ const extractButton = document.querySelector(".Extract");
 const checkButton = document.querySelector(".Check");
 
 let extractedReferences = [];
+let currentDLQ = "";
 
 // Controllo se gli elementi esistono nella pagina
 if (!DLQtext || !results || !extractButton || !checkButton) {
@@ -18,37 +19,64 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
 
         const dlqText = DLQtext.value;
 
-        const patterns = [
-            /"internalReference":\s*"([^"]+)"/g,
-            /"entityRef":\s*"([^"]+)"/g,
-            /"rootEntityRef":\s*"([^"]+)"/g,
-            /"ref":\s*"([^"]+)"/g,
-            /"asnId":\s*"([^"]+)"/g,
-        ];
+        // Identifica la DLQ dal testo
+        const dlqMatch = dlqText.match(/(\S+)\.DLQ/);
+        if (dlqMatch) {
+            currentDLQ = dlqMatch[1];
+            console.log("Identified DLQ:", currentDLQ);
+        } else {
+            console.error("No DLQ identified.");
+            results.innerHTML = "No DLQ identified in the text.";
+            return;
+        }
+
+        // Patterns di ricerca basati sulla DLQ
+        let patterns = [];
+        switch (currentDLQ) {
+            case "prod.fluent.returns.creditmemos":
+                patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
+                break;
+            case "prod.orderlifecycle.sendpartialrefund":
+                patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
+                break;
+            case "prod.process.goods-receptions":
+                patterns = [/\"asnType\":\s*\"([A-Z]+)\"/g, /\"asnId\":\s*\"(\d+)\"/g];
+                break;
+            case "prod.process.generateinvoice":
+            case "prod.emea.process.generateinvoice":
+                patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
+                break;
+            case "prod.orderlifecycle.LTReserveFulfilment":
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
+                break;
+            default:
+                console.error("No matching DLQ pattern found.");
+                results.innerHTML = "No matching DLQ pattern found.";
+                return;
+        }
 
         let combinedReferences = [];
-        patterns.forEach((pattern) => {
-            const matches = [...dlqText.matchAll(pattern)];
-            combinedReferences.push(...matches.map((match) => match[1]));
-        });
+        if (currentDLQ === "prod.process.goods-receptions") {
+            const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
+            const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
 
-        // Filtraggio delle reference per escludere UUID e alcuni pattern specifici
-        const filteredReferences = combinedReferences.filter(
-            (ref) =>
-                !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(ref) &&
-                !/^EC0\d{5}-[A-Z]+$/.test(ref)
-        );
-
-        // Rimozione dei duplicati e selezione della reference più lunga
-        const uniqueReferences = {};
-        filteredReferences.forEach((ref) => {
-            const baseRef = ref.split("-")[0];
-            if (!uniqueReferences[baseRef] || ref.length > uniqueReferences[baseRef].length) {
-                uniqueReferences[baseRef] = ref;
+            if (asnTypeMatches.length > 0) {
+                for (let i = 0; i < asnIdMatches.length; i++) {
+                    combinedReferences.push(`${asnIdMatches[i][1]} [${asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found"}]`);
+                }
+            } else {
+                // Se non c'è `asnType`, riportiamo solo `asnId` e annotiamo che `asnType` non era presente
+                combinedReferences = asnIdMatches.map(match => `${match[1]} [asnType not found]`);
             }
-        });
+        } else {
+            patterns.forEach((pattern) => {
+                const matches = [...dlqText.matchAll(pattern)];
+                combinedReferences.push(...matches.map((match) => match[1]));
+            });
+        }
 
-        extractedReferences = Object.values(uniqueReferences);
+        // Escludi referenze con il suffisso "-STD"
+        extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
 
         // Mostra le reference estratte nella sezione dei risultati
         results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences
@@ -77,7 +105,6 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             const data = await response.json();
             const { output } = data;
 
-            // Calcolo del numero di reference riportate e non riportate
             const reportedRefs = new Set();
             const nonReportedRefs = new Set(output.non_reported);
 
@@ -86,26 +113,20 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             }
             reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
 
-            // Contatori totali
             const totalReferencesCount = extractedReferences.length;
             const reportedCount = reportedRefs.size;
             const nonReportedCount = nonReportedRefs.size;
 
-            // Mostra i conteggi totali
             let totalReferencesCountText = `<p>Total References Found: ${totalReferencesCount}</p>`;
             totalReferencesCountText += `<p>Non-reported References: ${nonReportedCount}</p>`;
             totalReferencesCountText += `<p>Reported References: ${reportedCount}</p>`;
 
-            // Mostra le reference non riportate
             let nonReportedText = `Non-reported References (${nonReportedCount}):<ul>`;
-            console.log("Non-reported references received:", output.non_reported);
-            console.log("Reported references received:", Object.keys(output.reported));
             nonReportedRefs.forEach((ref) => {
                 nonReportedText += `<li>${ref}</li>`;
             });
             nonReportedText += "</ul>";
 
-            // Mostra le reference riportate
             let reportedText = `Reported References (${reportedCount}):<ul>`;
             for (const [incident, details] of Object.entries(output.reported)) {
                 if (details.references_count > 0) {
@@ -117,39 +138,10 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             }
             reportedText += "</ul>";
 
-            // Mostra avvisi per i task con customer diverso da "DIOR01MMS"
-            let differentCustomerText = "";
-            if (output.different_customers && output.different_customers.length > 0) {
-                differentCustomerText = `<div class="warning-box"><h3>Warning: Tasks with Different Customer</h3><ul>`;
-                output.different_customers.forEach((task) => {
-                    differentCustomerText += `<li><a href="${task.task_link}" target="_blank">${task.task_name}</a> - Customer: ${task.customer} - Status: ${task.task_status} (${task.status_category})</li>`;
-                });
-                differentCustomerText += `</ul></div>`;
-            }
-
-            // Mostra i risultati inclusi i conteggi corretti e gli avvisi per i customer diversi
-            results.innerHTML = totalReferencesCountText + nonReportedText + reportedText + differentCustomerText;
+            results.innerHTML = totalReferencesCountText + nonReportedText + reportedText;
         } catch (error) {
             console.error(error);
             results.innerHTML = "Error: Failed to connect to server.";
         }
     });
 }
-
-// Gestione della visibilità del menu
-document.addEventListener("DOMContentLoaded", function () {
-    const menuButton = document.getElementById("menuButton");
-    const menu = document.getElementById("menu");
-
-    menuButton.addEventListener("click", function () {
-        console.log("Menu button clicked"); // Debugging line
-        if (menu.classList.contains("hidden")) {
-            menu.classList.remove("hidden");
-            menu.classList.add("show");
-        } else {
-            menu.classList.remove("show");
-            menu.classList.add("hidden");
-        }
-        console.log("Menu visibility toggled"); // Debugging line
-    });
-});

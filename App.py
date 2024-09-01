@@ -57,7 +57,6 @@ def run_script():
                 status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
                 status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
                 
-                # Controlla il campo del customer
                 customer_field = issue.get("fields", {}).get("customfield_10124", [])
                 customer_value = customer_field[0].get("value", "Unknown Customer") if customer_field else "Unknown Customer"
                 
@@ -109,21 +108,18 @@ def run_script():
                     "task_link": result["task_link"],
                     "task_status": result["task_status"],
                     "status_category": result["status_category"],
-                    "references": []
+                    "references": [],
+                    "references_count": 0  # Inizializza references_count
                 }
             output["reported"][incident_key]["references"].append(result["reference"])
+            output["reported"][incident_key]["references_count"] += 1  # Incrementa references_count
 
-        # Controllo se il customer è diverso da DIOR01MMS
-        # Utilizza .get() con un valore predefinito se il campo non esiste
         customer = result.get("customer", "Unknown Customer")
         if customer != "DIOR01MMS":
             output["different_customers"].append(result)
 
     output["non_reported_count"] = len(output["non_reported"])
-    output["reported_count"] = len(output["reported"])
-
-    for incident_key, details in output["reported"].items():
-        details["references_count"] = len(details["references"])
+    output["reported_count"] = sum(details["references_count"] for details in output["reported"].values())  # Somma tutti references_count
 
     return jsonify(output=output)
 
