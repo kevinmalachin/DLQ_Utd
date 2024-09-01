@@ -56,10 +56,10 @@ def run_script():
                 description = issue.get("fields", {}).get("description", {})
                 status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
                 status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
-                
+
                 customer_field = issue.get("fields", {}).get("customfield_10124", [])
                 customer_value = customer_field[0].get("value", "Unknown Customer") if customer_field else "Unknown Customer"
-                
+
                 found = False
                 if isinstance(description, dict):
                     for content in description.get("content", []):

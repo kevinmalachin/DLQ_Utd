@@ -85,63 +85,69 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
     });
 
     // Gestione del click sul bottone "Check Reported References"
-    checkButton.addEventListener("click", async (e) => {
-        e.preventDefault();
+checkButton.addEventListener("click", async (e) => {
+    e.preventDefault();
 
-        if (extractedReferences.length === 0) {
-            results.innerHTML = "Please extract references first.";
-            return;
+    if (extractedReferences.length === 0) {
+        results.innerHTML = "Please extract references first.";
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:5000/run-script", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ references: extractedReferences }),
+        });
+
+        const data = await response.json();
+        const { output } = data;
+
+        const reportedRefs = new Set();
+        const nonReportedRefs = new Set(output.non_reported);
+
+        for (const [incident, details] of Object.entries(output.reported)) {
+            details.references.forEach((ref) => reportedRefs.add(ref));
         }
+        reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
 
-        try {
-            const response = await fetch("http://localhost:5000/run-script", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ references: extractedReferences }),
-            });
+        // Conta totale delle referenze
+        const totalReferencesCount = extractedReferences.length;
+        const reportedCount = reportedRefs.size;
+        const nonReportedCount = nonReportedRefs.size;
 
-            const data = await response.json();
-            const { output } = data;
+        // Output delle referenze totali, riportate e non riportate
+        let totalReferencesCountText = `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`;
+        totalReferencesCountText += `<p><strong>Reported References:</strong> ${reportedCount}</p>`;
+        totalReferencesCountText += `<p><strong>Non-reported References:</strong> ${nonReportedCount}</p>`;
 
-            const reportedRefs = new Set();
-            const nonReportedRefs = new Set(output.non_reported);
+        // Mostra referenze non riportate in rosso grassetto
+        let nonReportedText = `<p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p><ul>`;
+        nonReportedRefs.forEach((ref) => {
+            nonReportedText += `<li style="color:red;"><strong>${ref}</strong></li>`;
+        });
+        nonReportedText += "</ul>";
 
-            for (const [incident, details] of Object.entries(output.reported)) {
-                details.references.forEach((ref) => reportedRefs.add(ref));
+        // Mostra referenze riportate con i dettagli della task in verde grassetto
+        let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
+        for (const [incident, details] of Object.entries(output.reported)) {
+            if (details.references_count > 0) {
+                reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a> - Status: ${details.task_status} (${details.status_category})</strong><ul>`;
+                details.references.forEach((ref) => {
+                    reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
+                });
+                reportedText += `</ul></li>`;
             }
-            reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
-
-            const totalReferencesCount = extractedReferences.length;
-            const reportedCount = reportedRefs.size;
-            const nonReportedCount = nonReportedRefs.size;
-
-            let totalReferencesCountText = `<p>Total References Found: ${totalReferencesCount}</p>`;
-            totalReferencesCountText += `<p>Non-reported References: ${nonReportedCount}</p>`;
-            totalReferencesCountText += `<p>Reported References: ${reportedCount}</p>`;
-
-            let nonReportedText = `Non-reported References (${nonReportedCount}):<ul>`;
-            nonReportedRefs.forEach((ref) => {
-                nonReportedText += `<li>${ref}</li>`;
-            });
-            nonReportedText += "</ul>";
-
-            let reportedText = `Reported References (${reportedCount}):<ul>`;
-            for (const [incident, details] of Object.entries(output.reported)) {
-                if (details.references_count > 0) {
-                    const { task_name, task_link, task_status, status_category, references } = details;
-                    reportedText += `<li><strong><a href="${task_link}" target="_blank">${incident} - ${task_name}</a> - Status: ${task_status} (${status_category})</strong><ul>`;
-                    references.forEach((ref) => (reportedText += `<li>${ref}</li>`));
-                    reportedText += `</ul></li>`;
-                }
-            }
-            reportedText += "</ul>";
-
-            results.innerHTML = totalReferencesCountText + nonReportedText + reportedText;
-        } catch (error) {
-            console.error(error);
-            results.innerHTML = "Error: Failed to connect to server.";
         }
-    });
+        reportedText += "</ul>";
+
+        // Unisci il tutto nel div dei risultati
+        results.innerHTML = totalReferencesCountText + reportedText + nonReportedText;
+    } catch (error) {
+        console.error(error);
+        results.innerHTML = "Error: Failed to connect to server.";
+    }
+});
 }
