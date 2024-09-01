@@ -54,6 +54,8 @@ def run_script():
                 incident_number = issue.get("fields", {}).get("customfield_10111", "NOT REPORTED")
                 task_link = f"https://cap4cloud.atlassian.net/browse/{task_name}"
                 description = issue.get("fields", {}).get("description", {})
+                
+                # Corretta assegnazione dello stato
                 status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
                 status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
 
@@ -76,7 +78,7 @@ def run_script():
                     "incident": incident_number if found else "NOT REPORTED",
                     "task_name": task_name,
                     "task_link": task_link,
-                    "task_status": status,
+                    "task_status": status,  # Usa direttamente il nome dello stato
                     "status_category": status_category,
                     "customer": customer_value
                 }
