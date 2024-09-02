@@ -144,7 +144,8 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
             for (const [incident, details] of Object.entries(output.reported)) {
                 if (details.references_count > 0) {
-                    reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a> - Status: ${details.task_status} (${details.status_category})</strong><ul>`;
+                    reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a></strong>`;
+                    reportedText += ` - Summary: ${details.summary} - Status: ${details.task_status} (${details.status_category})<ul>`;
                     details.references.forEach((ref) => {
                         reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
                     });

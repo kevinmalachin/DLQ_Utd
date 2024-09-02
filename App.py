@@ -59,6 +59,9 @@ def run_script():
                 status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
                 status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
 
+                # Assegna il summary della task
+                summary = issue.get("fields", {}).get("summary", "No Summary")
+
                 customer_field = issue.get("fields", {}).get("customfield_10124", [])
                 customer_value = customer_field[0].get("value", "Unknown Customer") if customer_field else "Unknown Customer"
 
@@ -77,6 +80,7 @@ def run_script():
                     "reference": ref,
                     "incident": incident_number if found else "NOT REPORTED",
                     "task_name": task_name,
+                    "summary": summary,  # Include the summary in the response
                     "task_link": task_link,
                     "task_status": status,  # Usa direttamente il nome dello stato
                     "status_category": status_category,
@@ -107,6 +111,7 @@ def run_script():
             if incident_key not in output["reported"]:
                 output["reported"][incident_key] = {
                     "task_name": result["task_name"],
+                    "summary": result["summary"],  # Add summary to the reported section
                     "task_link": result["task_link"],
                     "task_status": result["task_status"],
                     "status_category": result["status_category"],
