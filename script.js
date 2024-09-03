@@ -14,75 +14,88 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
     console.error("Elements not found in the page.");
 } else {
     // Gestione del click sul bottone "Extract References"
-extractButton.addEventListener("click", (e) => {
-    e.preventDefault();
+    extractButton.addEventListener("click", (e) => {
+        e.preventDefault();
 
-    const dlqText = DLQtext.value;
+        const dlqText = DLQtext.value;
 
-    // Identifica la DLQ dal testo con riconoscimento flessibile degli ambienti
-    const dlqMatch = dlqText.match(/(\S+)\.DLQ/);
-    if (dlqMatch) {
-        currentDLQ = dlqMatch[1];
-        console.log("Identified DLQ:", currentDLQ);
-    } else {
-        console.error("No DLQ identified.");
-        results.innerHTML = "No DLQ identified in the text.";
-        return;
-    }
+        // Identifica la DLQ dal testo con riconoscimento flessibile degli ambienti
+        const dlqMatch = dlqText.match(/(\S+)\.DLQ/);
+        if (dlqMatch) {
+            currentDLQ = dlqMatch[1];
+            console.log("Identified DLQ:", currentDLQ);
+        } else {
+            console.error("No DLQ identified.");
+            results.innerHTML = "No DLQ identified in the text.";
+            return;
+        }
 
-    // Definizione delle parti comuni delle DLQ per gli ambienti diversi
-    const dlqPatterns = {
-        "fluent.returns.creditmemos": [/\"ref\":\s*\"(CM_[^\"]+)\"/g],
-        "orderlifecycle.sendpartialrefund": [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g],
-        "process.goods-receptions": [/\"asnType\":\s*\"([A-Z]+)\"/g, /\"asnId\":\s*\"(\d+)\"/g],
-        "process.generateinvoice": [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g],
-        "orderlifecycle.LTReserveFulfilment": [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g],
-        "orderlifecycle.LTRejectFulfilment": [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g],
-        "orderlifecycle.LTValidateFulfilment": [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g],
-        "emea.orderlifecycle.createLabelSAV": [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g],
-        "emea.m51au.process": [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g],
-        "emea.eboutique.order": [/\"externalReference\":\s*\"(EC\d+)\"/g],
-    };
+        let patterns = [];
+        switch (true) {
+            case /fluent\.returns\.creditmemos/.test(currentDLQ):
+                patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
+                break;
+            case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
+                break;
+            case /process\.goods-receptions/.test(currentDLQ):
+                patterns = [/\"asnType\":\s*\"([A-Z]+)\"/g, /\"asnId\":\s*\"(\d+)\"/g];
+                break;
+            case /process\.generateinvoice/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
+                break;
+            case /orderlifecycle\.LTReserveFulfilment/.test(currentDLQ):
+            case /orderlifecycle\.LTRejectFulfilment/.test(currentDLQ):
+            case /orderlifecycle\.LTValidateFulfilment/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g];
+                break;
+            case /emea\.orderlifecycle\.createLabelSAV/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g];
+                break;
+            case /emea\.m51au\.process/.test(currentDLQ):
+            case /apac\.orderlifecycle\.dhl\.kr\.delivery/.test(currentDLQ): // Nuovo pattern aggiunto
+                patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
+                break;
+            case /emea\.eboutique\.order/.test(currentDLQ):
+                patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
+                break;
+            case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ): // Nuovo pattern aggiunto
+                patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
+                break;
+            default:
+                console.error("No matching DLQ pattern found.");
+                results.innerHTML = "No matching DLQ pattern found.";
+                return;
+        }
 
-    // Estrai la parte comune ignorando l'ambiente
-    const commonPattern = Object.keys(dlqPatterns).find(pattern => currentDLQ.includes(pattern));
+        // Logica per combinare riferimenti specifici (come goods-receptions)
+        let combinedReferences = [];
+        if (currentDLQ.includes("goods-receptions")) {
+            const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
+            const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
 
-    if (!commonPattern) {
-        console.error("No matching DLQ pattern found.");
-        results.innerHTML = "No matching DLQ pattern found.";
-        return;
-    }
-
-    let patterns = dlqPatterns[commonPattern];
-
-    // Logica per combinare riferimenti (modifiche non necessarie qui)
-    let combinedReferences = [];
-    if (currentDLQ.includes("goods-receptions")) {
-        const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
-        const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
-
-        if (asnTypeMatches.length > 0) {
-            for (let i = 0; i < asnIdMatches.length; i++) {
-                combinedReferences.push(`${asnIdMatches[i][1]} [${asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found"}]`);
+            if (asnTypeMatches.length > 0) {
+                for (let i = 0; i < asnIdMatches.length; i++) {
+                    combinedReferences.push(`${asnIdMatches[i][1]} [${asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found"}]`);
+                }
+            } else {
+                combinedReferences = asnIdMatches.map(match => `${match[1]} [asnType not found]`);
             }
         } else {
-            combinedReferences = asnIdMatches.map(match => `${match[1]} [asnType not found]`);
+            patterns.forEach((pattern) => {
+                const matches = [...dlqText.matchAll(pattern)];
+                combinedReferences.push(...matches.map((match) => match[1]));
+            });
         }
-    } else {
-        patterns.forEach((pattern) => {
-            const matches = [...dlqText.matchAll(pattern)];
-            combinedReferences.push(...matches.map((match) => match[1]));
-        });
-    }
 
-    // Filtra ed escludi referenze con il suffisso "-STD"
-    extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
+        // Filtra ed escludi referenze con il suffisso "-STD"
+        extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
 
-    // Mostra le reference estratte nella sezione dei risultati
-    results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences
-        .map((ref) => `<li>${ref}</li>`)
-        .join("")}</ul>`;
-});
+        // Mostra le reference estratte nella sezione dei risultati
+        results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences
+            .map((ref) => `<li>${ref}</li>`)
+            .join("")}</ul>`;
+    });
 
     // Gestione del click sul bottone "Check Reported References"
     checkButton.addEventListener("click", async (e) => {
