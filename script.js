@@ -5,6 +5,16 @@ const DLQtext = document.querySelector(".DLQtext");
 const results = document.querySelector(".Results");
 const extractButton = document.querySelector(".Extract");
 const checkButton = document.querySelector(".Check");
+const menuButton = document.querySelector("#menuButton");
+const menu = document.querySelector("#menu");
+
+if (menuButton && menu) {
+    menuButton.addEventListener("click", () => {
+        menu.classList.toggle("hidden"); // Aggiunge o rimuove la classe 'hidden' per nascondere/mostrare il menu
+    });
+} else {
+    console.error("Menu or Menu Button not found in the page.");
+}
 
 let extractedReferences = [];
 let currentDLQ = "";
