@@ -27,11 +27,7 @@ const Results = ({
         <h3 className="results-subtitle">Reported References</h3>
         <ul className="results-list">
           {reportedRefs.length > 0 ? (
-            reportedRefs.map((item, index) => (
-              <li key={index}>
-                <strong>{item.task_name}:</strong> {item.summary}
-              </li>
-            ))
+            reportedRefs.map((ref, index) => <li key={index}>{ref}</li>)
           ) : (
             <li>No reported references found.</li>
           )}

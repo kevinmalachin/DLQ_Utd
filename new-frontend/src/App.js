@@ -11,13 +11,65 @@ function App() {
   const [error, setError] = useState(null);
 
   const handleExtract = (dlqText) => {
-    const refs = dlqText.match(/(EC\d+-\d+|CM_[^\"]+)/g) || [];
-    setExtractedReferences(refs);
+    setError(null); // Reset error on new extract
+    const dlqMatch = dlqText.match(/(\S+)\.DLQ/);
+    if (!dlqMatch) {
+      setError("No DLQ identified in the text.");
+      return;
+    }
+    const currentDLQ = dlqMatch[1];
+    let patterns = [];
+    switch (true) {
+      case /fluent\.returns\.creditmemos/.test(currentDLQ):
+        patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
+        break;
+      case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
+        patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
+        break;
+      case /process\.goods-receptions/.test(currentDLQ):
+        patterns = [/\"asnType\":\s*\"([A-Z]+)\"/g, /\"asnId\":\s*\"(\d+)\"/g];
+        break;
+      case /process\.generateinvoice/.test(currentDLQ):
+        patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
+        break;
+      case /orderlifecycle\.LTReserveFulfilment/.test(currentDLQ):
+      case /orderlifecycle\.LTRejectFulfilment/.test(currentDLQ):
+      case /orderlifecycle\.LTValidateFulfilment/.test(currentDLQ):
+        patterns = [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g];
+        break;
+      case /emea\.orderlifecycle\.createLabelSAV/.test(currentDLQ):
+        patterns = [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g];
+        break;
+      case /emea\.m51au\.process/.test(currentDLQ):
+      case /apac\.orderlifecycle\.dhl\.kr\.delivery/.test(currentDLQ):
+        patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
+        break;
+      case /emea\.eboutique\.order/.test(currentDLQ):
+        patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
+        break;
+      case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
+        patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
+        break;
+      default:
+        setError("No matching DLQ pattern found.");
+        return;
+    }
+
+    let combinedReferences = [];
+    patterns.forEach((pattern) => {
+      const matches = [...dlqText.matchAll(pattern)];
+      combinedReferences.push(...matches.map((match) => match[1]));
+    });
+
+    const filteredReferences = [...new Set(combinedReferences)].filter(
+      (ref) => !ref.endsWith("-STD")
+    );
+    setExtractedReferences(filteredReferences);
   };
 
   const handleCheck = async () => {
     if (extractedReferences.length === 0) {
-      alert("Please extract references first.");
+      setError("Please extract references first.");
       return;
     }
 
@@ -29,25 +81,22 @@ function App() {
         },
         body: JSON.stringify({ references: extractedReferences }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to connect to the server");
-      }
-
       const data = await response.json();
       const { output } = data;
 
-      if (!output) {
-        throw new Error("Invalid server response");
+      const reportedRefsSet = new Set();
+      const nonReportedRefsSet = new Set(output.non_reported);
+
+      for (const [incident, details] of Object.entries(output.reported)) {
+        details.references.forEach((ref) => reportedRefsSet.add(ref));
       }
 
-      const reported = output.reported || {};
-      const nonReported = output.non_reported || [];
+      reportedRefsSet.forEach((ref) => nonReportedRefsSet.delete(ref));
 
-      setReportedRefs(Object.values(reported));
-      setNonReportedRefs(nonReported);
-    } catch (err) {
-      setError(err.message);
+      setReportedRefs([...reportedRefsSet]);
+      setNonReportedRefs([...nonReportedRefsSet]);
+    } catch (error) {
+      setError("Failed to connect to server.");
     }
   };
 
