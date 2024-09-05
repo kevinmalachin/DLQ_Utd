@@ -96,10 +96,8 @@
   "devDependencies": {
     "tailwindcss": "^3.4.4"
   },
-  
   "scripts": {
-  "build:css": "tailwindcss build src/styles/tailwind.css -o src/styles/output.css"
-}
+    "build:css": "tailwindcss build src/styles/tailwind.css -o src/styles/output.css"
   },
   "keywords": [],
   "author": "",
