@@ -3,6 +3,14 @@ import React, { useState } from "react";
 const DLQInput = ({ onExtract, onCheck }) => {
   const [dlqText, setDlqText] = useState("");
 
+  const handleExtractClick = () => {
+    if (!dlqText.trim()) {
+      alert("Please enter DLQ content.");
+      return;
+    }
+    onExtract(dlqText);
+  };
+
   return (
     <div className="dlq-input-container">
       <h2>DLQ Reference Extractor</h2>
@@ -14,7 +22,7 @@ const DLQInput = ({ onExtract, onCheck }) => {
         onChange={(e) => setDlqText(e.target.value)}
       />
       <div className="button-group">
-        <button className="btn" onClick={() => onExtract(dlqText)}>
+        <button className="btn" onClick={handleExtractClick}>
           Extract References
         </button>
         <button className="btn" onClick={onCheck}>
