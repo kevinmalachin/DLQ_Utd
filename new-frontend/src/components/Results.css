@@ -1,0 +1,30 @@
+/* Results.css */
+.results-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.results-container ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li {
+  font-size: 1rem;
+  padding: 0.5rem 0;
+}
+
+.reference-section h3 {
+  margin-bottom: 1rem;
+}
+
+.reported {
+  color: #28a745;
+}
+
+.non-reported {
+  color: #dc3545;
+}
