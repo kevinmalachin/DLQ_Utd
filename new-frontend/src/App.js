@@ -21,6 +21,8 @@ function App() {
     const currentDLQ = dlqMatch[1];
 
     let patterns = [];
+    let combinedReferences = [];
+    
     switch (true) {
       case /fluent\.returns\.creditmemos/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
@@ -29,8 +31,18 @@ function App() {
         patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
         break;
       case /process\.goods-receptions/.test(currentDLQ):
-        patterns = [/\"asnType\":\s*\"([A-Z]+)\"/g, /\"asnId\":\s*\"(\d+)\"/g];
-        break;
+        // Cattura sia asnType che asnId
+        const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
+        const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
+
+        for (let i = 0; i < asnIdMatches.length; i++) {
+          const asnId = asnIdMatches[i][1];
+          const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "UNKNOWN";
+          combinedReferences.push(`${asnId} [${asnType}]`); // Combina asnId con asnType
+        }
+        setExtractedReferences([...new Set(combinedReferences)]); // Rimuove duplicati
+        return;
+        
       case /process\.generateinvoice/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
         break;
@@ -57,7 +69,6 @@ function App() {
         return;
     }
 
-    let combinedReferences = [];
     patterns.forEach((pattern) => {
       const matches = [...dlqText.matchAll(pattern)];
       combinedReferences.push(...matches.map((match) => match[1]));
