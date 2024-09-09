@@ -20,24 +20,30 @@ html {
 
 /* Sidebar styling */
 .sidebar {
-  width: 60px;
+  position: fixed; /* Fixed position */
+  top: 0;
+  left: -250px; /* Hide it completely off-screen initially */
+  height: 100vh; /* Full viewport height */
+  width: 250px; /* Full width when opened */
   background-color: #2d2e32;
   color: white;
-  transition: width 0.4s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden; /* Ensures content is hidden when closed */
+  justify-content: flex-start; /* Align items to the top */
+  transition: left 0.4s ease; /* Slide effect */
+  overflow: hidden;
+  z-index: 1000; /* Ensure it is on top of other content */
 }
 
 .sidebar.open {
-  width: 250px;
+  left: 0; /* Slide it into view */
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  margin-top: 60px; /* Adds some space below the toggle button */
 }
 
 .sidebar li {
@@ -55,41 +61,50 @@ html {
   background-color: #444548;
 }
 
-.toggle-sidebar-btn {
+/* Toggle button styling */
+.menu-toggle-btn {
+  position: fixed; /* Keep it fixed to the edge of the screen */
+  top: 20px; /* Align it near the top */
+  left: 10px; /* Keep it always on the left side */
   background-color: #0070f3;
   color: white;
-  padding: 10px;
+  padding: 10px 20px;
   border: none;
   border-radius: 10px;
-  margin: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  z-index: 1001; /* Ensure the button is always on top of other elements */
 }
 
-.toggle-sidebar-btn:hover {
+.menu-toggle-btn:hover {
   background-color: #005bb5;
 }
 
 /* Main container */
 .container {
-  flex-grow: 1;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  height: 100%;
-  justify-content: center;
+  flex-direction: row; /* Align input and results side by side */
+  justify-content: space-around;
+  align-items: flex-start; /* Align items at the top */
+  padding-left: 60px; /* Sidebar width when collapsed */
+  width: calc(100vw - 60px);
+  transition: padding-left 0.4s ease;
+}
+
+.sidebar.open + .container {
+  padding-left: 250px; /* Adjust when sidebar is open */
+  width: calc(100vw - 250px);
 }
 
 /* DLQ Input container */
 .dlq-input-container {
-  width: 100%;
-  max-width: 600px;
+  width: 48%; /* Maintain equal width */
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 30px;
   text-align: center;
+  height: 100%; /* Full height */
 }
 
 .dlq-input-container h2 {
@@ -107,6 +122,10 @@ html {
   margin-bottom: 20px;
   background-color: #f9f9f9;
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+  min-height: 100px; /* Altezza minima */
+  max-height: 60vh; /* Altezza massima in viewport height (80% dell'altezza visibile) */
+  overflow-y: auto; /* Permette lo scrolling verticale quando necessario */
+  resize: none; /* Disabilita il ridimensionamento manuale */
 }
 
 .button-group {
@@ -114,32 +133,16 @@ html {
   justify-content: space-between;
 }
 
-.button-group .btn {
-  background-color: #0070f3;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button-group .btn:hover {
-  background-color: #005bb5;
-}
-
-/* Results styling */
+/* Results container */
 .results-container {
-  margin-top: 30px;
-  width: 100%;
-  max-width: 700px;
+  width: 48%; /* Maintain equal width */
+  margin-left: 20px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 30px;
-  height: 400px; /* Set a fixed height */
-  overflow-y: auto; /* Enable scrolling */
+  height: 100%; /* Adjusted to 80% height */
+  overflow-y: auto;
 }
 
 .results-title {

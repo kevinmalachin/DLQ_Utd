@@ -4,6 +4,7 @@ const Results = ({
   extractedReferences,
   reportedRefs,
   nonReportedRefs,
+  reportedTasks,
   error,
 }) => {
   return (
@@ -26,8 +27,22 @@ const Results = ({
       <div className="results-section">
         <h3 className="results-subtitle">Reported References</h3>
         <ul className="results-list">
-          {reportedRefs.length > 0 ? (
-            reportedRefs.map((ref, index) => <li key={index}>{ref}</li>)
+          {reportedTasks && reportedTasks.length > 0 ? (
+            reportedTasks.map((task, index) => (
+              <li key={index}>
+                <strong>
+                  <a href={task.task_link} target="_blank" rel="noreferrer">
+                    {task.task_name} - {task.summary}
+                  </a>
+                </strong>{" "}
+                ({task.task_status})
+                <ul>
+                  {task.references.map((ref, i) => (
+                    <li key={i}>{ref}</li>
+                  ))}
+                </ul>
+              </li>
+            ))
           ) : (
             <li>No reported references found.</li>
           )}
@@ -35,7 +50,9 @@ const Results = ({
       </div>
 
       <div className="results-section">
-        <h3 className="results-subtitle">Non-Reported References</h3>
+        <h3 className="results-subtitle" style={{ color: "red" }}>
+          Non-Reported References
+        </h3>
         <ul className="results-list">
           {nonReportedRefs.length > 0 ? (
             nonReportedRefs.map((ref, index) => (

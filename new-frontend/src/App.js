@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import "./App.css";
+import Sidebar from "./components/Sidebar"; // Import the Sidebar
 import DLQInput from "./components/DLQInput";
 import Results from "./components/Results";
-import Sidebar from "./components/Sidebar";
 
 function App() {
   const [extractedReferences, setExtractedReferences] = useState([]);
   const [reportedRefs, setReportedRefs] = useState([]);
   const [nonReportedRefs, setNonReportedRefs] = useState([]);
+  const [reportedTasks, setReportedTasks] = useState([]);
   const [error, setError] = useState(null);
 
   const handleExtract = (dlqText) => {
@@ -18,6 +19,7 @@ function App() {
       return;
     }
     const currentDLQ = dlqMatch[1];
+
     let patterns = [];
     switch (true) {
       case /fluent\.returns\.creditmemos/.test(currentDLQ):
@@ -84,19 +86,23 @@ function App() {
       const data = await response.json();
       const { output } = data;
 
-      const reportedRefsSet = new Set();
-      const nonReportedRefsSet = new Set(output.non_reported);
+      const nonReported = output.non_reported;
+      const reportedTasksData = Object.entries(output.reported).map(
+        ([incident, details]) => ({
+          task_name: details.task_name,
+          task_link: details.task_link,
+          summary: details.summary,
+          task_status: details.task_status,
+          references: details.references,
+        })
+      );
 
-      for (const [incident, details] of Object.entries(output.reported)) {
-        details.references.forEach((ref) => reportedRefsSet.add(ref));
-      }
-
-      reportedRefsSet.forEach((ref) => nonReportedRefsSet.delete(ref));
-
-      setReportedRefs([...reportedRefsSet]);
-      setNonReportedRefs([...nonReportedRefsSet]);
+      setReportedRefs(output.reported_count);
+      setNonReportedRefs(nonReported);
+      setReportedTasks(reportedTasksData);
     } catch (error) {
-      setError("Failed to connect to server.");
+      console.error(error);
+      setError("Failed to connect to the server.");
     }
   };
 
@@ -109,6 +115,7 @@ function App() {
           extractedReferences={extractedReferences}
           reportedRefs={reportedRefs}
           nonReportedRefs={nonReportedRefs}
+          reportedTasks={reportedTasks}
           error={error}
         />
       </div>
