@@ -13,8 +13,11 @@ const Results = ({
 
       {error && <div className="error">{error}</div>}
 
+      {/* Extracted References Section with Count */}
       <div className="results-section">
-        <h3 className="results-subtitle">Extracted References</h3>
+        <h3 className="results-subtitle" style={{ color: "#0070f3" }}>
+          Extracted References ({extractedReferences.length})
+        </h3>
         <ul className="results-list">
           {extractedReferences.length > 0 ? (
             extractedReferences.map((ref, index) => <li key={index}>{ref}</li>)
@@ -24,8 +27,11 @@ const Results = ({
         </ul>
       </div>
 
+      {/* Reported References Section with Count */}
       <div className="results-section">
-        <h3 className="results-subtitle">Reported References</h3>
+        <h3 className="results-subtitle" style={{ color: "green" }}>
+          Reported References ({reportedTasks ? reportedTasks.length : 0})
+        </h3>
         <ul className="results-list">
           {reportedTasks && reportedTasks.length > 0 ? (
             reportedTasks.map((task, index) => (
@@ -49,9 +55,10 @@ const Results = ({
         </ul>
       </div>
 
+      {/* Non-Reported References Section with Count */}
       <div className="results-section">
         <h3 className="results-subtitle" style={{ color: "red" }}>
-          Non-Reported References
+          Non-Reported References ({nonReportedRefs.length})
         </h3>
         <ul className="results-list">
           {nonReportedRefs.length > 0 ? (
