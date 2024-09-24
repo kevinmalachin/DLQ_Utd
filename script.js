@@ -63,13 +63,17 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g];
                 break;
             case /emea\.m51au\.process/.test(currentDLQ):
-            case /apac\.orderlifecycle\.dhl\.kr\.delivery/.test(currentDLQ): // Nuovo pattern aggiunto
+            case /apac\.orderlifecycle\.dhl\.kr\.delivery/.test(currentDLQ): 
                 patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
                 break;
-            case /emea\.eboutique\.order/.test(currentDLQ):
-                patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
+            case /prod\.emea\.orderlifecycle\.OrderCreation/.test(currentDLQ):
+                // Updated pattern specifically for `rootEntityRef`
+                patterns = [/\"rootEntityRef\":\s*\"(EC\d+)\"/g];
                 break;
-            case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ): // Nuovo pattern aggiunto
+            case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
+                break;
+            case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
                 break;
             default:
@@ -120,8 +124,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             const response = await fetch("http://localhost:5000/run-script", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                },
+                    "Content-Type": "application/json"},
                 body: JSON.stringify({ references: extractedReferences }),
             });
 
