@@ -3,3 +3,8 @@ test/
 Python test DLQ + SS/input.txt
 cred.env
 venv/
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
