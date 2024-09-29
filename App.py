@@ -7,6 +7,19 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+def search_text_recursively(content, ref):
+    """ Recursive function to search for a reference in the nested content structure """
+    if isinstance(content, list):
+        for item in content:
+            if search_text_recursively(item, ref):
+                return True
+    elif isinstance(content, dict):
+        if content.get("type") == "text" and ref in content.get("text", ""):
+            return True
+        if "content" in content:
+            return search_text_recursively(content["content"], ref)
+    return False
+
 @app.route('/run-script', methods=['POST'])
 def run_script():
     references = request.json.get('references', [])
@@ -54,7 +67,7 @@ def run_script():
                 incident_number = issue.get("fields", {}).get("customfield_10111", "NOT REPORTED")
                 task_link = f"https://cap4cloud.atlassian.net/browse/{task_name}"
                 description = issue.get("fields", {}).get("description", {})
-                
+
                 # Corretta assegnazione dello stato
                 status = issue.get("fields", {}).get("status", {}).get("name", "Unknown Status")
                 status_category = issue.get("fields", {}).get("status", {}).get("statusCategory", {}).get("name", "Unknown Category")
@@ -67,14 +80,7 @@ def run_script():
 
                 found = False
                 if isinstance(description, dict):
-                    for content in description.get("content", []):
-                        if content.get("type") == "paragraph":
-                            for item in content.get("content", []):
-                                if item.get("type") == "text" and ref in item.get("text", ""):
-                                    found = True
-                                    break
-                        if found:
-                            break
+                    found = search_text_recursively(description.get("content", []), ref)
 
                 task_data = {
                     "reference": ref,
