@@ -76,6 +76,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
                 break;
+            case /prod\.emea\.eboutique\.order/.test(currentDLQ): // Aggiunta del nuovo pattern
+                patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
+                break;
             default:
                 console.error("No matching DLQ pattern found.");
                 results.innerHTML = "No matching DLQ pattern found.";
