@@ -77,8 +77,17 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
                 break;
-            case /prod\.emea\.eboutique\.order/.test(currentDLQ): // Aggiunta del nuovo pattern
+            case /prod\.emea\.eboutique\.order/.test(currentDLQ):
                 patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
+                break;
+            case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Aggiunta del nuovo pattern per catturare `rootEntityRef`
+                break;
+            case /prod\.emea\.orex\.financial-transactions-creation/.test(currentDLQ):
+                patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
             default:
                 console.error("No matching DLQ pattern found.");
