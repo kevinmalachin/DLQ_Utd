@@ -66,6 +66,12 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
+            case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.alf-rout/.test(currentDLQ):
+                patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g, /\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
             case /apac\.supply\.notifications\.transfer/.test(currentDLQ):
                 patterns = [/\"Number\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
