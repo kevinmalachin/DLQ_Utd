@@ -146,20 +146,40 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 return;
         }
 
-        // Logica per combinare riferimenti specifici (come goods-receptions)
+        // Logica per combinare riferimenti specifici (come alf-route e goods-receptions)
         let combinedReferences = [];
         if (currentDLQ.includes("goods-receptions")) {
+            // Gestione specifica per goods-receptions
             const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
             const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
 
-            if (asnTypeMatches.length > 0) {
+            if (asnIdMatches.length > 0) {
                 for (let i = 0; i < asnIdMatches.length; i++) {
-                    combinedReferences.push(`${asnIdMatches[i][1]} [${asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found"}]`);
+                    const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found";
+                    combinedReferences.push(`${asnIdMatches[i][1]} [${asnType}]`);
                 }
             } else {
                 combinedReferences = asnIdMatches.map(match => `${match[1]} [asnType not found]`);
             }
+        } else if (currentDLQ.includes("alf-route")) {
+            // Gestione specifica per alf-route
+            const externalReferences = [...dlqText.matchAll(/\"externalReference\":\s*\"([^\"]+)\"/g)];
+            const internalReferences = [...dlqText.matchAll(/\"internalReference\":\s*\"([^\"]+)\"/g)];
+            const entityIds = [...dlqText.matchAll(/\"entityId\":\s*\"([^\"]+)\"/g)];
+            const storeCodes = [...dlqText.matchAll(/\"storeCode\":\s*\"([^\"]+)\"/g)];
+            const orderCountryCodes = [...dlqText.matchAll(/\"orderCountryCode\":\s*\"([^\"]+)\"/g)];
+
+            for (let i = 0; i < externalReferences.length; i++) {
+                const externalReference = externalReferences[i] ? externalReferences[i][1] : "N/A";
+                const internalReference = internalReferences[i] ? internalReferences[i][1] : "N/A";
+                const entityId = entityIds[i] ? entityIds[i][1] : "N/A";
+                const storeCode = storeCodes[i] ? storeCodes[i][1] : "N/A";
+                const orderCountryCode = orderCountryCodes[i] ? orderCountryCodes[i][1] : "N/A";
+
+                combinedReferences.push(`${externalReference} [${internalReference}, ${entityId}, ${storeCode}, ${orderCountryCode}]`);
+            }
         } else {
+            // Default: Cattura qualsiasi altro pattern definito
             patterns.forEach((pattern) => {
                 const matches = [...dlqText.matchAll(pattern)];
                 combinedReferences.push(...matches.map((match) => match[1]));
