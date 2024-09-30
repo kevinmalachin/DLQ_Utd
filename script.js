@@ -45,6 +45,21 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /fluent\.returns\.creditmemos/.test(currentDLQ):
                 patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
                 break;
+            case /emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
+                patterns = [/\"creditMemoReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.eboutique\.return-notices/.test(currentDLQ):
+                patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.sendmailccreminder2/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
             case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
                 break;
