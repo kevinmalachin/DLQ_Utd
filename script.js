@@ -60,6 +60,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g];
                 break;
             case /emea\.orderlifecycle\.createLabelSAV/.test(currentDLQ):
+            case /orderlifecycle\.sendcodrefundcase/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g];
                 break;
             case /emea\.m51au\.process/.test(currentDLQ):
