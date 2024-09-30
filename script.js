@@ -60,6 +60,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
+            case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
             case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
                 break;
