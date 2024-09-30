@@ -69,9 +69,15 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
-            case /emea\.orderlifecycle\.alf-rout/.test(currentDLQ):
-                patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g, /\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
-                break;
+                case /prod\.emea\.orderlifecycle\.alf-route/.test(currentDLQ):
+                    patterns = [
+                        /\"externalReference\":\s*\"([^\"]+)\"/g, 
+                        /\"internalReference\":\s*\"([^\"]+)\"/g,
+                        /\"entityId\":\s*\"([^\"]+)\"/g,
+                        /\"storeCode\":\s*\"([^\"]+)\"/g,
+                        /\"orderCountryCode\":\s*\"([^\"]+)\"/g
+                    ];
+                    break;
             case /apac\.supply\.notifications\.transfer/.test(currentDLQ):
                 patterns = [/\"Number\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
