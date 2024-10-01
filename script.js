@@ -57,7 +57,46 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
+            case /emea\.orderlifecycle\.SendASN/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
             case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+                case /prod\.emea\.orderlifecycle\.alf-route/.test(currentDLQ):
+                    patterns = [
+                        /\"externalReference\":\s*\"([^\"]+)\"/g, 
+                        /\"internalReference\":\s*\"([^\"]+)\"/g,
+                        /\"entityId\":\s*\"([^\"]+)\"/g,
+                        /\"storeCode\":\s*\"([^\"]+)\"/g,
+                        /\"orderCountryCode\":\s*\"([^\"]+)\"/g
+                    ];
+                    break;
+            case /apac\.supply\.notifications\.transfer/.test(currentDLQ):
+                patterns = [/\"Number\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /emea\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /prod\.emea\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /prod\.amer\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+            patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /prod\.apac\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+            patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
+            case /apac\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
             case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
@@ -110,20 +149,40 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 return;
         }
 
-        // Logica per combinare riferimenti specifici (come goods-receptions)
+        // Logica per combinare riferimenti specifici (come alf-route e goods-receptions)
         let combinedReferences = [];
         if (currentDLQ.includes("goods-receptions")) {
+            // Gestione specifica per goods-receptions
             const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
             const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
 
-            if (asnTypeMatches.length > 0) {
+            if (asnIdMatches.length > 0) {
                 for (let i = 0; i < asnIdMatches.length; i++) {
-                    combinedReferences.push(`${asnIdMatches[i][1]} [${asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found"}]`);
+                    const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found";
+                    combinedReferences.push(`${asnIdMatches[i][1]} [${asnType}]`);
                 }
             } else {
                 combinedReferences = asnIdMatches.map(match => `${match[1]} [asnType not found]`);
             }
+        } else if (currentDLQ.includes("alf-route")) {
+            // Gestione specifica per alf-route
+            const externalReferences = [...dlqText.matchAll(/\"externalReference\":\s*\"([^\"]+)\"/g)];
+            const internalReferences = [...dlqText.matchAll(/\"internalReference\":\s*\"([^\"]+)\"/g)];
+            const entityIds = [...dlqText.matchAll(/\"entityId\":\s*\"([^\"]+)\"/g)];
+            const storeCodes = [...dlqText.matchAll(/\"storeCode\":\s*\"([^\"]+)\"/g)];
+            const orderCountryCodes = [...dlqText.matchAll(/\"orderCountryCode\":\s*\"([^\"]+)\"/g)];
+
+            for (let i = 0; i < externalReferences.length; i++) {
+                const externalReference = externalReferences[i] ? externalReferences[i][1] : "N/A";
+                const internalReference = internalReferences[i] ? internalReferences[i][1] : "N/A";
+                const entityId = entityIds[i] ? entityIds[i][1] : "N/A";
+                const storeCode = storeCodes[i] ? storeCodes[i][1] : "N/A";
+                const orderCountryCode = orderCountryCodes[i] ? orderCountryCodes[i][1] : "N/A";
+
+                combinedReferences.push(`${externalReference} [${internalReference}, ${entityId}, ${storeCode}, ${orderCountryCode}]`);
+            }
         } else {
+            // Default: Cattura qualsiasi altro pattern definito
             patterns.forEach((pattern) => {
                 const matches = [...dlqText.matchAll(pattern)];
                 combinedReferences.push(...matches.map((match) => match[1]));
