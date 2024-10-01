@@ -57,6 +57,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
+            case /emea\.orderlifecycle\.SendASN/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
+                break;
             case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g]; // Cattura qualsiasi valore tra virgolette
                 break;
