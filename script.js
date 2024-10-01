@@ -82,6 +82,16 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /apac\.supply\.notifications\.transfer/.test(currentDLQ):
                 patterns = [/\"Number\":\s*\"([^\"]+)\"/g];
                 break;
+            case /emea\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+            case /prod\.emea\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+            case /prod\.amer\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+            case /prod\.apac\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+            case /apac\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
+                break;
+            case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
+                break;
             case /process\.goods-receptions/.test(currentDLQ):
                 patterns = [
                     /\"asnType\":\s*\"([A-Z]+)\"/g, 
@@ -89,11 +99,40 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                     /\"asnInternalReference\":\s*\"(\d+)\"/g
                 ];
                 break;
-            case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
-                patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
+            case /process\.generateinvoice/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
+                break;
+            case /orderlifecycle\.LTReserveFulfilment/.test(currentDLQ):
+            case /orderlifecycle\.LTRejectFulfilment/.test(currentDLQ):
+            case /orderlifecycle\.LTValidateFulfilment/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g];
+                break;
+            case /emea\.orderlifecycle\.createLabelSAV/.test(currentDLQ):
+            case /orderlifecycle\.sendcodrefundcase/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g];
+                break;
+            case /emea\.m51au\.process/.test(currentDLQ):
+            case /apac\.orderlifecycle\.dhl\.kr\.delivery/.test(currentDLQ): 
+                patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
+                break;
+            case /prod\.emea\.orderlifecycle\.OrderCreation/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"(EC\d+)\"/g];
+                break;
+            case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
+                patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
+                break;
+            case /prod\.emea\.eboutique\.order/.test(currentDLQ):
+                patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
                 break;
             case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.orex\.financial-transactions-creation/.test(currentDLQ):
+                patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
                 break;
             default:
                 console.error("No matching DLQ pattern found.");
@@ -136,13 +175,8 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             });
         }
 
-        // Filtra ed escludi referenze con il suffisso "-STD"
         extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
-
-        // Mostra le reference estratte nella sezione dei risultati
-        results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences
-            .map((ref) => `<li>${ref}</li>`)
-            .join("")}</ul>`;
+        results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
     });
 
     // Gestione del click sul bottone "Check Reported References"
