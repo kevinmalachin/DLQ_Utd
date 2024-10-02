@@ -82,6 +82,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /apac\.supply\.notifications\.transfer/.test(currentDLQ):
                 patterns = [/\"Number\":\s*\"([^\"]+)\"/g];
                 break;
+            case /apac\.store-factory\.sapNotice/.test(currentDLQ):
+                patterns = [/\"DOCNUM\":\s*\"([^\"]+)\"/g];
+                break;
             case /emea\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
             case /prod\.emea\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
             case /prod\.amer\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
@@ -140,43 +143,37 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 return;
         }
 
-        // Logica per combinare riferimenti specifici (come alf-route e goods-receptions)
         let combinedReferences = [];
-        if (currentDLQ.includes("goods-receptions")) {
-            const asnTypeMatches = [...dlqText.matchAll(/\"asnType\":\s*\"([A-Z]+)\"/g)];
-            const asnIdMatches = [...dlqText.matchAll(/\"asnId\":\s*\"(\d+)\"/g)];
-            const asnInternalRefMatches = [...dlqText.matchAll(/\"asnInternalReference\":\s*\"(\d+)\"/g)];
+        patterns.forEach((pattern) => {
+            const matches = [...dlqText.matchAll(pattern)];
+            combinedReferences.push(...matches.map((match) => match[1]));
+        });
 
-            for (let i = 0; i < asnIdMatches.length; i++) {
-                const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "asnType not found";
-                const asnInternalReference = asnInternalRefMatches[i] ? asnInternalRefMatches[i][1] : "asnInternalReference not found";
-                combinedReferences.push(`${asnIdMatches[i][1]} [${asnType}, ${asnInternalReference}]`);
-            }
-        } else if (currentDLQ.includes("alf-route")) {
-            const externalReferences = [...dlqText.matchAll(/\"externalReference\":\s*\"([^\"]+)\"/g)];
-            const internalReferences = [...dlqText.matchAll(/\"internalReference\":\s*\"([^\"]+)\"/g)];
-            const entityIds = [...dlqText.matchAll(/\"entityId\":\s*\"([^\"]+)\"/g)];
-            const storeCodes = [...dlqText.matchAll(/\"storeCode\":\s*\"([^\"]+)\"/g)];
-            const orderCountryCodes = [...dlqText.matchAll(/\"orderCountryCode\":\s*\"([^\"]+)\"/g)];
-
-            for (let i = 0; i < externalReferences.length; i++) {
-                const externalReference = externalReferences[i] ? externalReferences[i][1] : "N/A";
-                const internalReference = internalReferences[i] ? internalReferences[i][1] : "N/A";
-                const entityId = entityIds[i] ? entityIds[i][1] : "N/A";
-                const storeCode = storeCodes[i] ? storeCodes[i][1] : "N/A";
-                const orderCountryCode = orderCountryCodes[i] ? orderCountryCodes[i][1] : "N/A";
-
-                combinedReferences.push(`${externalReference} [${internalReference}, ${entityId}, ${storeCode}, ${orderCountryCode}]`);
-            }
-        } else {
-            patterns.forEach((pattern) => {
-                const matches = [...dlqText.matchAll(pattern)];
-                combinedReferences.push(...matches.map((match) => match[1]));
-            });
-        }
-
-        extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
+        extractedReferences = [...new Set(combinedReferences)];
         results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
+
+        // Contatore dei duplicati
+        const duplicateCounts = {};
+        patterns.forEach((pattern) => {
+            const matches = [...dlqText.matchAll(pattern)].map(match => match[1]);
+            matches.forEach((ref) => {
+                duplicateCounts[ref] = (duplicateCounts[ref] || 0) + 1;
+            });
+        });
+
+        const duplicateReferences = Object.entries(duplicateCounts).filter(([ref, count]) => count > 1);
+
+        // Visualizzazione dei duplicati
+        let duplicatesText = `<p><strong>Duplicate References Found:</strong></p><ul>`;
+        if (duplicateReferences.length > 0) {
+            duplicateReferences.forEach(([ref, count]) => {
+                duplicatesText += `<li>${ref} - Duplicated ${count} times</li>`;
+            });
+            duplicatesText += "</ul>";
+        } else {
+            duplicatesText += "<li>No duplicates found.</li></ul>";
+        }
+        results.innerHTML += duplicatesText;
     });
 
     // Gestione del click sul bottone "Check Reported References"
