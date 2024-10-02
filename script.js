@@ -165,14 +165,21 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
 
         // Visualizzazione dei duplicati
         let duplicatesText = `<p><strong>Duplicate References Found:</strong></p><ul>`;
+        let totalDuplicateCount = 0;
         if (duplicateReferences.length > 0) {
             duplicateReferences.forEach(([ref, count]) => {
                 duplicatesText += `<li>${ref} - Duplicated ${count} times</li>`;
+                totalDuplicateCount += count; // Incrementa il conteggio totale dei duplicati
             });
             duplicatesText += "</ul>";
         } else {
             duplicatesText += "<li>No duplicates found.</li></ul>";
         }
+
+        // Mostra il totale delle reference duplicate
+        const totalReferences = extractedReferences.length + (totalDuplicateCount - duplicateReferences.length);
+        duplicatesText += `<p><strong>Total References including duplicates: ${totalReferences}</strong></p>`;
+
         results.innerHTML += duplicatesText;
     });
 
