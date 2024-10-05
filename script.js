@@ -149,13 +149,14 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             combinedReferences.push(...matches.map((match) => match[1]));
         });
 
-        extractedReferences = [...new Set(combinedReferences)];
+        // Filtra le reference che non terminano con "-STD"
+        extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
         results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
 
         // Contatore dei duplicati
         const duplicateCounts = {};
         patterns.forEach((pattern) => {
-            const matches = [...dlqText.matchAll(pattern)].map(match => match[1]);
+            const matches = [...dlqText.matchAll(pattern)].map(match => match[1]).filter(ref => !ref.endsWith("-STD"));
             matches.forEach((ref) => {
                 duplicateCounts[ref] = (duplicateCounts[ref] || 0) + 1;
             });
