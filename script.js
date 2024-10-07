@@ -19,6 +19,25 @@ if (menuButton && menu) {
 let extractedReferences = [];
 let currentDLQ = "";
 
+// Funzione per estrarre i dettagli del messaggio per la coda prod.emea.plm.product.DLQ
+function extractPLMProductDetails(dlqText) {
+    const correlationIdMatch = dlqText.match(/"correlationId":\s*"([^\"]+)"/);
+    const styleCodeMatch = dlqText.match(/"styleCode":\s*"([^\"]+)"/);
+    const launchIdMatch = dlqText.match(/"Launch ID":\s*"([^\"]+)"/);
+    const errorCodeMatch = dlqText.match(/"error code":\s*(\d+)/);
+    const messageMatch = dlqText.match(/"message":\s*"([^"]+)"/);
+    const detailsMatch = dlqText.match(/"details":\s*"([^"]+)"/);
+
+    return {
+        correlationId: correlationIdMatch ? correlationIdMatch[1] : "Not found",
+        styleCode: styleCodeMatch ? styleCodeMatch[1] : "Not found",
+        launchId: launchIdMatch ? launchIdMatch[1] : "Not found",
+        errorCode: errorCodeMatch ? errorCodeMatch[1] : "Not found",
+        message: messageMatch ? messageMatch[1] : "Not found",
+        details: detailsMatch ? detailsMatch[1] : "Not found"
+    };
+}
+
 // Controllo se gli elementi esistono nella pagina
 if (!DLQtext || !results || !extractButton || !checkButton) {
     console.error("Elements not found in the page.");
@@ -61,6 +80,17 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
+            case /prod\.emea\.plm\.product/.test(currentDLQ): // Aggiunto per la coda prod.emea.plm.product.DLQ
+                const plmDetails = extractPLMProductDetails(dlqText);
+                results.innerHTML = `
+                    <p><strong>Correlation ID:</strong> ${plmDetails.correlationId}</p>
+                    <p><strong>Style Code:</strong> ${plmDetails.styleCode}</p>
+                    <p><strong>Launch ID:</strong> ${plmDetails.launchId}</p>
+                    <p><strong>Error Code:</strong> ${plmDetails.errorCode}</p>
+                    <p><strong>Message:</strong> ${plmDetails.message}</p>
+                    <p><strong>Details:</strong> ${plmDetails.details}</p>
+                `;
+                return; // Non proseguire con altri pattern per questa coda
             case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
