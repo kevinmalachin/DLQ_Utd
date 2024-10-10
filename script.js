@@ -82,6 +82,18 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 break;
             case /prod\.emea\.plm\.product/.test(currentDLQ): // Aggiunto per la coda prod.emea.plm.product.DLQ
                 const plmDetails = extractPLMProductDetails(dlqText);
+
+                let references = [];
+
+                // Conteggio delle occorrenze per i messaggi PLM
+                let messageCounts = {};
+                let matches = [...dlqText.matchAll(/"styleCode":\s*"([^\"]+)"/g)];
+                matches.forEach(match => {
+                    const ref = match[1];
+                    messageCounts[ref] = (messageCounts[ref] || 0) + 1;
+                    references.push(ref);
+                });
+
                 results.innerHTML = `
                     <p><strong>Correlation ID:</strong> ${plmDetails.correlationId}</p>
                     <p><strong>Style Code:</strong> ${plmDetails.styleCode}</p>
@@ -89,6 +101,10 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                     <p><strong>Error Code:</strong> ${plmDetails.errorCode}</p>
                     <p><strong>Message:</strong> ${plmDetails.message}</p>
                     <p><strong>Details:</strong> ${plmDetails.details}</p>
+                    <p><strong>Total Messages:</strong> ${references.length}</p>
+                    <ul>
+                        ${references.map(ref => `<li>${ref} (${messageCounts[ref]}x)</li>`).join('')}
+                    </ul>
                 `;
                 return; // Non proseguire con altri pattern per questa coda
             case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
@@ -151,6 +167,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orderlifecycle\.OrderCreation/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"(EC\d+)\"/g];
                 break;
+            case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
+                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
+                break;
             case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
             case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
@@ -183,35 +202,21 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
         results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
 
-        // Contatore dei duplicati
-        const duplicateCounts = {};
-        patterns.forEach((pattern) => {
-            const matches = [...dlqText.matchAll(pattern)].map(match => match[1]).filter(ref => !ref.endsWith("-STD"));
-            matches.forEach((ref) => {
-                duplicateCounts[ref] = (duplicateCounts[ref] || 0) + 1;
-            });
+        // Contatore dei duplicati accanto a ogni messaggio
+        const referenceCounts = {};
+        extractedReferences.forEach((ref) => {
+            referenceCounts[ref] = (referenceCounts[ref] || 0) + 1;
         });
 
-        const duplicateReferences = Object.entries(duplicateCounts).filter(([ref, count]) => count > 1);
+        // Visualizzazione dei messaggi con il numero di occorrenze accanto
+        let referencesHTML = extractedReferences.map((ref) => {
+            return `<li>${ref} (${referenceCounts[ref]}x)</li>`;
+        }).join("");
 
-        // Visualizzazione dei duplicati
-        let duplicatesText = `<p><strong>Duplicate References Found:</strong></p><ul>`;
-        let totalDuplicateCount = 0;
-        if (duplicateReferences.length > 0) {
-            duplicateReferences.forEach(([ref, count]) => {
-                duplicatesText += `<li>${ref} - Duplicated ${count} times</li>`;
-                totalDuplicateCount += count; // Incrementa il conteggio totale dei duplicati
-            });
-            duplicatesText += "</ul>";
-        } else {
-            duplicatesText += "<li>No duplicates found.</li></ul>";
-        }
-
-        // Mostra il totale delle reference duplicate
-        const totalReferences = extractedReferences.length + (totalDuplicateCount - duplicateReferences.length);
-        duplicatesText += `<p><strong>Total References including duplicates: ${totalReferences}</strong></p>`;
-
-        results.innerHTML += duplicatesText;
+        results.innerHTML = `
+            <p><strong>Extracted References (${extractedReferences.length}):</strong></p>
+            <ul>${referencesHTML}</ul>
+        `;
     });
 
     // Gestione del click sul bottone "Check Reported References"
