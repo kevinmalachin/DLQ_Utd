@@ -194,8 +194,11 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
-                case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
-                case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.checkout/.test(currentDLQ):
+                patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
+            case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
                     patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
                     break;
             case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
