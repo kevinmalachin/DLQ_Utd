@@ -28,13 +28,31 @@ function extractPLMProductDetails(dlqText) {
     const messageMatch = dlqText.match(/"message":\s*"([^"]+)"/);
     const detailsMatch = dlqText.match(/"details":\s*"([^"]+)"/);
 
+    // Estrazione dei campi aggiuntivi
+    const muleErrorTypeMatch = dlqText.match(/"muleErrorType":\s*"([^\"]+)"/);
+    const processStepMatch = dlqText.match(/"processStep":\s*"([^\"]+)"/);
+    const plmAckMessageMatch = dlqText.match(/"plmAckMessage":\s*"([^\"]+)"/);
+    const muleEncodingMatch = dlqText.match(/"MULE_ENCODING":\s*"([^\"]+)"/);
+    const pendingShoesLoopMatch = dlqText.match(/"pendingShoesLoop":\s*(\d+)/);
+    const plmAckStatusMatch = dlqText.match(/"plmAckStatus":\s*"([^\"]+)"/);
+    const errorCategoryMatch = dlqText.match(/"errorCategory":\s*"([^\"]+)"/);
+    const muleErrorDescriptionMatch = dlqText.match(/"muleErrorDescription":\s*"([^"]+)"/);
+
     return {
         correlationId: correlationIdMatch ? correlationIdMatch[1] : "Not found",
         styleCode: styleCodeMatch ? styleCodeMatch[1] : "Not found",
         launchId: launchIdMatch ? launchIdMatch[1] : "Not found",
         errorCode: errorCodeMatch ? errorCodeMatch[1] : "Not found",
         message: messageMatch ? messageMatch[1] : "Not found",
-        details: detailsMatch ? detailsMatch[1] : "Not found"
+        details: detailsMatch ? detailsMatch[1] : "Not found",
+        muleErrorType: muleErrorTypeMatch ? muleErrorTypeMatch[1] : "Not found",
+        processStep: processStepMatch ? processStepMatch[1] : "Not found",
+        plmAckMessage: plmAckMessageMatch ? plmAckMessageMatch[1] : "Not found",
+        muleEncoding: muleEncodingMatch ? muleEncodingMatch[1] : "Not found",
+        pendingShoesLoop: pendingShoesLoopMatch ? pendingShoesLoopMatch[1] : "Not found",
+        plmAckStatus: plmAckStatusMatch ? plmAckStatusMatch[1] : "Not found",
+        errorCategory: errorCategoryMatch ? errorCategoryMatch[1] : "Not found",
+        muleErrorDescription: muleErrorDescriptionMatch ? muleErrorDescriptionMatch[1] : "Not found",
     };
 }
 
@@ -51,7 +69,6 @@ function extractGoodsReceptionDetails(dlqText) {
         const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "N/A";
         const asnId = asnIdMatches[i] ? asnIdMatches[i][1] : "N/A";
 
-        // Formattare il riferimento come richiesto: "asnInternalReference [asnType asnId]"
         references.push(`${asnInternalRef} [${asnType} ${asnId}]`);
     }
 
@@ -79,29 +96,10 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             return;
         }
 
-        let patterns = [];
         let references = [];
+        let patterns = [];
 
         switch (true) {
-            case /fluent\.returns\.creditmemos/.test(currentDLQ):
-                patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
-                break;
-            case /emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
-                patterns = [/\"creditMemoReference\":\s*\"([^\"]+)\"/g];
-                break;
-            case /emea\.eboutique\.return-notices/.test(currentDLQ):
-                patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
-                break;
-            case /emea\.orderlifecycle\.sendmailccreminder2/.test(currentDLQ):
-            case /emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
-                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
-                break;
-            case /emea\.orderlifecycle\.SendASN/.test(currentDLQ):
-                patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
-                break;
-            case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
-                patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
-                break;
             case /prod\.emea\.plm\.product/.test(currentDLQ):
                 const plmDetails = extractPLMProductDetails(dlqText);
 
@@ -122,12 +120,20 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                     <p><strong>Error Code:</strong> ${plmDetails.errorCode}</p>
                     <p><strong>Message:</strong> ${plmDetails.message}</p>
                     <p><strong>Details:</strong> ${plmDetails.details}</p>
+                    <p><strong>Mule Error Type:</strong> ${plmDetails.muleErrorType}</p>
+                    <p><strong>Process Step:</strong> ${plmDetails.processStep}</p>
+                    <p><strong>PLM Ack Message:</strong> ${plmDetails.plmAckMessage}</p>
+                    <p><strong>MULE Encoding:</strong> ${plmDetails.muleEncoding}</p>
+                    <p><strong>Pending Shoes Loop:</strong> ${plmDetails.pendingShoesLoop}</p>
+                    <p><strong>PLM Ack Status:</strong> ${plmDetails.plmAckStatus}</p>
+                    <p><strong>Error Category:</strong> ${plmDetails.errorCategory}</p>
+                    <p><strong>Mule Error Description:</strong> ${plmDetails.muleErrorDescription}</p>
                     <p><strong>Total Messages:</strong> ${plmReferences.length}</p>
                     <ul>
                         ${plmReferences.map(ref => `<li>${ref} (${messageCounts[ref]}x)</li>`).join('')}
                     </ul>
                 `;
-                return; // Non proseguire con altri pattern per questa coda
+                return;
             case /prod\.process\.goods-receptions/.test(currentDLQ):
                 references = extractGoodsReceptionDetails(dlqText);
                 break;
@@ -163,6 +169,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
             case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.paymentRefund/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
                 break;
             case /process\.generateinvoice/.test(currentDLQ):
@@ -187,8 +194,13 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
+                case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
+                case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
+                    patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
+                    break;
             case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
             case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.sendmailccreminder2/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
                 break;
             case /prod\.emea\.eboutique\.order/.test(currentDLQ):
