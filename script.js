@@ -141,6 +141,8 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
+            case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQ):
+            case /emea\.orderlifecycle\.activateQRCode/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
@@ -201,6 +203,12 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
                     patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
                     break;
+            case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(currentDLQ):
+                    patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
+                    break;
+            case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
+                    patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
+                    break;
             case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
             case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
             case /prod\.emea\.orderlifecycle\.sendmailccreminder2/.test(currentDLQ):
@@ -218,7 +226,19 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
+            case /prod\.emea\.fluent\.events\.invoices/.test(currentDLQ):
+                patterns = [/\"externalInvoiceId\":\s*\"([^\"]+)\"/g];
+                break;
             case /prod\.emea\.orex\.financial-transactions-creation/.test(currentDLQ):
+                patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.orex\.callback-transfers/.test(currentDLQ):
+                patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
+                patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.orex\.inbound\.orderCancelation/.test(currentDLQ):
                 patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
                 break;
             default:
