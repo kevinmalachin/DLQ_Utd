@@ -212,6 +212,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
+            case /prod\.emea\.usermanagement\.users\.creations/.test(currentDLQ):
+                patterns = [/\"iat\":\s*\"([^\"]+)\"/g];
+                break;
             case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
