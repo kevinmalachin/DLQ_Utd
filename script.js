@@ -38,6 +38,26 @@ function extractPLMProductDetails(dlqText) {
     };
 }
 
+// Funzione per estrarre i dettagli di asnType, asnId e asnInternalReference per la coda prod.process.goods-receptions.DLQ
+function extractGoodsReceptionDetails(dlqText) {
+    const asnTypeMatches = [...dlqText.matchAll(/"asnType":\s*"([A-Z]+)"/g)];
+    const asnIdMatches = [...dlqText.matchAll(/"asnId":\s*"(\d+)"/g)];
+    const asnInternalReferenceMatches = [...dlqText.matchAll(/"asnInternalReference":\s*"([^\"]+)"/g)];
+
+    let references = [];
+
+    for (let i = 0; i < asnInternalReferenceMatches.length; i++) {
+        const asnInternalRef = asnInternalReferenceMatches[i][1];
+        const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "N/A";
+        const asnId = asnIdMatches[i] ? asnIdMatches[i][1] : "N/A";
+
+        // Formattare il riferimento come richiesto: "asnInternalReference [asnType asnId]"
+        references.push(`${asnInternalRef} [${asnType} ${asnId}]`);
+    }
+
+    return references;
+}
+
 // Controllo se gli elementi esistono nella pagina
 if (!DLQtext || !results || !extractButton || !checkButton) {
     console.error("Elements not found in the page.");
@@ -60,6 +80,8 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         }
 
         let patterns = [];
+        let references = [];
+
         switch (true) {
             case /fluent\.returns\.creditmemos/.test(currentDLQ):
                 patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
@@ -80,18 +102,17 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
-            case /prod\.emea\.plm\.product/.test(currentDLQ): // Aggiunto per la coda prod.emea.plm.product.DLQ
+            case /prod\.emea\.plm\.product/.test(currentDLQ):
                 const plmDetails = extractPLMProductDetails(dlqText);
 
-                let references = [];
-
-                // Conteggio delle occorrenze per i messaggi PLM
+                let plmReferences = [];
                 let messageCounts = {};
                 let matches = [...dlqText.matchAll(/"styleCode":\s*"([^\"]+)"/g)];
+
                 matches.forEach(match => {
                     const ref = match[1];
                     messageCounts[ref] = (messageCounts[ref] || 0) + 1;
-                    references.push(ref);
+                    plmReferences.push(ref);
                 });
 
                 results.innerHTML = `
@@ -101,12 +122,15 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                     <p><strong>Error Code:</strong> ${plmDetails.errorCode}</p>
                     <p><strong>Message:</strong> ${plmDetails.message}</p>
                     <p><strong>Details:</strong> ${plmDetails.details}</p>
-                    <p><strong>Total Messages:</strong> ${references.length}</p>
+                    <p><strong>Total Messages:</strong> ${plmReferences.length}</p>
                     <ul>
-                        ${references.map(ref => `<li>${ref} (${messageCounts[ref]}x)</li>`).join('')}
+                        ${plmReferences.map(ref => `<li>${ref} (${messageCounts[ref]}x)</li>`).join('')}
                     </ul>
                 `;
                 return; // Non proseguire con altri pattern per questa coda
+            case /prod\.process\.goods-receptions/.test(currentDLQ):
+                references = extractGoodsReceptionDetails(dlqText);
+                break;
             case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
@@ -140,13 +164,6 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 break;
             case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
-                break;
-            case /process\.goods-receptions/.test(currentDLQ):
-                patterns = [
-                    /\"asnType\":\s*\"([A-Z]+)\"/g, 
-                    /\"asnId\":\s*\"(\d+)\"/g,
-                    /\"asnInternalReference\":\s*\"(\d+)\"/g
-                ];
                 break;
             case /process\.generateinvoice/.test(currentDLQ):
                 patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
@@ -192,14 +209,15 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 return;
         }
 
-        let combinedReferences = [];
-        patterns.forEach((pattern) => {
-            const matches = [...dlqText.matchAll(pattern)];
-            combinedReferences.push(...matches.map((match) => match[1]));
-        });
+        if (patterns.length > 0) {
+            patterns.forEach((pattern) => {
+                const matches = [...dlqText.matchAll(pattern)];
+                matches.forEach(match => references.push(match[1]));
+            });
+        }
 
         // Filtra le reference che non terminano con "-STD"
-        extractedReferences = [...new Set(combinedReferences)].filter(ref => !ref.endsWith("-STD"));
+        extractedReferences = [...new Set(references)].filter(ref => !ref.endsWith("-STD"));
         results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
 
         // Contatore dei duplicati accanto a ogni messaggio
