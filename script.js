@@ -238,6 +238,12 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
                 patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
                 break;
+            case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
+                break;
+            case /prod\.emea\.plm\.product/.test(currentDLQ):
+                patterns = [/\"styleCode\":\s*\"([^\"]+)\"/g];
+                break;
             case /prod\.emea\.orex\.inbound\.orderCancelation/.test(currentDLQ):
                 patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
                 break;
