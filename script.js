@@ -75,6 +75,18 @@ function extractGoodsReceptionDetails(dlqText) {
     return references;
 }
 
+// Funzione per estrarre i riferimenti con i pattern
+function extractReferences(dlqText, patterns) {
+    let references = [];
+
+    patterns.forEach(pattern => {
+        const matches = [...dlqText.matchAll(pattern)];
+        matches.forEach(match => references.push(match[1]));
+    });
+
+    return references;
+}
+
 // Controllo se gli elementi esistono nella pagina
 if (!DLQtext || !results || !extractButton || !checkButton) {
     console.error("Elements not found in the page.");
@@ -221,7 +233,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.usermanagement\.users\.creations/.test(currentDLQ):
-                patterns = [/\"iat\":\s*\"([^\"]+)\"/g];
+                patterns = [/\"iat\":\s*(\d+)/g];
                 break;
             case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
@@ -247,100 +259,98 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orex\.inbound\.orderCancelation/.test(currentDLQ):
                 patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
                 break;
-            default:
-                console.error("No matching DLQ pattern found.");
-                results.innerHTML = "No matching DLQ pattern found.";
-                return;
-        }
-
-        if (patterns.length > 0) {
-            patterns.forEach((pattern) => {
-                const matches = [...dlqText.matchAll(pattern)];
-                matches.forEach(match => references.push(match[1]));
-            });
-        }
-
-        // Filtra le reference che non terminano con "-STD"
-        extractedReferences = [...new Set(references)].filter(ref => !ref.endsWith("-STD"));
-        results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
-
-        // Contatore dei duplicati accanto a ogni messaggio
-        const referenceCounts = {};
-        extractedReferences.forEach((ref) => {
-            referenceCounts[ref] = (referenceCounts[ref] || 0) + 1;
+                default:
+                    console.error("No matching DLQ pattern found.");
+                    results.innerHTML = "No matching DLQ pattern found.";
+                    return;
+            }
+    
+            // Estrazione riferimenti usando i pattern trovati
+            if (patterns.length > 0) {
+                references = extractReferences(dlqText, patterns);
+            }
+    
+            // Filtra le reference che non terminano con "-STD"
+            extractedReferences = [...new Set(references)].filter(ref => !ref.endsWith("-STD"));
+            results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
+    
+            // Contatore dei duplicati accanto a ogni messaggio
+            const referenceCounts = extractedReferences.reduce((acc, ref) => {
+                acc[ref] = (acc[ref] || 0) + 1;
+                return acc;
+            }, {});
+    
+            // Visualizzazione dei messaggi con il numero di occorrenze accanto
+            let referencesHTML = Object.entries(referenceCounts).map(([ref, count]) => {
+                return `<li>${ref} (${count}x)</li>`;
+            }).join("");
+    
+            results.innerHTML = `
+                <p><strong>Extracted References (${extractedReferences.length}):</strong></p>
+                <ul>${referencesHTML}</ul>
+            `;
         });
-
-        // Visualizzazione dei messaggi con il numero di occorrenze accanto
-        let referencesHTML = extractedReferences.map((ref) => {
-            return `<li>${ref} (${referenceCounts[ref]}x)</li>`;
-        }).join("");
-
-        results.innerHTML = `
-            <p><strong>Extracted References (${extractedReferences.length}):</strong></p>
-            <ul>${referencesHTML}</ul>
-        `;
-    });
-
-    // Gestione del click sul bottone "Check Reported References"
-    checkButton.addEventListener("click", async (e) => {
-        e.preventDefault();
-
-        if (extractedReferences.length === 0) {
-            results.innerHTML = "Please extract references first.";
-            return;
-        }
-
-        try {
-            const response = await fetch("http://localhost:5000/run-script", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ references: extractedReferences }),
-            });
-
-            const data = await response.json();
-            const { output } = data;
-
-            const reportedRefs = new Set();
-            const nonReportedRefs = new Set(output.non_reported);
-
-            for (const [incident, details] of Object.entries(output.reported)) {
-                details.references.forEach((ref) => reportedRefs.add(ref));
+    
+        // Gestione del click sul bottone "Check Reported References"
+        checkButton.addEventListener("click", async (e) => {
+            e.preventDefault();
+    
+            if (extractedReferences.length === 0) {
+                results.innerHTML = "Please extract references first.";
+                return;
             }
-            reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
-
-            const totalReferencesCount = extractedReferences.length;
-            const reportedCount = reportedRefs.size;
-            const nonReportedCount = nonReportedRefs.size;
-
-            let totalReferencesCountText = `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`;
-            totalReferencesCountText += `<p><strong>Reported References:</strong> ${reportedCount}</p>`;
-            totalReferencesCountText += `<p><strong>Non-reported References:</strong> ${nonReportedCount}</p>`;
-
-            let nonReportedText = `<p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p><ul>`;
-            nonReportedRefs.forEach((ref) => {
-                nonReportedText += `<li style="color:red;"><strong>${ref}</strong></li>`;
-            });
-            nonReportedText += "</ul>";
-
-            let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
-            for (const [incident, details] of Object.entries(output.reported)) {
-                if (details.references_count > 0) {
-                    reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a></strong>`;
-                    reportedText += ` - Summary: ${details.summary} - Status: ${details.task_status} (${details.status_category})<ul>`;
-                    details.references.forEach((ref) => {
-                        reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
-                    });
-                    reportedText += `</ul></li>`;
+    
+            try {
+                const response = await fetch("http://localhost:5000/run-script", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ references: extractedReferences }),
+                });
+    
+                const data = await response.json();
+                const { output } = data;
+    
+                const reportedRefs = new Set();
+                const nonReportedRefs = new Set(output.non_reported);
+    
+                for (const [incident, details] of Object.entries(output.reported)) {
+                    details.references.forEach((ref) => reportedRefs.add(ref));
                 }
+                reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
+    
+                const totalReferencesCount = extractedReferences.length;
+                const reportedCount = reportedRefs.size;
+                const nonReportedCount = nonReportedRefs.size;
+    
+                let totalReferencesCountText = `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`;
+                totalReferencesCountText += `<p><strong>Reported References:</strong> ${reportedCount}</p>`;
+                totalReferencesCountText += `<p><strong>Non-reported References:</strong> ${nonReportedCount}</p>`;
+    
+                let nonReportedText = `<p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p><ul>`;
+                nonReportedRefs.forEach((ref) => {
+                    nonReportedText += `<li style="color:red;"><strong>${ref}</strong></li>`;
+                });
+                nonReportedText += "</ul>";
+    
+                let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
+                for (const [incident, details] of Object.entries(output.reported)) {
+                    if (details.references_count > 0) {
+                        reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a></strong>`;
+                        reportedText += ` - Summary: ${details.summary} - Status: ${details.task_status} (${details.status_category})<ul>`;
+                        details.references.forEach((ref) => {
+                            reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
+                        });
+                        reportedText += `</ul></li>`;
+                    }
+                }
+                reportedText += "</ul>";
+    
+                results.innerHTML = totalReferencesCountText + reportedText + nonReportedText;
+            } catch (error) {
+                console.error(error);
+                results.innerHTML = "Error: Failed to connect to server.";
             }
-            reportedText += "</ul>";
-
-            results.innerHTML = totalReferencesCountText + reportedText + nonReportedText;
-        } catch (error) {
-            console.error(error);
-            results.innerHTML = "Error: Failed to connect to server.";
-        }
-    });
-}
+        });
+    }
