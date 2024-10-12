@@ -87,6 +87,15 @@ function extractReferences(dlqText, patterns) {
     return references;
 }
 
+// Funzione per contare i riferimenti duplicati
+function countReferences(references) {
+    const referenceCounts = references.reduce((acc, ref) => {
+        acc[ref] = (acc[ref] || 0) + 1;
+        return acc;
+    }, {});
+    return referenceCounts;
+}
+
 // Controllo se gli elementi esistono nella pagina
 if (!DLQtext || !results || !extractButton || !checkButton) {
     console.error("Elements not found in the page.");
@@ -271,14 +280,10 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             }
     
             // Filtra le reference che non terminano con "-STD"
-            extractedReferences = [...new Set(references)].filter(ref => !ref.endsWith("-STD"));
-            results.innerHTML = `<p>Extracted References (${extractedReferences.length}):</p><ul>${extractedReferences.map((ref) => `<li>${ref}</li>`).join("")}</ul>`;
-    
-            // Contatore dei duplicati accanto a ogni messaggio
-            const referenceCounts = extractedReferences.reduce((acc, ref) => {
-                acc[ref] = (acc[ref] || 0) + 1;
-                return acc;
-            }, {});
+            extractedReferences = references.filter(ref => !ref.endsWith("-STD"));
+
+            // Conta i riferimenti duplicati
+            const referenceCounts = countReferences(extractedReferences);
     
             // Visualizzazione dei messaggi con il numero di occorrenze accanto
             let referencesHTML = Object.entries(referenceCounts).map(([ref, count]) => {
