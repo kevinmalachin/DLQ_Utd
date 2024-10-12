@@ -58,18 +58,13 @@ function extractPLMProductDetails(dlqText) {
 
 // Funzione per estrarre i dettagli di asnType, asnId e asnInternalReference per la coda prod.process.goods-receptions.DLQ
 function extractGoodsReceptionDetails(dlqText) {
-    const asnTypeMatches = [...dlqText.matchAll(/"asnType":\s*"([A-Z]+)"/g)];
-    const asnIdMatches = [...dlqText.matchAll(/"asnId":\s*"(\d+)"/g)];
     const asnInternalReferenceMatches = [...dlqText.matchAll(/"asnInternalReference":\s*"([^\"]+)"/g)];
 
     let references = [];
 
     for (let i = 0; i < asnInternalReferenceMatches.length; i++) {
         const asnInternalRef = asnInternalReferenceMatches[i][1];
-        const asnType = asnTypeMatches[i] ? asnTypeMatches[i][1] : "N/A";
-        const asnId = asnIdMatches[i] ? asnIdMatches[i][1] : "N/A";
-
-        references.push(`${asnInternalRef} [${asnType} ${asnId}]`);
+        references.push(asnInternalRef); // Usa solo asnInternalReference
     }
 
     return references;
@@ -275,87 +270,87 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             }
     
             // Estrazione riferimenti usando i pattern trovati
-            if (patterns.length > 0) {
-                references = extractReferences(dlqText, patterns);
-            }
-    
-            // Filtra le reference che non terminano con "-STD"
-            extractedReferences = references.filter(ref => !ref.endsWith("-STD"));
+        if (patterns.length > 0) {
+            references = extractReferences(dlqText, patterns);
+        }
 
-            // Conta i riferimenti duplicati
-            const referenceCounts = countReferences(extractedReferences);
-    
-            // Visualizzazione dei messaggi con il numero di occorrenze accanto
-            let referencesHTML = Object.entries(referenceCounts).map(([ref, count]) => {
-                return `<li>${ref} (${count}x)</li>`;
-            }).join("");
-    
-            results.innerHTML = `
-                <p><strong>Extracted References (${extractedReferences.length}):</strong></p>
-                <ul>${referencesHTML}</ul>
-            `;
-        });
-    
-        // Gestione del click sul bottone "Check Reported References"
-        checkButton.addEventListener("click", async (e) => {
-            e.preventDefault();
-    
-            if (extractedReferences.length === 0) {
-                results.innerHTML = "Please extract references first.";
-                return;
+        // Filtra le reference che non terminano con "-STD"
+        extractedReferences = references.filter(ref => !ref.endsWith("-STD"));
+
+        // Conta i riferimenti duplicati
+        const referenceCounts = countReferences(extractedReferences);
+
+        // Visualizzazione dei messaggi con il numero di occorrenze accanto
+        let referencesHTML = Object.entries(referenceCounts).map(([ref, count]) => {
+            return `<li>${ref} (${count}x)</li>`;
+        }).join("");
+
+        results.innerHTML = `
+            <p><strong>Extracted References (${extractedReferences.length}):</strong></p>
+            <ul>${referencesHTML}</ul>
+        `;
+    });
+
+    // Gestione del click sul bottone "Check Reported References"
+    checkButton.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        if (extractedReferences.length === 0) {
+            results.innerHTML = "Please extract references first.";
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:5000/run-script", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ references: extractedReferences, dlq: currentDLQ }), // Passa anche la DLQ corrente
+            });
+
+            const data = await response.json();
+            const { output } = data;
+
+            const reportedRefs = new Set();
+            const nonReportedRefs = new Set(output.non_reported);
+
+            for (const [incident, details] of Object.entries(output.reported)) {
+                details.references.forEach((ref) => reportedRefs.add(ref));
             }
-    
-            try {
-                const response = await fetch("http://localhost:5000/run-script", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ references: extractedReferences }),
-                });
-    
-                const data = await response.json();
-                const { output } = data;
-    
-                const reportedRefs = new Set();
-                const nonReportedRefs = new Set(output.non_reported);
-    
-                for (const [incident, details] of Object.entries(output.reported)) {
-                    details.references.forEach((ref) => reportedRefs.add(ref));
+            reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
+
+            const totalReferencesCount = extractedReferences.length;
+            const reportedCount = reportedRefs.size;
+            const nonReportedCount = nonReportedRefs.size;
+
+            let totalReferencesCountText = `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`;
+            totalReferencesCountText += `<p><strong>Reported References:</strong> ${reportedCount}</p>`;
+            totalReferencesCountText += `<p><strong>Non-reported References:</strong> ${nonReportedCount}</p>`;
+
+            let nonReportedText = `<p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p><ul>`;
+            nonReportedRefs.forEach((ref) => {
+                nonReportedText += `<li style="color:red;"><strong>${ref}</strong></li>`;
+            });
+            nonReportedText += "</ul>";
+
+            let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
+            for (const [incident, details] of Object.entries(output.reported)) {
+                if (details.references_count > 0) {
+                    reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a></strong>`;
+                    reportedText += ` - Summary: ${details.summary} - Status: ${details.task_status} (${details.status_category})<ul>`;
+                    details.references.forEach((ref) => {
+                        reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
+                    });
+                    reportedText += `</ul></li>`;
                 }
-                reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
-    
-                const totalReferencesCount = extractedReferences.length;
-                const reportedCount = reportedRefs.size;
-                const nonReportedCount = nonReportedRefs.size;
-    
-                let totalReferencesCountText = `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`;
-                totalReferencesCountText += `<p><strong>Reported References:</strong> ${reportedCount}</p>`;
-                totalReferencesCountText += `<p><strong>Non-reported References:</strong> ${nonReportedCount}</p>`;
-    
-                let nonReportedText = `<p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p><ul>`;
-                nonReportedRefs.forEach((ref) => {
-                    nonReportedText += `<li style="color:red;"><strong>${ref}</strong></li>`;
-                });
-                nonReportedText += "</ul>";
-    
-                let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
-                for (const [incident, details] of Object.entries(output.reported)) {
-                    if (details.references_count > 0) {
-                        reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a></strong>`;
-                        reportedText += ` - Summary: ${details.summary} - Status: ${details.task_status} (${details.status_category})<ul>`;
-                        details.references.forEach((ref) => {
-                            reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
-                        });
-                        reportedText += `</ul></li>`;
-                    }
-                }
-                reportedText += "</ul>";
-    
-                results.innerHTML = totalReferencesCountText + reportedText + nonReportedText;
-            } catch (error) {
-                console.error(error);
-                results.innerHTML = "Error: Failed to connect to server.";
             }
-        });
-    }
+            reportedText += "</ul>";
+
+            results.innerHTML = totalReferencesCountText + reportedText + nonReportedText;
+        } catch (error) {
+            console.error(error);
+            results.innerHTML = "Error: Failed to connect to server.";
+        }
+    });
+}

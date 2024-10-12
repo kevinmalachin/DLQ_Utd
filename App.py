@@ -23,6 +23,7 @@ def search_text_recursively(content, ref):
 @app.route('/run-script', methods=['POST'])
 def run_script():
     references = request.json.get('references', [])
+    dlq = request.json.get('dlq', '')  # Assumi che la DLQ venga passata dal frontend
     if not references:
         return jsonify(error="No references provided"), 400
 
@@ -36,7 +37,13 @@ def run_script():
     results = []
 
     for ref in references:
-        jql_query = f'description ~ "{ref}"'
+        # Se la coda è goods-receptions, usa asnInternalReference per il controllo
+        if 'goods-receptions' in dlq:
+            jql_query = f'description ~ "{ref}"'
+        else:
+            # Per tutte le altre code usa la logica esistente
+            jql_query = f'description ~ "{ref}"'
+
         search_params = {
             'jql': jql_query,
             'fields': 'key,summary,customfield_10111,description,status,customfield_10124'
