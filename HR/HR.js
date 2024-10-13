@@ -23,23 +23,56 @@ function extractDLQName(dlqText) {
 }
 
 function extractDLQFields(dlqText) {
-  const messages = dlqText.split(/ID\s+/); // Divide i messaggi in base a "ID"
+  const lines = dlqText.split("\n");
   let extractedData = [];
 
-  // Itera attraverso i messaggi per estrarre i campi
-  messages.forEach((message) => {
-    const eventIdMatch = message.match(/([a-f0-9-]{36})/); // Cerca l'eventID come UUID
-    const errorTypeMatch = message.match(/errorType\s+([^\n]+)/);
-    const errorMessageMatch = message.match(/errorMessage\s+([\s\S]+?)(?=\n\S|$)/); // Prende il messaggio su più righe
-    const errorCodeMatch = message.match(/errorCode\s+(\d+)/);
+  // Inizializza variabili per i campi che ci interessano
+  let eventId = "N/A";
+  let errorType = "N/A";
+  let errorMessage = "N/A";
+  let errorCode = "N/A";
 
-    // Crea un oggetto per i campi estratti e aggiungilo all'array
-    extractedData.push({
-      eventId: eventIdMatch ? eventIdMatch[1].trim() : "N/A",
-      errorType: errorTypeMatch ? errorTypeMatch[1].trim() : "N/A",
-      errorMessage: errorMessageMatch ? errorMessageMatch[1].trim() : "N/A",
-      errorCode: errorCodeMatch ? errorCodeMatch[1].trim() : "N/A",
-    });
+  // Itera attraverso le linee per estrarre i campi
+  lines.forEach((line) => {
+    // Cerca l'Event ID (formato UUID)
+    const eventIdMatch = line.match(/\b([a-f0-9-]{36})\b/);
+    if (eventIdMatch) {
+      eventId = eventIdMatch[1].trim();
+    }
+
+    // Cerca l'Error Type
+    const errorTypeMatch = line.match(/errorType\s*:\s*([^\n]+)/);
+    if (errorTypeMatch) {
+      errorType = errorTypeMatch[1].trim();
+    }
+
+    // Cerca l'Error Message (considera più righe)
+    const errorMessageMatch = line.match(/errorMessage\s*:\s*([\s\S]+?)(?=errorCode|MULE_ENCODING|\n\S)/);
+    if (errorMessageMatch) {
+      errorMessage = errorMessageMatch[1].trim();
+    }
+
+    // Cerca l'Error Code
+    const errorCodeMatch = line.match(/errorCode\s*:\s*(\d+)/);
+    if (errorCodeMatch) {
+      errorCode = errorCodeMatch[1].trim();
+    }
+
+    // Quando troviamo un Event ID o altri campi, consideriamo il blocco completato e aggiungiamo i dati
+    if (eventId !== "N/A" || errorType !== "N/A" || errorMessage !== "N/A" || errorCode !== "N/A") {
+      extractedData.push({
+        eventId,
+        errorType,
+        errorMessage,
+        errorCode,
+      });
+
+      // Resetta i campi per il prossimo blocco
+      eventId = "N/A";
+      errorType = "N/A";
+      errorMessage = "N/A";
+      errorCode = "N/A";
+    }
   });
 
   return extractedData;
