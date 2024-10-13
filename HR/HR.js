@@ -9,69 +9,40 @@ document.getElementById("generateExcel").addEventListener("click", function () {
   // Estrai il nome della DLQ dal testo incollato
   const dlqQueueName = extractDLQName(dlqText);
 
-  // Funzione per estrarre i campi che ci interessano
-  const extractedData = extractDLQFields(dlqText);
+  // Estrai i campi necessari
+  const extractedData = extractDLQFieldsWithRegex(dlqText);
 
   // Genera e scarica l'Excel
   generateExcelFile(extractedData, dlqQueueName);
 });
 
 function extractDLQName(dlqText) {
-  // Estrai il nome della DLQ dal testo
   const dlqMatch = dlqText.match(/(prod\.[a-zA-Z0-9._-]+\.DLQ)/);
   return dlqMatch ? dlqMatch[1] : "DLQ_File";
 }
 
-function extractDLQFields(dlqText) {
-  const lines = dlqText.split("\n");
+// Funzione per estrarre i campi usando regex
+function extractDLQFieldsWithRegex(dlqText) {
+  // Suddivide il testo in base ai processId
+  const messageBlocks = dlqText.split(/(?="processId":)/g); 
   let extractedData = [];
 
-  // Inizializza variabili per i campi che ci interessano
-  let eventId = "N/A";
-  let errorType = "N/A";
-  let errorMessage = "N/A";
-  let errorCode = "N/A";
+  messageBlocks.forEach((block) => {
+    const eventIdMatch = block.match(/"processId":\s*"([a-f0-9-]{36})"/);
+    const errorTypeMatch = block.match(/"errorType":\s*"([^\"]+)"/);
+    const errorMessageMatch = block.match(/"message":\s*"([^"]+)"/);
+    const errorCodeMatch = block.match(/"code":\s*"(\d+)"/);
+    const muleEncodingMatch = block.match(/"MULE_ENCODING":\s*"([^\"]+)"/);
 
-  // Itera attraverso le linee per estrarre i campi
-  lines.forEach((line) => {
-    // Cerca l'Event ID (formato UUID)
-    const eventIdMatch = line.match(/\b([a-f0-9-]{36})\b/);
-    if (eventIdMatch) {
-      eventId = eventIdMatch[1].trim();
-    }
-
-    // Cerca l'Error Type
-    const errorTypeMatch = line.match(/errorType\s*:\s*([^\n]+)/);
-    if (errorTypeMatch) {
-      errorType = errorTypeMatch[1].trim();
-    }
-
-    // Cerca l'Error Message (considera più righe)
-    const errorMessageMatch = line.match(/errorMessage\s*:\s*([\s\S]+?)(?=errorCode|MULE_ENCODING|\n\S)/);
-    if (errorMessageMatch) {
-      errorMessage = errorMessageMatch[1].trim();
-    }
-
-    // Cerca l'Error Code
-    const errorCodeMatch = line.match(/errorCode\s*:\s*(\d+)/);
-    if (errorCodeMatch) {
-      errorCode = errorCodeMatch[1].trim();
-    }
-
-    // Quando troviamo un Event ID o altri campi, consideriamo il blocco completato e aggiungiamo i dati
-    if (eventId !== "N/A" || errorType !== "N/A" || errorMessage !== "N/A" || errorCode !== "N/A") {
+    // Aggiunge i campi solo se il blocco contiene dati validi
+    if (eventIdMatch || errorTypeMatch || errorMessageMatch || errorCodeMatch || muleEncodingMatch) {
       extractedData.push({
-        eventId,
-        errorType,
-        errorMessage,
-        errorCode,
+        eventId: eventIdMatch ? eventIdMatch[1].trim() : "N/A",
+        errorType: errorTypeMatch ? errorTypeMatch[1].trim() : "N/A",
+        errorMessage: errorMessageMatch ? errorMessageMatch[1].trim() : "N/A",
+        errorCode: errorCodeMatch ? errorCodeMatch[1].trim() : "N/A",
+        muleEncoding: muleEncodingMatch ? muleEncodingMatch[1].trim() : "N/A",
       });
-
-      // Resetta i campi per il prossimo blocco
-      eventId = "N/A";
-      errorType = "N/A";
-      errorMessage = "N/A";
-      errorCode = "N/A";
     }
   });
 
@@ -80,23 +51,32 @@ function extractDLQFields(dlqText) {
 
 // Funzione per generare l'Excel usando SheetJS
 function generateExcelFile(data, dlqQueueName) {
-  // Definisci le colonne dell'Excel
   const worksheetData = [
-    ["Event ID", "Error Type", "Error Message", "Error Code"],
+    ["Event ID", "Error Type", "Error Message", "Error Code", "Mule Encoding"],
   ];
 
-  // Aggiungi i dati estratti
   data.forEach((row) => {
     worksheetData.push([
       row.eventId,
       row.errorType,
       row.errorMessage,
       row.errorCode,
+      row.muleEncoding,
     ]);
   });
 
   // Crea un nuovo foglio di lavoro
   const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+  // Auto-resize delle colonne in base al contenuto
+  const maxLengths = worksheetData[0].map((_, colIndex) =>
+    Math.max(
+      ...worksheetData.map((row) => row[colIndex].toString().length),
+      10 // Minimo larghezza
+    )
+  );
+
+  worksheet["!cols"] = maxLengths.map((length) => ({ wch: length }));
 
   // Crea una nuova cartella di lavoro (workbook)
   const workbook = XLSX.utils.book_new();
