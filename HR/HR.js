@@ -6,32 +6,39 @@ document.getElementById("generateExcel").addEventListener("click", function () {
     return;
   }
 
+  // Estrai il nome della DLQ dal testo incollato
+  const dlqQueueName = extractDLQName(dlqText);
+
   // Funzione per estrarre i campi che ci interessano
   const extractedData = extractDLQFields(dlqText);
 
   // Genera e scarica l'Excel
-  generateExcelFile(extractedData);
+  generateExcelFile(extractedData, dlqQueueName);
 });
 
+function extractDLQName(dlqText) {
+  // Estrai il nome della DLQ dal testo
+  const dlqMatch = dlqText.match(/(prod\.[a-zA-Z0-9._-]+\.DLQ)/);
+  return dlqMatch ? dlqMatch[1] : "DLQ_File";
+}
+
 function extractDLQFields(dlqText) {
-  const lines = dlqText.split("\n");
+  const messages = dlqText.split(/ID\s+/); // Divide i messaggi in base a "ID"
   let extractedData = [];
 
-  // Itera attraverso le linee per estrarre i campi
-  lines.forEach((line) => {
-    const correlationIdMatch = line.match(/"correlationId":\s*"([^"]+)"/);
-    const styleCodeMatch = line.match(/"styleCode":\s*"([^"]+)"/);
-    const errorCodeMatch = line.match(/"error code":\s*(\d+)/);
-    const messageMatch = line.match(/"message":\s*"([^"]+)"/);
-    const dateMatch = line.match(/"date":\s*"([^"]+)"/); // esempio di un nuovo campo
+  // Itera attraverso i messaggi per estrarre i campi
+  messages.forEach((message) => {
+    const eventIdMatch = message.match(/([a-f0-9-]{36})/); // Cerca l'eventID come UUID
+    const errorTypeMatch = message.match(/errorType\s+([^\n]+)/);
+    const errorMessageMatch = message.match(/errorMessage\s+([\s\S]+?)(?=\n\S|$)/); // Prende il messaggio su più righe
+    const errorCodeMatch = message.match(/errorCode\s+(\d+)/);
 
     // Crea un oggetto per i campi estratti e aggiungilo all'array
     extractedData.push({
-      correlationId: correlationIdMatch ? correlationIdMatch[1] : "N/A",
-      styleCode: styleCodeMatch ? styleCodeMatch[1] : "N/A",
-      errorCode: errorCodeMatch ? errorCodeMatch[1] : "N/A",
-      message: messageMatch ? messageMatch[1] : "N/A",
-      date: dateMatch ? dateMatch[1] : "N/A",
+      eventId: eventIdMatch ? eventIdMatch[1].trim() : "N/A",
+      errorType: errorTypeMatch ? errorTypeMatch[1].trim() : "N/A",
+      errorMessage: errorMessageMatch ? errorMessageMatch[1].trim() : "N/A",
+      errorCode: errorCodeMatch ? errorCodeMatch[1].trim() : "N/A",
     });
   });
 
@@ -39,20 +46,19 @@ function extractDLQFields(dlqText) {
 }
 
 // Funzione per generare l'Excel usando SheetJS
-function generateExcelFile(data) {
+function generateExcelFile(data, dlqQueueName) {
   // Definisci le colonne dell'Excel
   const worksheetData = [
-    ["Correlation ID", "Style Code", "Error Code", "Message", "Date"],
+    ["Event ID", "Error Type", "Error Message", "Error Code"],
   ];
 
   // Aggiungi i dati estratti
   data.forEach((row) => {
     worksheetData.push([
-      row.correlationId,
-      row.styleCode,
+      row.eventId,
+      row.errorType,
+      row.errorMessage,
       row.errorCode,
-      row.message,
-      row.date,
     ]);
   });
 
@@ -63,6 +69,6 @@ function generateExcelFile(data) {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "DLQ Data");
 
-  // Genera il file Excel
-  XLSX.writeFile(workbook, "DLQ_Data.xlsx");
+  // Genera il file Excel con il nome della DLQ
+  XLSX.writeFile(workbook, `${dlqQueueName}.xlsx`);
 }
