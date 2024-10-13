@@ -12,8 +12,11 @@ document.getElementById("generateExcel").addEventListener("click", function () {
   // Estrai i campi necessari
   const extractedData = extractDLQFieldsWithRegex(dlqText);
 
+  // Rimuovi eventuali duplicati basati solo sul processId
+  const uniqueData = removeDuplicateEntriesByProcessId(extractedData);
+
   // Genera e scarica l'Excel
-  generateExcelFile(extractedData, dlqQueueName);
+  generateExcelFile(uniqueData, dlqQueueName);
 });
 
 function extractDLQName(dlqText) {
@@ -24,7 +27,7 @@ function extractDLQName(dlqText) {
 // Funzione per estrarre i campi usando regex
 function extractDLQFieldsWithRegex(dlqText) {
   // Suddivide il testo in base ai processId
-  const messageBlocks = dlqText.split(/(?="processId":)/g); 
+  const messageBlocks = dlqText.split(/(?="processId":)/g);
   let extractedData = [];
 
   messageBlocks.forEach((block) => {
@@ -34,7 +37,6 @@ function extractDLQFieldsWithRegex(dlqText) {
     const errorCodeMatch = block.match(/"code":\s*"(\d+)"/);
     const muleEncodingMatch = block.match(/"MULE_ENCODING":\s*"([^\"]+)"/);
 
-    // Aggiunge i campi solo se il blocco contiene dati validi
     if (eventIdMatch || errorTypeMatch || errorMessageMatch || errorCodeMatch || muleEncodingMatch) {
       extractedData.push({
         eventId: eventIdMatch ? eventIdMatch[1].trim() : "N/A",
@@ -47,6 +49,21 @@ function extractDLQFieldsWithRegex(dlqText) {
   });
 
   return extractedData;
+}
+
+// Funzione per rimuovere i duplicati basati solo su processId
+function removeDuplicateEntriesByProcessId(data) {
+  const uniqueData = [];
+  const seenProcessIds = new Set();
+
+  data.forEach((entry) => {
+    if (!seenProcessIds.has(entry.eventId)) {
+      uniqueData.push(entry);
+      seenProcessIds.add(entry.eventId);
+    }
+  });
+
+  return uniqueData;
 }
 
 // Funzione per generare l'Excel usando SheetJS
