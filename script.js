@@ -154,18 +154,15 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 references = extractGoodsReceptionDetails(dlqText);
                 break;
             case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
-                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
-                break;
             case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
+            case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
             case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQ):
             case /emea\.orderlifecycle\.activateQRCode/.test(currentDLQ):
                 patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
-                break;
-            case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
-                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.orderlifecycle\.alf-route/.test(currentDLQ):
                 patterns = [
@@ -241,9 +238,6 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 break;
             case /prod\.emea\.usermanagement\.users\.creations/.test(currentDLQ):
                 patterns = [/\"iat\":\s*(\d+)/g];
-                break;
-            case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
-                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.fluent\.events\.invoices/.test(currentDLQ):
                 patterns = [/\"externalInvoiceId\":\s*\"([^\"]+)\"/g];
