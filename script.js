@@ -156,6 +156,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
+            case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
+                patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
+                break;
             case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
             case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQ):
             case /emea\.orderlifecycle\.activateQRCode/.test(currentDLQ):
