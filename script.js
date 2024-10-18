@@ -223,6 +223,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                     patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
                     break;
             case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
+            case /prod\.amer\.store-factory\.orderFromStore\.sales\.ffa/.test(currentDLQ):
                     patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
                     break;
             case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
