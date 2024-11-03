@@ -253,6 +253,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.cscshortagealertlevel2/.test(currentDLQ):
                 patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.plm\.product/.test(currentDLQ):
