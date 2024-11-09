@@ -246,6 +246,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
             case /prod\.emea\.orex\.financial-transactions-creation/.test(currentDLQ):
                 patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
                 break;
+            case /prod\.emea\.cim\.outbound\.messages\.sfb2c/.test(currentDLQ):
+                patterns = [/\"gc_id\":\s*\"([^\"]+)\"/g];
+                break;
             case /prod\.emea\.orex\.callback-transfers/.test(currentDLQ):
                 patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
                 break;
