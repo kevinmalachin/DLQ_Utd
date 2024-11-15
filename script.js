@@ -244,6 +244,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"externalInvoiceId\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.orex\.financial-transactions-creation/.test(currentDLQ):
+            case /prod\.emea\.orderlifecycle\.blr-route/.test(currentDLQ):
                 patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.cim\.outbound\.messages\.sfb2c/.test(currentDLQ):
