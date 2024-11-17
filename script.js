@@ -251,6 +251,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
                 patterns = [/\"gc_id\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.orex\.callback-transfers/.test(currentDLQ):
+            case /prod\.emea\.eboutique\.return-notices/.test(currentDLQ):
                 patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
                 break;
             case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
