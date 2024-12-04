@@ -147,6 +147,47 @@ button:focus {
   font-size: 1.2em;
 }
 
+.Third-Part {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.TicketSection {
+  margin-top: 2em;
+  padding: 1em;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.TicketSection.hidden {
+  display: none;
+}
+
+.TicketSection label {
+  display: block;
+  font-weight: bold;
+  margin: 0.5em 0 0.2em 0;
+}
+
+.TicketSection input,
+.TicketSection textarea {
+  width: 100%;
+  padding: 0.5em;
+  margin-bottom: 1em;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.TicketSection input:focus,
+.TicketSection textarea:focus {
+  border-color: #2c9caf;
+  outline: none;
+}
+
 /* Aggiustamenti per il menu a tendina */
 nav {
   position: relative;
