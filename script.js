@@ -477,6 +477,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Popola il corpo della Description
       const descriptionTemplate = `
+Name of the DLQ:
+Number of messages in the DLQ:
 Ref:
 ${nonReportedReferences.map((ref) => `${ref}`).join("\n")}
 
