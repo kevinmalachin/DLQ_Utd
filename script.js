@@ -257,6 +257,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orderlifecycle\.checkout/.test(currentDLQ):
         patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
         break;
+      case /prod\.emea\.orderlifecycle\.blr-route/.test(currentDLQ):
+        patterns = [/\"customerId\":\s*\"([^\"]+)\"/g];
+        break;
       case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
       case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
