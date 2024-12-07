@@ -480,19 +480,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Popola il corpo della Description
       const descriptionTemplate = `
-Name of the DLQ:
-Number of messages in the DLQ:
+Name of the DLQ: ${dlqName}
+Number of messages in the DLQ: ${nonReportedReferences.length}
 Ref:
 ${nonReportedReferences.map((ref) => `${ref}`).join("\n")}
 
-Failure Level (if Any):
+Failure Level:
 Event ID:
 Time Stamp:
 Application name:
 
 MuleSoft Log error:
-
-messageFromSysCegid: (Only from Cegid backend system)
 
 First analysis / Interpretation of the logs:
 
@@ -502,7 +500,7 @@ Action(s) taken until now:
 
 Action to be taken (If possible):
 Dear team,
-Could you kindly check these orders and update us if we can remove or a replay is needed?
+Could you kindly check these orders and update us if we can remove from the DLQ?
 Thank you very much!
 `.trim();
 
