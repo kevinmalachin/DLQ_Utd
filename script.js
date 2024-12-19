@@ -264,13 +264,14 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
         break;
-      case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(
-        currentDLQ
-      ):
+      case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(currentDLQ):
         patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
         break;
       case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
         patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
+        break;
+      case /prod\.emea\.orex\.long-tail-receptions/.test(currentDLQ):
+        patterns = [/\"orderIncrementId\":\s*\"([^\"]+)\"/g];
         break;
       case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
