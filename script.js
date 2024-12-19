@@ -483,6 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const descriptionTemplate = `
 Name of the DLQ: ${currentDLQ}.DLQ
 Number of messages in the DLQ: ${nonReportedReferences.length}
+
 Ref:
 ${nonReportedReferences.map((ref) => `${ref}`).join("\n")}
 
