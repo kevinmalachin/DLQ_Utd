@@ -212,21 +212,11 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /apac\.store-factory\.sapNotice/.test(currentDLQ):
         patterns = [/\"DOCNUM\":\s*\"([^\"]+)\"/g];
         break;
-      case /emea\.orderFromStore\.availableCustomerOrders\.sac/.test(
-        currentDLQ
-      ):
-      case /prod\.emea\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(
-        currentDLQ
-      ):
-      case /prod\.amer\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(
-        currentDLQ
-      ):
-      case /prod\.apac\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(
-        currentDLQ
-      ):
-      case /apac\.orderFromStore\.availableCustomerOrders\.sac/.test(
-        currentDLQ
-      ):
+      case /emea\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+      case /prod\.emea\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+      case /prod\.amer\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+      case /prod\.apac\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+      case /apac\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
@@ -303,9 +293,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
         break;
-      case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(
-        currentDLQ
-      ):
+      case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.plm\.product/.test(currentDLQ):
