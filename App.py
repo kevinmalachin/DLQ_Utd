@@ -120,26 +120,26 @@ def run_script():
         if result["incident"] == "NOT REPORTED":
             output["non_reported"].append(result["reference"])
         else:
-            incident_key = result["incident"]
+            incident_key = result["incident"] or "UNKNOWN_INCIDENT"
             if incident_key not in output["reported"]:
                 output["reported"][incident_key] = {
-                    "task_name": result["task_name"],
-                    "summary": result["summary"],  # Add summary to the reported section
-                    "task_link": result["task_link"],
-                    "task_status": result["task_status"],
-                    "status_category": result["status_category"],
+                    "task_name": result["task_name"] or "N/A",
+                    "summary": result["summary"] or "No Summary",
+                    "task_link": result["task_link"] or "N/A",
+                    "task_status": result["task_status"] or "Unknown Status",
+                    "status_category": result["status_category"] or "Unknown Category",
                     "references": [],
                     "references_count": 0  # Inizializza references_count
                 }
             output["reported"][incident_key]["references"].append(result["reference"])
-            output["reported"][incident_key]["references_count"] += 1  # Incrementa references_count
+            output["reported"][incident_key]["references_count"] += 1
 
         customer = result.get("customer", "Unknown Customer")
         if customer != "DIOR01MMS":
             output["different_customers"].append(result)
 
-    output["non_reported_count"] = len(output["non_reported"])
-    output["reported_count"] = sum(details["references_count"] for details in output["reported"].values())  # Somma tutti references_count
+    # Rimozione di chiavi con valore None
+    output = {k: v for k, v in output.items() if v is not None}
 
     return jsonify(output=output)
 
