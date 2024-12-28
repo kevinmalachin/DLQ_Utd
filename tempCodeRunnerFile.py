@@ -1,1 +1,0 @@
-https://cap4cloud.atlassian.net/browse/{task_name}
