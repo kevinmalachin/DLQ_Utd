@@ -185,6 +185,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.process\.goods-receptions/.test(currentDLQ):
         references = extractGoodsReceptionDetails(dlqText);
         break;
+      case /prod\.emea\.process\.goods-receptions/.test(currentDLQ):
+        references = extractGoodsReceptionDetails(dlqText);
+        break;
       case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
       case /emea\.orderlifecycle\.sendfullcancellationtoriskified/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
