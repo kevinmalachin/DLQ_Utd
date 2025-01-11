@@ -190,13 +190,13 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         break;
       case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
       case /emea\.orderlifecycle\.sendfullcancellationtoriskified/.test(currentDLQ):
+      case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
       case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQ):
       case /emea\.orderlifecycle\.activateQRCode/.test(currentDLQ):
       case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
-      case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
         patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orderlifecycle\.alf-route/.test(currentDLQ):
