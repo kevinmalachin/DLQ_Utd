@@ -253,7 +253,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orderlifecycle\.blr-route/.test(currentDLQ):
-        patterns = [/\"customerId\":\s*\"([^\"]+)\"/g];
+        patterns = [/\"creditMemoRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
       case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
