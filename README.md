@@ -8,6 +8,8 @@ public token freely provided by Jira) and make a GET call to the global API of J
 
 Here's how it work:
 
+First Button: "Extract references"
+
 - Insert ALL the content of the payload in the first textarea;
 - The output will follow the pattern if a reference is in the format CM_EC0XXXXX_XXX will not report the one EC0XXXXX;
 - If a duplicated is found will be reported in the format (x1, x2 etc.,)
@@ -15,10 +17,14 @@ Here's how it work:
 - If a reference has EC0XXXXX-letters+number will be reported;
 - Reference ending with "-STD" will be not reported (since are usually duplicated and because we already have the one in the EC0XXXXX format);
 - IMPORTANT: At the current stage, for the Ordercreation.DLQ given the format of the payload we'll receive a (x2) for every ref, you have to consider the final number divided by 2;
+- Generally speaking there is a specific pattern for each DLQ and this will extract the reference from that specific DLQ;
+
+Second Button: "Check Reported References"
+
 - After that a GET call to Jira will be made and the reference found in the first textarea will be searched in the JSON Body in response from the Jira API;
-- If a reference is NOT reported will be grouped with all the reference NOT reported in the RED color;
+- If a reference is NOT reported will be grouped with all the reference NOT reported in the RED color and numbered;
 - If it was already reported will be grouped in the GREEN reference and the task number and link will be indicated - reference in the same task will be grouped together by tasks;
-- the script searches the values in the JSON payload in response at the call made to the JIRA API for "key, summary, customfield_10111, description" and also the link; if the reference is found in the description it will be reported in the GREEN section and the link will be provided;
+- the script searches the values in the JSON payload in response at the call made to the JIRA API for "key, summary, customfield_10111, description" and also the link; if the reference is found in the description it will be reported in the GREEN section and the link will be provided. This means that if the reference are not reported in the description of a task  will appear in red as not reported;
 - If you want you can also create a template ticket clicking the "Create Ticket" button = two Boxes will appear at the bottom with short description and description.
   The short description will be populated with our short description template and a variable calling the actual DLQ you are checking (the variable is the same) and the short description will automatically
   populated our template for the DLQ tickets and add the name of the DLQ and the "REF to be reported". The "REF to be reported" will be only the one checked as "NOT reported" int he previous button.
@@ -28,6 +34,8 @@ Here's how it work:
   So it is important that the Jira task are updated with the references in the descriptions;
 
 Since is doing a lot of stuff give it some seconds :P
+
+Section for the Server to run the second part of the check (the one involving the JIRA check for the reported/not reported references)
 
 to start Flask server:
 python3 App.py <!-- Or python FlaskApp depending on the version -->
@@ -80,23 +88,20 @@ pip install flask flask-cors
 
 ---
 
-Support scope check NOT COMPLETE
 
-There are two script, on in JavaScript and one in Python
 
-JavaScript:
+HR DLQs Check:
 
-- Select the customer, select the business group (if there are no business group it's ok you can skip and the script will check all the cells in the excel)
-- Attach the html file (need the OuterHTML because otherwise some apps will miss)
-  - Attach the excel
+You have a menu where you can find a page for the HR DLQs Check.
 
-There will be the output in the textarea below
+- The process is the same as the one for the DLQ but in this case we don't have any server that need to run.
+Just:
 
-Python: - Click on the menù, the script will run but before you need to run python3 FlaskApp.py to start the server <!-- Or python FlaskApp depending on the version --> - There will be an output in excel in a specific folder with the column of the app checked and the difference between excel and HTML
 
-IMPORTANT:
-for python you need to modifiy the script with the path of your html and excel files.
+- Insert ALL the content of the payload in the first textarea;
+- Click on the "Generate Excel" button;
+- It will be generated and downloaded an excel with all the values you need to fill for the ticket creation separated by columnm (error message, error code, eventID etc)
 
-STILL UNDER TESTING
+You can use that or create a pdf with it.
 
----
+And that's it! You're done.
