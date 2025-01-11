@@ -195,10 +195,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
       case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQ):
       case /emea\.orderlifecycle\.activateQRCode/.test(currentDLQ):
-        patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
-        break;
       case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
-        patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
+      case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
+        patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orderlifecycle\.alf-route/.test(currentDLQ):
         patterns = [
