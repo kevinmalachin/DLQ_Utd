@@ -191,6 +191,8 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQ):
       case /emea\.orderlifecycle\.sendfullcancellationtoriskified/.test(currentDLQ):
       case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
@@ -219,10 +221,13 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.amer\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
       case /prod\.apac\.store-factory\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
       case /apac\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
+      case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
+      case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.paymentRefund/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(currentDLQ):
         patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
         break;
       case /process\.generateinvoice/.test(currentDLQ):
@@ -244,9 +249,6 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orderlifecycle\.OrderCreation/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"(EC\d+)\"/g];
         break;
-      case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
-        patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
-        break;
       case /prod\.emea\.orderlifecycle\.checkout/.test(currentDLQ):
         patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
         break;
@@ -256,9 +258,6 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
       case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
-        break;
-      case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(currentDLQ):
-        patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
         break;
       case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
         patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
@@ -274,19 +273,14 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.eboutique\.order/.test(currentDLQ):
         patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
         break;
-      case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
-        patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
-        break;
       case /prod\.emea\.usermanagement\.users\.creations/.test(currentDLQ):
         patterns = [/\"iat\":\s*(\d+)/g];
-        break;
-      case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
-        patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.fluent\.events\.invoices/.test(currentDLQ):
         patterns = [/\"externalInvoiceId\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orex\.financial-transactions-creation/.test(currentDLQ):
+      case /prod\.emea\.orex\.inbound\.orderCancelation/.test(currentDLQ):
         patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orex\.callback-transfers/.test(currentDLQ):
@@ -294,15 +288,6 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         break;
       case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
-        break;
-      case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
-        patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
-        break;
-      case /prod\.emea\.plm\.product/.test(currentDLQ):
-        patterns = [/\"styleCode\":\s*\"([^\"]+)\"/g];
-        break;
-      case /prod\.emea\.orex\.inbound\.orderCancelation/.test(currentDLQ):
-        patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
         break;
       default:
         console.error("No matching DLQ pattern found.");
