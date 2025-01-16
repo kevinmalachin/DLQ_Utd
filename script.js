@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Funzione per identificare la DLQ
 
       // Popola la Short Description
-      shortDescriptionInput.value = `[Monitor Alert][messages blocked in DLQ Mulesoft][C2] Queue: ${currentDLQ}.DLQ`;
+      shortDescriptionInput.value = `[Monitor Alert][messages blocked in DLQ Mulesoft][C2] ${currentDLQ}.DLQ`;
 
       // Popola il corpo della Description
       const descriptionTemplate = `
