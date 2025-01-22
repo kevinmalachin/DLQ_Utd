@@ -247,6 +247,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
         break;
       case /amer\.orderlifecycle\.stellae\.us\.delivery/.test(currentDLQ):
+        patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
+        break;
+      case /amer\.orderlifecycle\.stellae\.us\.delivery/.test(currentDLQ):
         patterns = [/\"REFLIV\":\s*\"([^\"]+)\"/g];
         break;
       case /apac\.orderlifecycle\.stellae\.us\.delivery/.test(currentDLQ):
