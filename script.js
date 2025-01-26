@@ -214,6 +214,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"Number\":\s*\"([^\"]+)\"/g];
         break;
       case /apac\.store-factory\.sapNotice/.test(currentDLQ):
+      case /apac\.sap\.outbound-delivery\.wtms-supply/.test(currentDLQ):
         patterns = [/\"DOCNUM\":\s*\"([^\"]+)\"/g];
         break;
       case /emea\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
