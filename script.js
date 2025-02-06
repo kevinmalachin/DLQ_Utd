@@ -257,7 +257,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orderlifecycle\.checkout/.test(currentDLQ):
         patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
         break;
-      case /prod\.emea\.products\.pdh\.messages/.test(currentDLQ):
+      case /prod\.emea\.products\.pdh\.messages/.test(currentDLQ): //questa
         patterns = [/\"codeStyle\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orderlifecycle\.blr-route/.test(currentDLQ):
