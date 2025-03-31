@@ -281,6 +281,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.eboutique\.order/.test(currentDLQ):
         patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
         break;
+      case /prod\.emea\.cim\.outbound\.messages\.ciam/.test(currentDLQ):
+        patterns = [/\"gc_id\"\s*:\s*\"([a-f0-9\-]+)\"/g];
+        break;
       case /prod\.emea\.usermanagement\.users\.creations/.test(currentDLQ):
         patterns = [/\"iat\":\s*(\d+)/g];
         break;
