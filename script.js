@@ -193,6 +193,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /emea\.orderlifecycle\.DCFulfilmentwms/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.GenerateInvoice/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.DCShipAuthRCU/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
