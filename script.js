@@ -264,6 +264,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orderlifecycle\.blr-route/.test(currentDLQ):
         patterns = [/\"creditMemoRef\":\s*\"([^\"]+)\"/g];
         break;
+      case /prod\.emea\.hed\.diorstar\.orders/.test(currentDLQ):
+        patterns = [/\"quoteId\":\s*\"([^\"]+)\"/g];
+        break;
       case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
       case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
