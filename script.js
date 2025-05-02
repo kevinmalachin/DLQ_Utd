@@ -268,6 +268,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.hed\.diorstar\.orders/.test(currentDLQ):
         patterns = [/\"quoteId\":\s*\"([^\"]+)\"/g];
         break;
+      case /prod\.emea\.orex\.return-order-creation/.test(currentDLQ):
+        patterns = [/\"orderReference\":\s*\"([^\"]+)\"/g];
+        break;
       case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQ):
       case /prod\.fluent\.returns\.creditmemos/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
