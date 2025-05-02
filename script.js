@@ -225,6 +225,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /apac\.orderFromStore\.availableCustomerOrders\.sac/.test(currentDLQ):
       case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
       case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
