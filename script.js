@@ -202,6 +202,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQ):
       case /emea\.orderlifecycle\.activateQRCode/.test(currentDLQ):
       case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQ):
+      case /emea\.orderlifecycle\.depositrefundsuccess/.test(currentDLQ):
         patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orderlifecycle\.alf-route/.test(currentDLQ):
@@ -228,6 +229,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQ):
       case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
+      case /prod\.amer\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
