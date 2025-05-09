@@ -195,6 +195,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.DCShipAuthRCU/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.SendM06/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.SendM50/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
       case /emea\.orderlifecycle\.paymentReversals/.test(currentDLQ):
