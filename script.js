@@ -217,6 +217,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /apac\.supply\.notifications\.transfer/.test(currentDLQ):
         patterns = [/\"Number\":\s*\"([^\"]+)\"/g];
         break;
+      case /emea\.eboutique\.return\.receipt/.test(currentDLQ):
+        patterns = [/\"returnNoticeExternalReference\":\s*\"([^\"]+)\"/g];
+        break;
       case /apac\.store-factory\.sapNotice/.test(currentDLQ):
       case /apac\.sap\.outbound-delivery\.wtms-supply/.test(currentDLQ):
         patterns = [/\"DOCNUM\":\s*\"([^\"]+)\"/g];
