@@ -233,6 +233,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.cdc-route/.test(currentDLQ):
       case /prod\.amer\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
+      case /prod\.amer\.orex\.store-factory-customerOrders-ordered/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
