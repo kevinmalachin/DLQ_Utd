@@ -236,6 +236,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.amer\.orex\.store-factory-customerOrders-ordered/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
+      case /prod\.apac\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
+        patterns = [/\"followUpReference\":\s*\"([^\"]+)\"/g];
+        break;
       case /orderlifecycle\.sendpartialrefund/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.paymentRefund/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(currentDLQ):
