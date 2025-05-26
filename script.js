@@ -284,6 +284,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
         break;
       case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQ):
+      case /prod\.emea\.store-factory\.orderFromStore\.sales\.ffa/.test(currentDLQ):
         patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
         break;
       case /prod\.emea\.orex\.long-tail-receptions/.test(currentDLQ):
