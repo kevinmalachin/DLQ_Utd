@@ -263,6 +263,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /amer\.orderlifecycle\.stellae\.us\.delivery/.test(currentDLQ):
         patterns = [/\"REFLIV\":\s*\"([^\"]+)\"/g];
         break;
+      case /emea\.plm\.livecycle\.style\.notifications/.test(currentDLQ):
+        patterns = [/\"cnl\":\s*\"([^\"]+)\"/g];
+        break;
       case /prod\.emea\.orderlifecycle\.OrderCreation/.test(currentDLQ):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         // if you need only the ones in EC0 you can use this      patterns = [/\"rootEntityRef\":\s*\"(EC\d+)\"/g];
