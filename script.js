@@ -273,6 +273,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orderlifecycle\.checkout/.test(currentDLQ):
         patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
         break;
+      case /prod\.emea\.orderlifecycle\.MassRecalcAfterControlUpdateForLocation/.test(currentDLQ):
+        patterns = [/\"batchId\":\s*\"([^\"]+)\"/g];
+        break;
       case /prod\.emea\.products\.pdh\.messages/.test(currentDLQ):
         patterns = [/\"codeStyle\":\s*\"([^\"]+)\"/g];
         break;
