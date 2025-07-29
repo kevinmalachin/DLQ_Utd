@@ -236,6 +236,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.amer\.orex\.store-factory-customerOrders-ordered/.test(currentDLQ):
       case /prod\.apac\.orex\.store-factory-customerOrders-ordered/.test(currentDLQ):
       case /prod\.apac\.orex\.store-factory-sales/.test(currentDLQ):
+      case /prod\.apac\.sap\.point-of-sales\.erp-transaction/.test(currentDLQ):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.apac\.storeFactory\.orderFromStore\.sales/.test(currentDLQ):
