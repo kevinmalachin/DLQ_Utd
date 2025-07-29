@@ -306,6 +306,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQ):
       case /prod\.emea\.orderlifecycle\.sendmailccreminder2/.test(currentDLQ):
+      case /prod\.emea\.orderlifecycle\.sendemailconfirmation/.test(currentDLQ):
         patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
         break;
       case /prod\.emea\.eboutique\.order/.test(currentDLQ):
