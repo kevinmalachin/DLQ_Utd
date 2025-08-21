@@ -328,6 +328,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orex\.callback-transfers/.test(currentDLQ):
       case /prod\.emea\.eboutique\.return-notices/.test(currentDLQ):
       case /prod\.emea\.eboutique\.exchanges/.test(currentDLQ):
+      case /prod\.emea\.eboutique\.close-stock-reservation/.test(currentDLQ):
         patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
         break;
       case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
