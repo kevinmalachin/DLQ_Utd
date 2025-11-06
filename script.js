@@ -336,11 +336,16 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.orex\.orderCreation/.test(currentDLQ):
         patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
         break;
+            // TIFFANY queues
+    case /tco\.rar\.archive\.files\.queue\.dlq/.test(currentDLQ):
+        patterns = [/\"fileName\":\s*\"([^\"]+)\"/g];
+        break;
       default:
         console.error("No matching DLQ pattern found.");
         results.innerHTML = "No matching DLQ pattern found.";
         return;
     }
+
 
     // Estrazione riferimenti usando i pattern trovati
     if (patterns.length > 0) {
