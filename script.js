@@ -513,7 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ticketSection.classList.toggle("hidden");
 
       // Short Description
-      shortDescriptionInput.value = `[Monitor Alert][messages blocked in DLQ Mulesoft][C2] ${currentDLQ}.DLQ`;
+      shortDescriptionInput.value = `[Monitor Alert][messages blocked in DLQ Mulesoft][C2] ${currentDLQ}`;
 
       // Description template
       const descriptionTemplate = `
