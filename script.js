@@ -355,12 +355,17 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       // ===== TIFFANY queues ====
       // =========================
 
-      // tco-rar-archive-files-queue-dlq(-prd|-prod)
+      // fileName
       case /tco\.rar\.archive\.files\.queue\.dlq(?:\.prd|\.prod)?/.test(currentDLQNorm):
         patterns = [/\"fileName\":\s*\"([^\"]+)\"/g];
         break;
 
-      // tco-rar-shipment-queue-dlq(-prd|-prod)
+        // BillToID
+      case /tco\.rar\.order\.transfer\.notice\.queue\.dlq(?:\.prd|\.prod)?/.test(currentDLQNorm):
+        patterns = [/\"BillToID\":\s*\"([^\"]+)\"/g];
+        break;
+
+      // C00-
       case /tco\.rar\.shipment\.queue\.dlq(?:\.prd|\.prod)?/.test(currentDLQNorm):
         patterns = [
           /\"C001\":\s*\"([^\"]+)\"/g,];
