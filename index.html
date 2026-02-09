@@ -2,46 +2,60 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DLQ Management</title>
-    <link href="style.css" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="script.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./style.css" rel="stylesheet" />
   </head>
   <body>
     <nav>
-      <button id="menuButton">Menu</button>
+      <div class="nav-actions">
+        <button id="menuButton">Menu</button>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false">Tema: Chiaro</button>
+      </div>
       <div id="menu" class="hidden">
         <ul>
           <li>
-            <a href="./SupportScope/SupportScope.html" target="_blank"
-              >Support Scope</a
-            >
+            <a href="./public/tools/HR/HR.html" target="_blank">
+              HR DLQs
+            </a>
           </li>
           <li>
-            <a href="./HR/HR.html" target="_blank">HR DLQs</a>
+            <a href="./public/tools/JiraTask/JiraTask.html" target="_blank">
+              Jira Task Check
+            </a>
+          </li>
+          <li>
+            <a href="./public/tools/DevToolbox/DevToolbox.html" target="_blank">
+              Dev Toolbox
+            </a>
           </li>
         </ul>
       </div>
     </nav>
+
     <div class="container">
       <div class="First-Part">
-        <textarea
-          class="DLQtext"
-          cols="60"
-          rows="15"
-          placeholder="Insert the content of the DLQ"
-        ></textarea>
-        <div class="Results"></div>
+        <div class="input-panel">
+          <textarea
+            class="DLQtext"
+            cols="60"
+            rows="15"
+            placeholder="Insert the content of the DLQ"
+          ></textarea>
+        </div>
+        <div class="Results results-panel"></div>
       </div>
+
       <div class="Second-Part">
         <button class="Extract">Extract References</button>
         <button class="Check">Check Reported References</button>
       </div>
     </div>
+
     <div class="Third-Part">
       <button class="CreateTicket">Create Ticket</button>
     </div>
+
     <div class="TicketSection hidden">
       <h3>Create Ticket</h3>
       <label for="shortDescription">Short Description:</label>
@@ -57,5 +71,7 @@
         placeholder="Enter detailed description here"
       ></textarea>
     </div>
+
+    <script src="./script.js"></script>
   </body>
 </html>

@@ -7,6 +7,7 @@ const extractButton = document.querySelector(".Extract");
 const checkButton = document.querySelector(".Check");
 const menuButton = document.querySelector("#menuButton");
 const menu = document.querySelector("#menu");
+const themeToggle = document.querySelector("#themeToggle");
 
 if (menuButton && menu) {
   menuButton.addEventListener("click", () => {
@@ -16,8 +17,49 @@ if (menuButton && menu) {
   console.error("Menu or Menu Button not found in the page.");
 }
 
+
+function applyTheme(theme) {
+  const targetTheme = theme === "dark" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", targetTheme);
+
+  if (themeToggle) {
+    const isDark = targetTheme === "dark";
+    themeToggle.textContent = isDark ? "Tema: Dark" : "Tema: Chiaro";
+    themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false");
+  }
+}
+
+(function initTheme() {
+  let savedTheme = "light";
+  try {
+    const stored = window.localStorage.getItem("dlq-theme");
+    if (stored === "dark" || stored === "light") {
+      savedTheme = stored;
+    }
+  } catch (_) {
+    savedTheme = "light";
+  }
+
+  applyTheme(savedTheme);
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const next = current === "dark" ? "light" : "dark";
+      applyTheme(next);
+      try {
+        window.localStorage.setItem("dlq-theme", next);
+      } catch (_) {
+        // Ignore localStorage errors in restricted browser contexts.
+      }
+    });
+  }
+})();
+
 let extractedReferences = [];
 let currentDLQ = "";
+let nonReportedReferences = [];
+let dlqName = "";
 
 // Funzione per estrarre i dettagli del messaggio per la coda prod.emea.plm.product.DLQ
 function extractPLMProductDetails(dlqText) {
@@ -102,23 +144,36 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
   extractButton.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const dlqText = DLQtext.value;
+    const dlqTextRaw = DLQtext.value;
+    const dlqTextNorm = dlqTextRaw
+      .normalize("NFKC")
+      .replace(/[\u2010-\u2015\u2212\u00AD\uFE58\uFE63\uFF0D]/g, "-")
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/\u00A0/g, " ");
+    const dlqText = dlqTextRaw;
 
     // Identifica la DLQ dal testo (supporta -dlq-, .dlq, suffissi -prd/-prod, maiuscole/minuscole)
     const dlqMatch =
-      dlqText.match(/([A-Za-z0-9._-]*dlq[._-]?(?:prd|prod)?)/i) ||
-      dlqText.match(/(\S+)\.DLQ/); // fallback legacy
-    if (dlqMatch) {
-      currentDLQ = dlqMatch[1];
-      console.log("Identified DLQ:", currentDLQ);
-    } else {
+      dlqTextNorm.match(/([A-Za-z0-9._-]*dlq[._-]?(?:prd|prod)?)/i) ||
+      dlqTextNorm.match(/(\S+)\.DLQ/); // fallback legacy
+    if (!dlqMatch) {
       console.error("No DLQ identified.");
       results.innerHTML = "No DLQ identified in the text.";
       return;
     }
 
+    // DLQ come appare nel testo (con i '-')
+    currentDLQ = dlqMatch[1].trim();
+
     // Normalizza per i match regex (tratta '-' e '_' come '.')
     const currentDLQNorm = currentDLQ.replace(/[-_]/g, ".").toLowerCase();
+    const currentDLQRaw = currentDLQ.toLowerCase();
+
+    // helper: prova a matchare sia sulla versione normalizzata (.) che su quella raw (-/_)
+    const tiffMatch = (re) => re.test(currentDLQNorm) || re.test(currentDLQRaw);
+
+    console.log("Identified DLQ RAW:", currentDLQ);
+    console.log("Identified DLQ NORM:", currentDLQNorm);
 
     let references = [];
     let patterns = [];
@@ -190,13 +245,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         break;
 
       // alf-route
-      case /prod\.emea\.orderlifecycle\.alf\-route/.test(currentDLQNorm):
+      case /prod\.emea\.orderlifecycle\.alf[._-]route/.test(currentDLQNorm):
         patterns = [
-          /\"externalReference\":\s*\"([^\"]+)\"/g,
           /\"internalReference\":\s*\"([^\"]+)\"/g,
-          /\"entityId\":\s*\"([^\"]+)\"/g,
-          /\"storeCode\":\s*\"([^\"]+)\"/g,
-          /\"orderCountryCode\":\s*\"([^\"]+)\"/g,
         ];
         break;
 
@@ -334,6 +385,9 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /prod\.emea\.fluent\.events\.invoices/.test(currentDLQNorm):
         patterns = [/\"externalInvoiceId\":\s*\"([^\"]+)\"/g];
         break;
+      case /prod\.emea\.cjb\.outbound\.sfmc\.japan/.test(currentDLQNorm):
+        patterns = [/\"number\":\s*\"([^\"]+)\"/g];
+        break;
 
       case /prod\.emea\.orex\.financial\-transactions\-creation/.test(currentDLQNorm):
       case /prod\.emea\.orex\.inbound\.ordercancelation/.test(currentDLQNorm):
@@ -356,23 +410,120 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       // =========================
 
       // fileName
-      case /tco\.rar\.archive\.files\.queue\.dlq(?:\.prd|\.prod)?/.test(currentDLQNorm):
+      case tiffMatch(/tco\.rar\.archive\.files\.queue\.dlq(?:\.prd|\.prod)?/i):
         patterns = [/\"fileName\":\s*\"([^\"]+)\"/g];
         break;
 
-        // BillToID
-      case /tco\.rar\.order\.transfer\.notice\.queue\.dlq(?:\.prd|\.prod)?/.test(currentDLQNorm):
-        patterns = [/\"BillToID\":\s*\"([^\"]+)\"/g];
+      // C00-
+      case tiffMatch(/tco\.rar\.shipment\.queue\.dlq(?:\.prd|\.prod)?/i):
+        patterns = [/\"C001\":\s*\"([^\"]+)\"/g];
         break;
 
-      // C00-
-      case /tco\.rar\.shipment\.queue\.dlq(?:\.prd|\.prod)?/.test(currentDLQNorm):
-        patterns = [
-          /\"C001\":\s*\"([^\"]+)\"/g,];
+      // BillToID
+      case tiffMatch(/tco\.rar\.orders\.release\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.rar\.create\.orders\.with\.deposit\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.rar\.order\.transfer\.notice\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.rar\.orders\.allocation\.queue\.dlq(?:\.prd|\.prod)?/i):
+      patterns = [/\"BillToID\":\s*\"([^\"]+)\"/g];
         break;
+
+
+      // OrderNo
+      case tiffMatch(/tco\.rar\.tax\.release\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.rar\.oms\.retail\.invoice\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.oms\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.oms\.invoice\.resa\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.oms\.invoice\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.oms\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/tco\.rar\.oms\.retail\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i): // da controllare se ha OrderNo
+        patterns = [/\"OrderNo\":\s*\"([^\"]+)\"/g];
+        break;
+
+      // C03
+      case tiffMatch(/tco\.rar\.sales\.history\.queue\.dlq(?:\.prd|\.prod)?/i):
+        patterns = [/\"C03\":\s*\"([^\"]+)\"/g];
+        break;
+
+      // InvoiceNo
+      case tiffMatch(/tco\.rar\.invoice\.creation\.queue\.dlq(?:\.prd|\.prod)?/i):
+        patterns = [/\"InvoiceNo\":\s*\"([^\"]+)\"/g];
+        break;
+
+      // ControlNumber
+      case tiffMatch(/sys\.inv\.kdc\.esb\.shipstatus\.dgm\.dlq(?:\.prd|\.prod)?/i):
+      case tiffMatch(/sys\.inv\.3pl\.esb\.reccon\.dgm\.dlq(?:\.prd|\.prod)?/i):
+        patterns = [/\"ControlNumber\":\s*\"([^\"]+)\"/g];
+        break;
+
+      // tco-rar-tax-update-queue-dlq-prd – InvoiceNo + FlowId + FlowName
+      case tiffMatch(/tco[.\-]rar[.\-]tax[.\-]update[.\-]queue[.\-]dlq(?:[.\-](?:prd|prod))?/i): {
+        // InvoiceNo (usato come reference principale verso Jira)
+        const invoiceMatches = [...dlqText.matchAll(/"InvoiceNo":\s*"([^"]+)"/g)];
+        const flowIdMatches  = [...dlqText.matchAll(/"FlowId":\s*"([^"]+)"/g)];
+        const flowNameMatches = [...dlqText.matchAll(/"FlowName":\s*"([^"]+)"/g)];
+
+        const rows = [];
+
+        const len = Math.max(
+          invoiceMatches.length,
+          flowIdMatches.length,
+          flowNameMatches.length
+        );
+
+        for (let i = 0; i < len; i++) {
+          const inv   = invoiceMatches[i]?.[1] || "N/A";
+          const fid   = flowIdMatches[i]?.[1] || "N/A";
+          const fname = flowNameMatches[i]?.[1] || "N/A";
+          rows.push({ invoice: inv, flowId: fid, flowName: fname });
+        }
+
+        // references che usiamo per il check su Jira
+        extractedReferences = rows
+          .map((r) => r.invoice)
+          .filter((v) => v && !v.endsWith("-STD"));
+
+        const referenceCounts = countReferences(extractedReferences);
+
+        // tabella leggibile
+        const tableRows = rows
+          .map(
+            (r) => `
+            <tr>
+              <td>${r.invoice}</td>
+              <td>${r.flowId}</td>
+              <td>${r.flowName}</td>
+            </tr>`
+          )
+          .join("");
+
+        const referencesHTML = Object.entries(referenceCounts)
+          .map(([ref, count]) => `<li>${ref} (${count}x)</li>`)
+          .join("");
+
+        results.innerHTML = `
+          <p><strong>DLQ:</strong> ${currentDLQ}</p>
+          <p><strong>Invoice / FlowId / FlowName (${rows.length} messages):</strong></p>
+          <table border="1" cellpadding="4" cellspacing="0">
+            <thead>
+              <tr>
+                <th>InvoiceNo</th>
+                <th>FlowId</th>
+                <th>FlowName</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+
+          <p><strong>References (per Jira, deduplicate):</strong></p>
+          <ul>${referencesHTML}</ul>
+        `;
+        return;
+      }
 
       default:
-        console.error("No matching DLQ pattern found.");
+        console.error("No matching DLQ pattern found for:", currentDLQ, "| norm:", currentDLQRaw);
         results.innerHTML = "No matching DLQ pattern found.";
         return;
     }
@@ -421,42 +572,82 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       const data = await response.json();
       const { output } = data;
 
-      const reportedRefs = new Set();
-      const nonReportedRefs = new Set(output.non_reported);
+      dlqName = (output && output.dlq) || currentDLQ || "Unknown Queue";
+      nonReportedReferences = Array.from(new Set((output && output.non_reported) || []));
 
-      for (const [incident, details] of Object.entries(output.reported)) {
-        details.references.forEach((ref) => reportedRefs.add(ref));
-      }
-      reportedRefs.forEach((ref) => nonReportedRefs.delete(ref));
+      const reportedRefs = new Set();
+      const reportedMap = new Map(); // ref -> array di task che la citano
+
+      Object.entries(output.reported || {}).forEach(([incident, details]) => {
+        const taskInfo = {
+          incident,
+          taskName: details.task_name,
+          taskLink: details.task_link,
+          summary: details.summary,
+          taskStatus: details.task_status,
+          statusCategory: details.status_category,
+        };
+
+        (details.references || []).forEach((ref) => {
+          reportedRefs.add(ref);
+          if (!reportedMap.has(ref)) reportedMap.set(ref, []);
+          const bucket = reportedMap.get(ref);
+          const already = bucket.some((t) => t.taskLink === taskInfo.taskLink);
+          if (!already) bucket.push(taskInfo);
+        });
+      });
 
       const totalReferencesCount = extractedReferences.length;
       const reportedCount = reportedRefs.size;
-      const nonReportedCount = nonReportedRefs.size;
+      const nonReportedCount = nonReportedReferences.length;
 
-      let totalReferencesCountText = `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`;
-      totalReferencesCountText += `<p><strong>Reported References:</strong> ${reportedCount}</p>`;
-      totalReferencesCountText += `<p><strong>Non-reported References:</strong> ${nonReportedCount}</p>`;
+      const dlqLabel = dlqName || currentDLQ || "Unknown Queue";
 
-      let nonReportedText = `<p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p><ul>`;
-      nonReportedRefs.forEach((ref) => {
-        nonReportedText += `<li style="color:red;"><strong>${ref}</strong></li>`;
-      });
-      nonReportedText += "</ul>";
+      const summaryHtml = [
+        `<p><strong>DLQ:</strong> ${dlqLabel}</p>`,
+        `<p><strong>Total References Found:</strong> ${totalReferencesCount}</p>`,
+        `<p style="color:green;"><strong>Reported References:</strong> ${reportedCount}</p>`,
+        `<p style="color:red;"><strong>Non-reported References:</strong> ${nonReportedCount}</p>`,
+      ].join("");
 
-      let reportedText = `<p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p><ul>`;
-      for (const [incident, details] of Object.entries(output.reported)) {
-        if (details.references_count > 0) {
-          reportedText += `<li style="color:green;"><strong><a href="${details.task_link}" target="_blank">${incident} - ${details.task_name}</a></strong>`;
-          reportedText += ` - Summary: ${details.summary} - Status: ${details.task_status} (${details.status_category})<ul>`;
-          details.references.forEach((ref) => {
-            reportedText += `<li style="color:green;"><strong>${ref}</strong></li>`;
-          });
-          reportedText += `</ul></li>`;
-        }
+      const statusClass = (t) => {
+        const st = (t.taskStatus || "").toLowerCase();
+        const cat = (t.statusCategory || "").toLowerCase();
+        if (st.includes("archived") || st.includes("done") || cat.includes("done")) return "status-done";
+        if (st.includes("pending")) return "status-pending";
+        return "status-other";
+      };
+
+      let reportedText = `<div class="reported-block"><p style="color:green;"><strong>Reported References (${reportedCount}):</strong></p>`;
+      if (reportedRefs.size === 0) {
+        reportedText += "<p>None.</p>";
+      } else {
+        reportedText += "<ul>";
+        reportedMap.forEach((tasks, ref) => {
+          const tasksList = tasks
+            .map((t) => {
+              const cls = statusClass(t);
+              return `<li class="${cls}"><a href="${t.taskLink}" target="_blank">${t.incident} - ${t.taskName}</a> - ${t.summary} (Status: ${t.taskStatus} / ${t.statusCategory})</li>`;
+            })
+            .join("");
+          reportedText += `<li><strong>${ref}</strong><ul>${tasksList}</ul></li>`;
+        });
+        reportedText += "</ul>";
       }
-      reportedText += "</ul>";
+      reportedText += "</div>";
 
-      results.innerHTML = totalReferencesCountText + reportedText + nonReportedText;
+      let nonReportedText = `<div class="non-reported-block"><p style="color:red;"><strong>Non-reported References (${nonReportedCount}):</strong></p>`;
+      if (nonReportedReferences.length === 0) {
+        nonReportedText += "<p>None.</p>";
+      } else {
+        const nonRepList = nonReportedReferences
+          .map((ref) => `<li style="color:red;"><strong>${ref}</strong></li>`)
+          .join("");
+        nonReportedText += `<ul>${nonRepList}</ul>`;
+      }
+      nonReportedText += "</div>";
+
+      results.innerHTML = summaryHtml + reportedText + nonReportedText;
     } catch (error) {
       console.error(error);
       results.innerHTML = "Error: Failed to connect to server.";
@@ -470,72 +661,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const shortDescriptionInput = document.querySelector("#shortDescription");
   const descriptionTextarea = document.querySelector("#description");
 
-  // Variabili per dati dinamici
-  let nonReportedReferences = []; // Popolato durante il check
-  let dlqName = ""; // Nome della queue
-
-  // Processa i risultati del check
-  const processCheckResults = (output) => {
-    dlqName = output.dlq || "Unknown Queue";
-    nonReportedReferences = output.non_reported || [];
-  };
-
-  // Associa il bottone di controllo (scoped dentro DOMContentLoaded)
-  const checkButton = document.querySelector(".Check");
-  if (checkButton) {
-    checkButton.addEventListener("click", async () => {
-      try {
-        const response = await fetch("http://localhost:5000/run-script", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            references: extractedReferences,
-            dlq: currentDLQ,
-          }),
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch check results");
-
-        const data = await response.json();
-        const output = data.output;
-
-        processCheckResults(output);
-        console.log("Check completed: References processed successfully.");
-      } catch (error) {
-        console.error("Error during check:", error);
-      }
-    });
-  }
-
   if (createTicketButton && ticketSection && shortDescriptionInput && descriptionTextarea) {
     createTicketButton.addEventListener("click", () => {
       if (nonReportedReferences.length === 0) {
-        console.log("No non-reported references found. Cannot create a ticket.");
+        console.log("No non-reported references found. Please run Check first.");
         return;
       }
 
       // Mostra la sezione "Create Ticket"
       ticketSection.classList.toggle("hidden");
 
+      const dlqLabel = dlqName || currentDLQ || "Unknown Queue";
+
       // Short Description
-      shortDescriptionInput.value = `[Monitor Alert][messages blocked in DLQ Mulesoft][C2] ${currentDLQ}`;
+      shortDescriptionInput.value = `[Monitor Alert][messages blocked in DLQ Mulesoft][C2] ${dlqLabel}`;
 
       // Description template
       const descriptionTemplate = `
-Name of the DLQ: ${currentDLQ}.DLQ
+Name of the DLQ: ${dlqLabel}
 Number of messages in the DLQ: ${nonReportedReferences.length}
 
 Ref:
-${nonReportedReferences.map((ref) => `${ref}`).join("\n")}
+${nonReportedReferences.join("\n")}
 
-Failure Level:
+
 Event ID:
-Time Stamp:
+Time Stamp (CET):
 Application name:
 
 MuleSoft Log error:
 
-First analysis / Interpretation of the logs:
+
 
 Action(s) taken until now:
  - Replay of the queue;

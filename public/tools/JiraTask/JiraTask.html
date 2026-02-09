@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activity Timeline</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+      rel="stylesheet"
+    />
+    <link href="JiraTask.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <nav class="side-menu" id="sideMenu">
+      <ul>
+        <li>
+          <a href="../../../index.html" target="_blank">Back to DLQ Home</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <header>
+        <h1>Activity Timeline</h1>
+      </header>
+
+      <section class="controls">
+        <div class="filter-group">
+          <div class="filter-row">
+            <label for="startDate">Start Date:</label>
+            <input type="text" id="startDate" class="date-picker" />
+
+            <label for="endDate">End Date:</label>
+            <input type="text" id="endDate" class="date-picker" />
+          </div>
+
+          <div class="filter-row">
+            <label for="projectSelect">Project:</label>
+            <select id="projectSelect" class="custom-select">
+              <option value="All">All</option>
+              <option value="IMSL1GEN">IMS - L1 Board</option>
+              <option value="LVMH03MMS">LVMH03MMS - Group</option>
+              <option value="LVMH01MMS">LVMH01MMS</option>
+              <option value="LVMH02MMS">LVMH02MMS - US</option>
+              <option value="LoroPiana">LoroPiana</option>
+              <option value="HBLT01IMS">HBLT01IMS</option>
+              <option value="WTJW01IMS">WTJW01IMS</option>
+            </select>
+
+            <label for="shiftSelect">Shift:</label>
+            <select id="shiftSelect" class="custom-select">
+              <option value="">None</option>
+              <option value="morning">Morning (06:00-14:00)</option>
+              <option value="afternoon">Afternoon (14:00-22:00)</option>
+              <option value="night">Night (22:00-06:00)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <label for="agentSelect">Agent:</label>
+          <select id="agentSelect" class="custom-select">
+            <option value="All">All</option>
+            <option value="Francesco Abate">Francesco Abate</option>
+            <option value="Gwladys Ateba-Ntsa">Gwladys Ateba-Ntsa</option>
+            <option value="Kevin Malachin">Kevin Malachin</option>
+            <option value="Francesco Veltri">Francesco Veltri</option>
+            <option value="Jafet Gonzales">Jafet Gonzales</option>
+            <option value="Roberto Raimondi">Roberto Raimondi</option>
+            <option value="Jose Pablo Duran">Jose Pablo Duran</option>
+            <option value="Jean Molina">Jean Molina</option>
+            <option value="Alessandro Masia">Alessandro Masia</option>
+          </select>
+        </div>
+
+        <!-- ✅ CONFLUENCE FILTERS -->
+        <div class="filter-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="includeConfluence" checked />
+            Include Confluence
+          </label>
+
+          <label for="confluenceSpaceSelect">Confluence Space:</label>
+          <select id="confluenceSpaceSelect" class="custom-select">
+            <!-- metti i tuoi space -->
+            <option value="MMS" selected>MMS</option>
+            <!-- esempio:
+            <option value="OPS">OPS</option>
+            <option value="L1">L1</option>
+            -->
+          </select>
+        </div>
+
+        <div id="totalTasks" class="total-tasks-container"></div>
+        <div id="totalConfluence" class="total-tasks-container"></div>
+
+        <button id="checkButton">Generate Timeline</button>
+        <div id="loading" class="hidden">Fetching data...</div>
+      </section>
+
+      <!-- ✅ JIRA TIMELINE -->
+      <div id="timeline-container">
+        <h2>Jira Timeline</h2>
+        <p id="totalTasksContainer"></p>
+        <div id="timeline" class="timeline"></div>
+      </div>
+
+      <!-- ✅ CONFLUENCE TIMELINE -->
+      <div id="confluence-container">
+        <h2>Confluence Timeline</h2>
+        <p id="totalConfluenceContainer"></p>
+        <div id="confluenceTimeline" class="timeline"></div>
+      </div>
+
+      <!-- Export -->
+      <div class="export-row">
+        <!-- se vuoi tenere anche CSV: -->
+        <!-- <button id="exportCsvButton" class="btn">Export CSV</button> -->
+
+        <button id="exportXlsxButton" class="btn">Export XLSX</button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="JiraTask.js" defer></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        flatpickr(".date-picker", { dateFormat: "Y-m-d" });
+      });
+    </script>
+  </body>
+</html>

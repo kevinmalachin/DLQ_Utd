@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Toolbox</title>
+    <link rel="stylesheet" href="DevToolbox.css">
+</head>
+<body>
+<main class="page">
+    <header class="hero">
+        <div class="hero__row">
+            <h1>Dev Toolbox</h1>
+            <div class="hero__controls">
+                <label class="option-toggle option-toggle--compact" for="lineNumbersToggle">
+                    <input id="lineNumbersToggle" type="checkbox" />
+                    <span>Numeri riga</span>
+                </label>
+                <button id="themeToggle" class="button-ghost" type="button" aria-pressed="false">Tema: Dark</button>
+            </div>
+        </div>
+        <p>Utility locali per confronto testi, validazione payload, parsing certificati e trasformazioni rapide.</p>
+    </header>
+
+    <section class="section-stack">
+        <section class="tool-theme" aria-labelledby="theme-text-tools">
+            <header class="tool-theme__header">
+                <h2 id="theme-text-tools" class="tool-theme__title">Text & Diff Tools</h2>
+                <p class="tool-theme__desc">Confronto testi, gruppi differenze e trasformazioni case/statistiche.</p>
+            </header>
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Diff base (caratteri/parole)</span>
+                            <span class="collapse__hint">Apri per un confronto rapido con riepilogo</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Testo sinistra</div>
+                                    <textarea id="leftInput" placeholder="Incolla qui il testo originale..."></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Testo destra</div>
+                                    <textarea id="rightInput" placeholder="Incolla qui il testo modificato..."></textarea>
+                                </article>
+                            </section>
+
+                            <div class="actions">
+                                <label class="mode-select" for="diffMode">
+                                    <span>Modalita diff</span>
+                                    <select id="diffMode">
+                                        <option value="char" selected>Caratteri (default)</option>
+                                        <option value="word">Parole</option>
+                                    </select>
+                                </label>
+                                <button id="compareBtn" type="button">Confronta</button>
+                            </div>
+
+                            <div class="option-toggles" aria-label="Opzioni diff">
+                                <label class="option-toggle">
+                                    <input type="checkbox" data-option="ignoreCase" />
+                                    <span>Ignora maiuscole</span>
+                                </label>
+                                <label class="option-toggle">
+                                    <input type="checkbox" data-option="ignoreWhitespace" />
+                                    <span>Ignora spazi</span>
+                                </label>
+                                <label class="option-toggle">
+                                    <input type="checkbox" data-option="ignorePunctuation" />
+                                    <span>Ignora punteggiatura</span>
+                                </label>
+                            </div>
+
+                            <section id="results" class="grid two-cols results hidden" aria-live="polite">
+                                <article class="card result-card">
+                                    <div class="card__title">Differenze (sinistra)</div>
+                                    <div id="leftResult" class="diff-output" aria-label="Differenze del testo sinistro"></div>
+                                </article>
+                                <article class="card result-card">
+                                    <div class="card__title">Differenze (destra)</div>
+                                    <div id="rightResult" class="diff-output" aria-label="Differenze del testo destro"></div>
+                                </article>
+                                <article class="card summary-card">
+                                    <div class="card__title">Riepilogo differenze</div>
+                                    <div class="summary-grid">
+                                        <div class="summary-block">
+                                            <div class="summary-title summary-left">Solo a sinistra</div>
+                                            <ul id="summaryLeftList" class="summary-list"></ul>
+                                        </div>
+                                        <div class="summary-block">
+                                            <div class="summary-title summary-right">Solo a destra</div>
+                                            <ul id="summaryRightList" class="summary-list"></ul>
+                                        </div>
+                                    </div>
+                                    <div class="summary-totals">
+                                        <div class="summary-total summary-left">Parole rimosse: <span id="summaryWordsRemoved">0</span></div>
+                                        <div class="summary-total summary-right">Parole aggiunte: <span id="summaryWordsAdded">0</span></div>
+                                        <div class="summary-total summary-left">Linee rimosse: <span id="summaryLinesRemoved">0</span></div>
+                                        <div class="summary-total summary-right">Linee aggiunte: <span id="summaryLinesAdded">0</span></div>
+                                    </div>
+                                </article>
+                            </section>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Text Compare</span>
+                            <span class="collapse__hint">Gruppi di parole + differenze inline</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <p class="section-intro">Confronta i testi e individua i gruppi di parole che cambiano.</p>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Testo originale</div>
+                                    <div class="file-actions">
+                                        <button id="tcLeftFileBtn" class="button-ghost" type="button">Apri file</button>
+                                        <input id="tcLeftFile" class="file-input" type="file" />
+                                    </div>
+                                    <textarea id="tcLeftInput" placeholder="Incolla qui il testo originale..."></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Testo modificato</div>
+                                    <div class="file-actions">
+                                        <button id="tcRightFileBtn" class="button-ghost" type="button">Apri file</button>
+                                        <input id="tcRightFile" class="file-input" type="file" />
+                                    </div>
+                                    <textarea id="tcRightInput" placeholder="Incolla qui il testo modificato..."></textarea>
+                                </article>
+                            </section>
+
+                            <div class="actions">
+                                <button id="tcCompareBtn" type="button">Trovare la differenza</button>
+                                <button id="tcSwapBtn" class="button-ghost" type="button">Scambia</button>
+                                <button id="tcClearBtn" class="button-ghost" type="button">Pulisci</button>
+                            </div>
+
+                            <div class="option-toggles" aria-label="Opzioni diff">
+                                <label class="option-toggle">
+                                    <input type="checkbox" data-option="ignoreCase" />
+                                    <span>Ignora maiuscole</span>
+                                </label>
+                                <label class="option-toggle">
+                                    <input type="checkbox" data-option="ignoreWhitespace" />
+                                    <span>Ignora spazi</span>
+                                </label>
+                                <label class="option-toggle">
+                                    <input type="checkbox" data-option="ignorePunctuation" />
+                                    <span>Ignora punteggiatura</span>
+                                </label>
+                            </div>
+
+                            <section id="tcResults" class="grid two-cols results hidden" aria-live="polite">
+                                <article class="card result-card">
+                                    <div class="card__title">Differenze (originale)</div>
+                                    <div id="tcLeftResult" class="diff-output" aria-label="Differenze del testo originale"></div>
+                                </article>
+                                <article class="card result-card">
+                                    <div class="card__title">Differenze (modificato)</div>
+                                    <div id="tcRightResult" class="diff-output" aria-label="Differenze del testo modificato"></div>
+                                </article>
+                                <article class="card summary-card">
+                                    <div class="card__title">Gruppi di parole</div>
+                                    <div class="group-table">
+                                        <div class="group-row group-head">
+                                            <div class="group-head-left">Originale</div>
+                                            <div class="group-head-right">Modificato</div>
+                                        </div>
+                                        <div id="tcGroupList" class="group-rows"></div>
+                                    </div>
+                                </article>
+                            </section>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Text Inspector & Case Converter</span>
+                            <span class="collapse__hint">Statistiche testo + trasformazioni rapide</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <textarea id="textCaseInput" placeholder="Incolla testo qui..."></textarea>
+                            <div class="stats-grid">
+                                <div class="stats-item">Chars: <span id="statChars">0</span></div>
+                                <div class="stats-item">Chars (no spaces): <span id="statCharsNoSpace">0</span></div>
+                                <div class="stats-item">Words: <span id="statWords">0</span></div>
+                                <div class="stats-item">Lines: <span id="statLines">0</span></div>
+                                <div class="stats-item">Sentences: <span id="statSentences">0</span></div>
+                                <div class="stats-item">Paragraphs: <span id="statParagraphs">0</span></div>
+                            </div>
+                            <div id="textCaseActions" class="actions">
+                                <button data-action="upper" type="button">UPPERCASE</button>
+                                <button data-action="lower" type="button">lowercase</button>
+                                <button data-action="title" type="button">Title Case</button>
+                                <button data-action="sentence" type="button">Sentence case</button>
+                                <button data-action="camel" type="button">camelCase</button>
+                                <button data-action="pascal" type="button">PascalCase</button>
+                                <button data-action="snake" type="button">snake_case</button>
+                                <button data-action="kebab" type="button">kebab-case</button>
+                                <button data-action="swap" type="button">sWaP cAsE</button>
+                                <button data-action="trim" type="button" class="button-ghost">Trim lines</button>
+                                <button data-action="collapse" type="button" class="button-ghost">Collapse spaces</button>
+                                <button data-action="clear" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="textCaseStatus" class="tool-status" aria-live="polite"></div>
+                        </div>
+                    </details>
+        </section>
+
+        <section class="tool-theme" aria-labelledby="theme-data-tools">
+            <header class="tool-theme__header">
+                <h2 id="theme-data-tools" class="tool-theme__title">Data Format & Validation</h2>
+                <p class="tool-theme__desc">Validazione/formattazione payload, conversione JSON-YAML e parsing certificati.</p>
+            </header>
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">JSON / XML Formatter & Validator</span>
+                            <span class="collapse__hint">Valida, formatta, minifica e converte JSON/XML/YAML</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="mode-select" for="formatType">
+                                    <span>Formato</span>
+                                    <select id="formatType">
+                                        <option value="json" selected>JSON (formatter)</option>
+                                        <option value="xml">XML (formatter)</option>
+                                        <option value="json_to_xml">JSON -> XML</option>
+                                        <option value="xml_to_json">XML -> JSON</option>
+                                        <option value="json_to_yaml">JSON -> YAML</option>
+                                        <option value="yaml_to_json">YAML -> JSON</option>
+                                    </select>
+                                </label>
+                                <label class="mode-select" for="formatIndent">
+                                    <span>Indent</span>
+                                    <input id="formatIndent" type="number" min="1" max="8" value="2" />
+                                </label>
+                                <label class="option-toggle" for="formatSortToggle">
+                                    <input id="formatSortToggle" type="checkbox" />
+                                    <span>Ordina output (JSON keys / XML nodi+attributi)</span>
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Input</div>
+                                    <textarea id="formatInput" placeholder="Incolla JSON, XML o YAML in base alla modalita selezionata..."></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Output</div>
+                                    <textarea id="formatOutput" placeholder="Risultato..." readonly></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="formatValidateBtn" type="button">Validate</button>
+                                <button id="formatPrettyBtn" type="button">Format / Convert</button>
+                                <button id="formatMinifyBtn" type="button">Minify</button>
+                                <button id="formatCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="formatClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="formatStatus" class="tool-status" aria-live="polite"></div>
+                        </div>
+                    </details>
+
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">JSON - YAML Converter</span>
+                            <span class="collapse__hint">Converti payload JSON e YAML in entrambe le direzioni</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="mode-select" for="jyDirection">
+                                    <span>Direction</span>
+                                    <select id="jyDirection">
+                                        <option value="json_to_yaml" selected>JSON -> YAML</option>
+                                        <option value="yaml_to_json">YAML -> JSON</option>
+                                    </select>
+                                </label>
+                                <label class="mode-select" for="jyIndent">
+                                    <span>Indent</span>
+                                    <input id="jyIndent" type="number" min="1" max="8" value="2" />
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Input</div>
+                                    <textarea id="jyInput" placeholder="Incolla qui JSON o YAML..."></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Output</div>
+                                    <textarea id="jyOutput" placeholder="Output conversione..." readonly></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="jyConvertBtn" type="button">Convert</button>
+                                <button id="jySwapBtn" type="button" class="button-ghost">Swap</button>
+                                <button id="jyCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="jyClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="jyStatus" class="tool-status" aria-live="polite"></div>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Certificate Parser</span>
+                            <span class="collapse__hint">Verifica validita certificato PEM e metadati principali</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <textarea id="certInput" placeholder="Incolla qui il certificato PEM (BEGIN/END CERTIFICATE)..."></textarea>
+                            <div class="actions">
+                                <button id="certParseBtn" type="button">Parse Certificate</button>
+                                <button id="certClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="certStatus" class="tool-status" aria-live="polite"></div>
+                            <div id="certOutput" class="cert-grid"></div>
+                        </div>
+                    </details>
+        </section>
+
+        <section class="tool-theme" aria-labelledby="theme-ops-tools">
+            <header class="tool-theme__header">
+                <h2 id="theme-ops-tools" class="tool-theme__title">Ops & Workflow</h2>
+                <p class="tool-theme__desc">Controllo reference DLQ/ticket e traduzione CRON standard o MuleSoft.</p>
+            </header>
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Checker REF (DLQ)</span>
+                            <span class="collapse__hint">Apri per confrontare liste di reference</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <p class="ref-hint">Confronta le reference presenti nella DLQ con quelle riportate nel ticket.</p>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">REF DLQ (lista completa)</div>
+                                    <textarea id="refLeftInput" placeholder="ECOxxxxxx1&#10;ECOxxxxxx2&#10;ECOxxxxxx3"></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">REF ticket riportate</div>
+                                    <textarea id="refRightInput" placeholder="ECOxxxxxx2&#10;ECOxxxxxx4"></textarea>
+                                </article>
+                            </section>
+
+                            <div class="actions">
+                                <button id="refCheckBtn" type="button">Check reported REF</button>
+                            </div>
+
+                            <section id="refResults" class="grid two-cols results ref-results hidden" aria-live="polite">
+                                <article class="card result-card">
+                                    <div class="card__title">REF DLQ (normalizzate)</div>
+                                    <div id="refLeftResult" class="diff-output ref-output" aria-label="Reference presenti nella DLQ"></div>
+                                </article>
+                                <article class="card result-card">
+                                    <div class="card__title">Esito confronto (ticket)</div>
+                                    <div id="refRightResult" class="diff-output ref-output" aria-label="Esito confronto reference ticket"></div>
+                                </article>
+                                <article class="card result-card">
+                                    <div class="card__title">Ticket evidenziato</div>
+                                    <div id="refInlineResult" class="diff-output ref-output" aria-label="Reference ticket evidenziate"></div>
+                                </article>
+                                <article class="card summary-card">
+                                    <div class="card__title">Riepilogo REF</div>
+                                    <ul id="refSummaryList" class="summary-list"></ul>
+                                    <div class="ref-summary-grid">
+                                        <div class="ref-summary-block">
+                                            <div class="ref-summary-title ref-only-left">Solo in DLQ</div>
+                                            <ul id="refLeftOnlyList" class="ref-list ref-list-compact"></ul>
+                                        </div>
+                                        <div class="ref-summary-block">
+                                            <div class="ref-summary-title ref-only-right">Solo nel ticket</div>
+                                            <ul id="refRightOnlyList" class="ref-list ref-list-compact"></ul>
+                                        </div>
+                                    </div>
+                                </article>
+                            </section>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">CRON Expression Translator</span>
+                            <span class="collapse__hint">Supporta cron standard e cron MuleSoft (Quartz)</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="option-toggle">
+                                    <input id="cronMuleFlag" type="checkbox" />
+                                    <span>Modalita MuleSoft (Quartz cron)</span>
+                                </label>
+                            </div>
+                            <textarea id="cronInput" placeholder="Es: 0 */15 * * * ?"></textarea>
+                            <div class="actions">
+                                <button id="cronTranslateBtn" type="button">Translate CRON</button>
+                                <button id="cronClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="cronStatus" class="tool-status" aria-live="polite"></div>
+                            <div id="cronOutput" class="tool-output"></div>
+                        </div>
+                    </details>
+        </section>
+        <section class="tool-theme" aria-labelledby="theme-api-tools">
+            <header class="tool-theme__header">
+                <h2 id="theme-api-tools" class="tool-theme__title">API & Integrations</h2>
+                <p class="tool-theme__desc">JSONPath/XPath, HTTP runner locale, utility cURL e validazione schema JSON.</p>
+            </header>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">JSONPath Tester</span>
+                            <span class="collapse__hint">Estrai nodi da payload JSON (dot/bracket/wildcard)</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="mode-select mode-select--grow" for="jsonPathExpr">
+                                    <span>JSONPath</span>
+                                    <input id="jsonPathExpr" type="text" value="$.items[*]" placeholder="Es: $.items[*].id" />
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">JSON Input</div>
+                                    <textarea id="jsonPathInput" placeholder='{"items":[{"id":1},{"id":2}]}'></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Result</div>
+                                    <textarea id="jsonPathOutput" placeholder="Risultato query..." readonly></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="jsonPathRunBtn" type="button">Run JSONPath</button>
+                                <button id="jsonPathCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="jsonPathClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="jsonPathStatus" class="tool-status" aria-live="polite"></div>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> inserisci JSON a sinistra e una query JSONPath nel campo in alto. Supporta <code>.</code>, <code>["key"]</code>, <code>[index]</code>, <code>[start:end]</code>, <code>[*]</code>.</p>
+                                    <pre class="tool-help__code">Esempio JSON:
+{"items":[{"id":1,"name":"a"},{"id":2,"name":"b"}]}
+
+Query:
+$.items[*].id
+
+Output atteso:
+[1,2]</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">XPath Tester (XML)</span>
+                            <span class="collapse__hint">Valuta XPath su XML e mostra i nodi trovati</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="mode-select mode-select--grow" for="xpathExpr">
+                                    <span>XPath</span>
+                                    <input id="xpathExpr" type="text" value="//item" placeholder="Es: //book[@id='123']/title/text()" />
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">XML Input</div>
+                                    <textarea id="xpathXmlInput" placeholder="&lt;root&gt;&lt;item&gt;A&lt;/item&gt;&lt;item&gt;B&lt;/item&gt;&lt;/root&gt;"></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Result</div>
+                                    <textarea id="xpathOutput" placeholder="Risultato XPath..." readonly></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="xpathRunBtn" type="button">Run XPath</button>
+                                <button id="xpathCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="xpathClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="xpathStatus" class="tool-status" aria-live="polite"></div>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> incolla XML e scrivi un XPath valido. Mostra nodi/valori trovati.</p>
+                                    <pre class="tool-help__code">Esempio XML:
+&lt;root&gt;&lt;book id="1"&gt;&lt;title&gt;Dev&lt;/title&gt;&lt;/book&gt;&lt;/root&gt;
+
+XPath:
+//book[@id='1']/title/text()
+
+Output:
+Dev</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">HTTP Request Runner</span>
+                            <span class="collapse__hint">Esegui GET/POST/... via backend locale (evita limiti CORS del browser)</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="mode-select" for="httpMethod">
+                                    <span>Method</span>
+                                    <select id="httpMethod">
+                                        <option value="GET" selected>GET</option>
+                                        <option value="POST">POST</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="PATCH">PATCH</option>
+                                        <option value="DELETE">DELETE</option>
+                                        <option value="HEAD">HEAD</option>
+                                        <option value="OPTIONS">OPTIONS</option>
+                                    </select>
+                                </label>
+                                <label class="mode-select mode-select--grow" for="httpUrl">
+                                    <span>URL</span>
+                                    <input id="httpUrl" type="url" placeholder="https://api.example.com/v1/resource" />
+                                </label>
+                                <label class="mode-select" for="httpTimeout">
+                                    <span>Timeout (s)</span>
+                                    <input id="httpTimeout" type="number" min="1" max="120" value="20" />
+                                </label>
+                                <label class="option-toggle" for="httpAsJson">
+                                    <input id="httpAsJson" type="checkbox" />
+                                    <span>Body come JSON</span>
+                                </label>
+                                <label class="option-toggle" for="httpIgnoreTls">
+                                    <input id="httpIgnoreTls" type="checkbox" />
+                                    <span>Ignore TLS verify</span>
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Headers</div>
+                                    <textarea id="httpHeadersInput" placeholder='JSON object o righe Key: Value
+{"Authorization":"Bearer ..."}'></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Body</div>
+                                    <textarea id="httpBodyInput" placeholder='{"name":"example"}'></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="httpSendBtn" type="button">Send Request</button>
+                                <button id="httpBuildCurlBtn" type="button" class="button-ghost">Generate cURL</button>
+                                <button id="httpCopyBtn" type="button" class="button-ghost">Copy Output</button>
+                                <button id="httpClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="httpStatus" class="tool-status" aria-live="polite"></div>
+                            <div id="httpMeta" class="tool-output tool-output--meta"></div>
+                            <textarea id="httpResponseOutput" placeholder="Response headers/body..." readonly></textarea>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> scegli metodo, URL, headers/body e premi <em>Send Request</em>. Il backend locale esegue la chiamata (utile contro blocchi CORS browser).</p>
+                                    <pre class="tool-help__code">Esempio rapido:
+Method: GET
+URL: https://httpbin.org/get
+Headers: Authorization: Bearer abc123
+
+Premi: Send Request</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">cURL Builder</span>
+                            <span class="collapse__hint">Genera cURL da form, oppure fai parse di un comando cURL esistente</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <textarea id="curlInputCommand" placeholder="Incolla qui un comando curl da parsare (opzionale)..."></textarea>
+                            <div class="tool-row">
+                                <label class="mode-select" for="curlMethod">
+                                    <span>Method</span>
+                                    <select id="curlMethod">
+                                        <option value="GET" selected>GET</option>
+                                        <option value="POST">POST</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="PATCH">PATCH</option>
+                                        <option value="DELETE">DELETE</option>
+                                        <option value="HEAD">HEAD</option>
+                                        <option value="OPTIONS">OPTIONS</option>
+                                    </select>
+                                </label>
+                                <label class="mode-select mode-select--grow" for="curlUrl">
+                                    <span>URL</span>
+                                    <input id="curlUrl" type="url" placeholder="https://api.example.com/v1/resource" />
+                                </label>
+                                <label class="option-toggle" for="curlAsJson">
+                                    <input id="curlAsJson" type="checkbox" />
+                                    <span>Body JSON</span>
+                                </label>
+                                <label class="option-toggle" for="curlInsecure">
+                                    <input id="curlInsecure" type="checkbox" />
+                                    <span>--insecure</span>
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Headers</div>
+                                    <textarea id="curlHeadersInput" placeholder='Righe Key: Value o JSON object'></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Body</div>
+                                    <textarea id="curlBodyInput" placeholder='{"key":"value"}'></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="curlGenerateBtn" type="button">Generate cURL</button>
+                                <button id="curlParseBtn" type="button" class="button-ghost">Parse cURL</button>
+                                <button id="curlToRunnerBtn" type="button" class="button-ghost">Usa in HTTP Runner</button>
+                                <button id="curlCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="curlClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="curlStatus" class="tool-status" aria-live="polite"></div>
+                            <textarea id="curlCommandOutput" placeholder="curl -X GET ..." readonly></textarea>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> puoi generare un comando cURL dal form oppure fare parse di un comando cURL esistente.</p>
+                                    <pre class="tool-help__code">Generazione esempio:
+Method: POST
+URL: https://api.example.com/users
+Headers: Content-Type: application/json
+Body: {"name":"Mario"}
+
+Output cURL: pronto da incollare in terminale.</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">JSON Schema Validator</span>
+                            <span class="collapse__hint">Verifica payload JSON contro schema (type, required, properties, items, enum...)</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Schema JSON</div>
+                                    <textarea id="schemaInput" placeholder='{"type":"object","required":["id"],"properties":{"id":{"type":"number"}}}'></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Payload JSON</div>
+                                    <textarea id="schemaJsonInput" placeholder='{"id": 12}'></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="schemaValidateBtn" type="button">Validate Schema</button>
+                                <button id="schemaCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="schemaClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="schemaStatus" class="tool-status" aria-live="polite"></div>
+                            <textarea id="schemaOutput" placeholder="Esito validazione..." readonly></textarea>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> incolla schema JSON e payload JSON, poi premi <em>Validate Schema</em>.</p>
+                                    <pre class="tool-help__code">Schema esempio:
+{"type":"object","required":["id"],"properties":{"id":{"type":"integer"}}}
+
+Payload valido:
+{"id":10}
+
+Payload non valido:
+{"id":"10"}</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Secret Masker</span>
+                            <span class="collapse__hint">Oscura token/password/secret nei log mantenendo testo leggibile</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <div class="tool-row">
+                                <label class="option-toggle" for="maskKeepEdgesToggle">
+                                    <input id="maskKeepEdgesToggle" type="checkbox" checked />
+                                    <span>Mantieni inizio/fine valore</span>
+                                </label>
+                                <label class="option-toggle" for="maskPreserveLengthToggle">
+                                    <input id="maskPreserveLengthToggle" type="checkbox" />
+                                    <span>Mantieni lunghezza</span>
+                                </label>
+                            </div>
+                            <section class="grid two-cols">
+                                <article class="card">
+                                    <div class="card__title">Input Log</div>
+                                    <textarea id="secretMaskInput" placeholder="Authorization: Bearer abcdef...
+password=mySecret"></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Masked Output</div>
+                                    <textarea id="secretMaskOutput" placeholder="Output mascherato..." readonly></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="secretMaskRunBtn" type="button">Mask Secrets</button>
+                                <button id="secretMaskCopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="secretMaskClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="secretMaskStatus" class="tool-status" aria-live="polite"></div>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> incolla log/raw text. Il tool oscura campi sensibili (token, secret, password, api key).</p>
+                                    <pre class="tool-help__code">Input:
+Authorization: Bearer eyJhbGciOi...
+password=mySecret123
+
+Output:
+Authorization: Bearer ey**********i...
+password=********</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+            <details class="collapse">
+                        <summary>
+                            <span class="collapse__title">Diff 3-way (Base / Left / Right)</span>
+                            <span class="collapse__hint">Simula un merge: prende i cambi non in conflitto e marca i conflitti</span>
+                        </summary>
+                        <div class="collapse__body">
+                            <p class="section-intro">Usa <strong>Base</strong> come riferimento comune: se Left e Right cambiano la stessa linea in modo diverso, viene creato un blocco di conflitto.</p>
+                            <section class="grid three-cols">
+                                <article class="card">
+                                    <div class="card__title">Base</div>
+                                    <textarea id="diff3BaseInput" placeholder="Versione base comune..."></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Left</div>
+                                    <textarea id="diff3LeftInput" placeholder="Versione branch left..."></textarea>
+                                </article>
+                                <article class="card">
+                                    <div class="card__title">Right</div>
+                                    <textarea id="diff3RightInput" placeholder="Versione branch right..."></textarea>
+                                </article>
+                            </section>
+                            <div class="actions">
+                                <button id="diff3RunBtn" type="button">Run 3-way diff</button>
+                                <button id="diff3CopyBtn" type="button" class="button-ghost">Copy</button>
+                                <button id="diff3ClearBtn" type="button" class="button-ghost">Pulisci</button>
+                            </div>
+                            <div id="diff3Status" class="tool-status" aria-live="polite"></div>
+                            <div id="diff3Summary" class="tool-output tool-output--meta"></div>
+                            <textarea id="diff3Output" placeholder="Merged output (con marker conflitti se presenti)..." readonly></textarea>
+                            <details class="tool-help">
+                                <summary>Guida rapida + esempi</summary>
+                                <div class="tool-help__body">
+                                    <p><strong>Uso:</strong> confronta 3 versioni: <em>Base</em> comune, <em>Left</em> e <em>Right</em>. Se entrambi cambiano la stessa riga in modo diverso, marca conflitto.</p>
+                                    <pre class="tool-help__code">Marker conflitto:
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; LEFT
+...contenuto left...
+||||||| BASE
+...contenuto base...
+=======
+...contenuto right...
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; RIGHT</pre>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+        </section>
+
+    </section>
+</main>
+
+<script src="DevToolbox.js"></script>
+<script src="DevToolboxExtras.js"></script>
+</body>
+</html>

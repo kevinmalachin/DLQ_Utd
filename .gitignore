@@ -1,12 +1,20 @@
-node_modules
 test/
-Python test DLQ + SS/input.txt
 cred.env
 venv/
-# Ignore Python bytecode files
+.venv/
+logs/
+*.pid
+
+# Python bytecode
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Local editor/runtime temp files
 tempCodeRunnerFile.php
 tempCodeRunnerFile.py
+.DS_Store
+
+# IDE local settings
+.vscode/
