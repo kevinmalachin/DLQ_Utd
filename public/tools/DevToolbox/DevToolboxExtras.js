@@ -213,6 +213,7 @@
   const formatType = document.getElementById("formatType");
   const formatIndent = document.getElementById("formatIndent");
   const formatSortToggle = document.getElementById("formatSortToggle");
+  const formatPlainTextToggle = document.getElementById("formatPlainTextToggle");
   const formatInput = document.getElementById("formatInput");
   const formatOutput = document.getElementById("formatOutput");
   const formatStatus = document.getElementById("formatStatus");
@@ -229,6 +230,11 @@
 
   function shouldSortOutput() {
     return Boolean(formatSortToggle && formatSortToggle.checked);
+  }
+
+  function shouldConvertPlainText(mode) {
+    if (mode !== "json") return false;
+    return Boolean(formatPlainTextToggle && formatPlainTextToggle.checked);
   }
 
   function sortJsonDeep(value) {
@@ -341,12 +347,61 @@
     return canonical.replace(/\n+/g, "").replace(/>\s+</g, "><").trim();
   }
 
-  function normalizeJson(raw, minify, indent, sortKeys) {
-    let parsed = JSON.parse(raw);
+  function plainTextToJsonValue(raw) {
+    const normalized = String(raw || "").trim();
+    if (!normalized) {
+      throw new Error("Plain text vuoto: impossibile convertire in JSON.");
+    }
+
+    const lines = normalized
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (lines.length > 1) {
+      return lines;
+    }
+
+    const singleLine = lines[0];
+    const words = singleLine
+      .split(/[,\s;]+/)
+      .map((word) => word.trim())
+      .filter(Boolean);
+
+    if (words.length > 1) {
+      return words;
+    }
+
+    return singleLine;
+  }
+
+  function parseJsonWithPlainTextFallback(raw, allowPlainTextFallback) {
+    try {
+      return {
+        payload: JSON.parse(raw),
+        plainTextFallbackUsed: false,
+      };
+    } catch (error) {
+      if (!allowPlainTextFallback) {
+        throw error;
+      }
+      return {
+        payload: plainTextToJsonValue(raw),
+        plainTextFallbackUsed: true,
+      };
+    }
+  }
+
+  function normalizeJson(raw, minify, indent, sortKeys, allowPlainTextFallback) {
+    const parsedResult = parseJsonWithPlainTextFallback(raw, allowPlainTextFallback);
+    let parsed = parsedResult.payload;
     if (sortKeys) {
       parsed = sortJsonDeep(parsed);
     }
-    return minify ? JSON.stringify(parsed) : JSON.stringify(parsed, null, indent);
+    return {
+      output: minify ? JSON.stringify(parsed) : JSON.stringify(parsed, null, indent),
+      plainTextFallbackUsed: parsedResult.plainTextFallbackUsed,
+    };
   }
 
   function normalizeXml(raw, minify, indent, sortXml) {
@@ -452,7 +507,7 @@
   function getInputHintForMode(mode) {
     switch (mode) {
       case "json":
-        return "Incolla JSON valido...";
+        return "Incolla JSON valido (oppure plain text con flag fallback attivo)...";
       case "xml":
         return "Incolla XML valido...";
       case "json_to_xml":
@@ -478,6 +533,11 @@
       const minifyEnabled = mode !== "json_to_yaml";
       formatMinifyBtn.disabled = !minifyEnabled;
       formatMinifyBtn.title = minifyEnabled ? "" : "Minify non disponibile per output YAML.";
+    }
+    if (formatPlainTextToggle) {
+      const enabled = mode === "json";
+      formatPlainTextToggle.disabled = !enabled;
+      formatPlainTextToggle.title = enabled ? "" : "Opzione disponibile solo in modalita JSON.";
     }
   }
 
@@ -509,8 +569,17 @@
     }
 
     if (mode === "json") {
-      output = normalizeJson(raw, action === "minify", indent, sortEnabled);
-      message = action === "validate" ? "JSON valido. Output aggiornato." : action === "minify" ? "JSON minificato." : "Formato JSON completato.";
+      const jsonResult = normalizeJson(raw, action === "minify", indent, sortEnabled, shouldConvertPlainText(mode));
+      output = jsonResult.output;
+      if (jsonResult.plainTextFallbackUsed) {
+        message = action === "validate"
+          ? "Plain text convertito in JSON valido. Output aggiornato."
+          : action === "minify"
+            ? "Plain text convertito e JSON minificato."
+            : "Plain text convertito in JSON e formattato.";
+      } else {
+        message = action === "validate" ? "JSON valido. Output aggiornato." : action === "minify" ? "JSON minificato." : "Formato JSON completato.";
+      }
     } else if (mode === "xml") {
       output = normalizeXml(raw, action === "minify", indent, sortEnabled);
       message = action === "validate" ? "XML valido. Output aggiornato." : action === "minify" ? "XML minificato." : "Formato XML completato.";
@@ -626,6 +695,7 @@
       formatInput.value = "";
       formatOutput.value = "";
       if (formatSortToggle) formatSortToggle.checked = false;
+      if (formatPlainTextToggle) formatPlainTextToggle.checked = false;
       setStatus(formatStatus, "");
       syncTextareaHeights();
     });
