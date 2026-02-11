@@ -147,7 +147,7 @@ if port_in_use "${STATIC_PORT}"; then
   exit 1
 fi
 
-# Virtualenv per Linux/macOS (.venv preferito, fallback venv, altrimenti creazione).
+# Virtualenv per Linux/macOS (.venv preferito, fallback venv, con recovery se rotto/spostato).
 if [[ -d "${ROOT_DIR}/.venv" ]]; then
   VENV_DIR="${ROOT_DIR}/.venv"
 elif [[ -d "${ROOT_DIR}/venv" ]]; then
@@ -158,19 +158,37 @@ else
   "${PYTHON_BIN}" -m venv "${VENV_DIR}"
 fi
 
-# shellcheck source=/dev/null
-source "${VENV_DIR}/bin/activate"
+VENV_PY="${VENV_DIR}/bin/python"
+if [[ ! -x "${VENV_PY}" ]]; then
+  log "WARN: virtualenv non valido in ${VENV_DIR}; provo a rigenerarlo."
+  "${PYTHON_BIN}" -m venv --clear "${VENV_DIR}" >/dev/null 2>&1 || "${PYTHON_BIN}" -m venv "${VENV_DIR}"
+  VENV_PY="${VENV_DIR}/bin/python"
+fi
+
+if [[ ! -x "${VENV_PY}" && "${VENV_DIR}" != "${ROOT_DIR}/.venv" ]]; then
+  VENV_DIR="${ROOT_DIR}/.venv"
+  log "WARN: fallback su ${VENV_DIR}..."
+  "${PYTHON_BIN}" -m venv "${VENV_DIR}"
+  VENV_PY="${VENV_DIR}/bin/python"
+fi
+
+if [[ ! -x "${VENV_PY}" ]]; then
+  log "ERRORE: python del virtualenv non trovato (${VENV_PY})."
+  exit 1
+fi
+
+log "Uso virtualenv: ${VENV_DIR}"
 
 if [[ -f "${REQUIREMENTS_FILE}" ]]; then
   log "Installo requirements da ${REQUIREMENTS_FILE} ..."
-  python -m pip install -r "${REQUIREMENTS_FILE}"
+  "${VENV_PY}" -m pip install -r "${REQUIREMENTS_FILE}"
 else
   log "WARN: ${REQUIREMENTS_FILE} non trovato, installo dipendenze minime."
-  python -m pip install flask flask-cors requests python-dotenv openpyxl
+  "${VENV_PY}" -m pip install flask flask-cors requests python-dotenv openpyxl
 fi
 
 log "Avvio DLQ API (${DLQ_SCRIPT}) su http://127.0.0.1:${DLQ_PORT} ..."
-nohup python "${DLQ_SCRIPT}" > "${DLQ_LOG_FILE}" 2>&1 &
+nohup "${VENV_PY}" "${DLQ_SCRIPT}" > "${DLQ_LOG_FILE}" 2>&1 &
 DLQ_PID=$!
 echo "${DLQ_PID}" > "${DLQ_PID_FILE}"
 sleep 1
@@ -181,7 +199,7 @@ fi
 
 JIRATASK_ENABLED=1
 log "Avvio JiraTask API (${JIRATASK_SCRIPT}) su http://127.0.0.1:${JIRATASK_PORT} ..."
-nohup python "${JIRATASK_SCRIPT}" > "${JIRATASK_LOG_FILE}" 2>&1 &
+nohup "${VENV_PY}" "${JIRATASK_SCRIPT}" > "${JIRATASK_LOG_FILE}" 2>&1 &
 JIRATASK_PID=$!
 echo "${JIRATASK_PID}" > "${JIRATASK_PID_FILE}"
 sleep 1
@@ -195,7 +213,7 @@ fi
 log "Avvio static server su http://127.0.0.1:${STATIC_PORT} ..."
 (
   cd "${ROOT_DIR}"
-  nohup python -m http.server "${STATIC_PORT}" > "${STATIC_LOG_FILE}" 2>&1 &
+  nohup "${VENV_PY}" -m http.server "${STATIC_PORT}" > "${STATIC_LOG_FILE}" 2>&1 &
   echo "$!" > "${STATIC_PID_FILE}"
 )
 STATIC_PID="$(cat "${STATIC_PID_FILE}")"
