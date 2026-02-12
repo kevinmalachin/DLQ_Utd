@@ -267,6 +267,56 @@ def _extract_pem_blocks(cert_text):
     return blocks
 
 
+def _clone_yaml_tree(value, memo=None):
+    if memo is None:
+        memo = {}
+
+    node_id = id(value)
+    if node_id in memo:
+        return memo[node_id]
+
+    if isinstance(value, list):
+        cloned_list = []
+        memo[node_id] = cloned_list
+        cloned_list.extend(_clone_yaml_tree(item, memo) for item in value)
+        return cloned_list
+
+    if isinstance(value, dict):
+        cloned_dict = {}
+        memo[node_id] = cloned_dict
+        for key, item in value.items():
+            cloned_key = _clone_yaml_tree(key, memo)
+            cloned_dict[cloned_key] = _clone_yaml_tree(item, memo)
+        return cloned_dict
+
+    return value
+
+
+def _safe_yaml_dump(payload, indent=2, resolve_aliases=False):
+    if not resolve_aliases:
+        return yaml.safe_dump(
+            payload,
+            sort_keys=False,
+            allow_unicode=True,
+            indent=indent,
+            default_flow_style=False,
+        )
+
+    class NoAliasSafeDumper(yaml.SafeDumper):
+        def ignore_aliases(self, _data):
+            return True
+
+    cloned_payload = _clone_yaml_tree(payload)
+    return yaml.dump(
+        cloned_payload,
+        Dumper=NoAliasSafeDumper,
+        sort_keys=False,
+        allow_unicode=True,
+        indent=indent,
+        default_flow_style=False,
+    )
+
+
 @app.route('/api/json-yaml/convert', methods=['POST'])
 def convert_json_yaml():
     if yaml is None:
@@ -289,12 +339,10 @@ def convert_json_yaml():
     try:
         if direction == 'json_to_yaml':
             parsed = json.loads(raw_input)
-            output = yaml.safe_dump(
+            output = _safe_yaml_dump(
                 parsed,
-                sort_keys=False,
-                allow_unicode=True,
                 indent=indent,
-                default_flow_style=False,
+                resolve_aliases=False,
             )
         elif direction == 'yaml_to_json':
             parsed = yaml.safe_load(raw_input)
@@ -308,6 +356,49 @@ def convert_json_yaml():
         return jsonify(ok=False, error=f'YAML non valido: {msg}'), 400
 
     return jsonify(ok=True, output=output)
+
+
+@app.route('/api/yaml/reformat', methods=['POST'])
+def reformat_yaml():
+    if yaml is None:
+        return jsonify(ok=False, error='PyYAML non installato nel virtualenv.'), 500
+
+    payload = request.get_json(silent=True) or {}
+    raw_input = payload.get('input', '')
+    indent = payload.get('indent', 2)
+    resolve_aliases = payload.get('resolve_aliases', True)
+
+    try:
+        indent = int(indent)
+    except (TypeError, ValueError):
+        indent = 2
+    indent = max(1, min(indent, 8))
+
+    if isinstance(resolve_aliases, str):
+        resolve_aliases = resolve_aliases.strip().lower() not in {'', '0', 'false', 'no', 'off'}
+    else:
+        resolve_aliases = bool(resolve_aliases)
+
+    if not str(raw_input).strip():
+        return jsonify(ok=False, error='Input YAML vuoto.'), 400
+
+    try:
+        parsed = yaml.safe_load(raw_input)
+        output = _safe_yaml_dump(
+            parsed,
+            indent=indent,
+            resolve_aliases=resolve_aliases,
+        )
+    except Exception as exc:
+        msg = str(exc) if str(exc) else exc.__class__.__name__
+        return jsonify(ok=False, error=f'YAML non valido: {msg}'), 400
+
+    return jsonify(
+        ok=True,
+        output=output,
+        stripped_comments=True,
+        resolved_aliases=resolve_aliases,
+    )
 
 
 @app.route('/api/certificate-parse', methods=['POST'])

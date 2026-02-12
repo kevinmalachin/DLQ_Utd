@@ -209,6 +209,31 @@
     return data.output || "";
   }
 
+  async function reformatYamlApi(input, indent, resolveAliases) {
+    const response = await fetch(`${API_BASE}/api/yaml/reformat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input,
+        indent,
+        resolve_aliases: resolveAliases,
+      }),
+    });
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (_) {
+      throw new Error("Risposta API non valida.");
+    }
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Reformat YAML non riuscito.");
+    }
+
+    return data.output || "";
+  }
+
   // ---------- JSON/XML Formatter ----------
   const formatType = document.getElementById("formatType");
   const formatIndent = document.getElementById("formatIndent");
@@ -709,6 +734,7 @@
   const jyStatus = document.getElementById("jyStatus");
   const jyConvertBtn = document.getElementById("jyConvertBtn");
   const jyCheckYamlBtn = document.getElementById("jyCheckYamlBtn");
+  const jyReformatYamlBtn = document.getElementById("jyReformatYamlBtn");
   const jySwapBtn = document.getElementById("jySwapBtn");
   const jyCopyBtn = document.getElementById("jyCopyBtn");
   const jyClearBtn = document.getElementById("jyClearBtn");
@@ -883,6 +909,26 @@
         setStatus(jyStatus, "YAML valido ma con " + issues.length + " caratteri sospetti/non-ASCII. Vedi report.", "warn");
       } else {
         setStatus(jyStatus, "YAML valido. Nessun carattere sospetto rilevato.", "ok");
+      }
+
+      syncTextareaHeights();
+    });
+  }
+
+  if (jyReformatYamlBtn && jyInput && jyOutput) {
+    jyReformatYamlBtn.addEventListener("click", async () => {
+      const input = jyInput.value || "";
+      if (!input.trim()) {
+        setStatus(jyStatus, "Incolla YAML da riformattare.", "err");
+        return;
+      }
+
+      setStatus(jyStatus, "Reformat YAML in corso...");
+      try {
+        jyOutput.value = await reformatYamlApi(input, getJyIndentValue(), true);
+        setStatus(jyStatus, "YAML riformattato (commenti rimossi, alias risolti).", "ok");
+      } catch (error) {
+        setStatus(jyStatus, "Errore reformat YAML: " + (error && error.message ? error.message : "Errore sconosciuto."), "err");
       }
 
       syncTextareaHeights();
