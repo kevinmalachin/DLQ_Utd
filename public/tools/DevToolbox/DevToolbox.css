@@ -865,6 +865,10 @@ button:active {
     color: #fca5a5;
 }
 
+.tool-status.warn {
+    color: #facc15;
+}
+
 .tool-output {
     background: var(--field-bg);
     border: 1px solid var(--field-border);

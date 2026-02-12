@@ -6,7 +6,7 @@
   function setStatus(el, message, type) {
     if (!el) return;
     el.textContent = message || "";
-    el.classList.remove("ok", "err");
+    el.classList.remove("ok", "err", "warn", "info");
     if (type) el.classList.add(type);
   }
 
@@ -708,6 +708,7 @@
   const jyOutput = document.getElementById("jyOutput");
   const jyStatus = document.getElementById("jyStatus");
   const jyConvertBtn = document.getElementById("jyConvertBtn");
+  const jyCheckYamlBtn = document.getElementById("jyCheckYamlBtn");
   const jySwapBtn = document.getElementById("jySwapBtn");
   const jyCopyBtn = document.getElementById("jyCopyBtn");
   const jyClearBtn = document.getElementById("jyClearBtn");
@@ -715,6 +716,123 @@
   function getJyIndentValue() {
     const n = Number(jyIndent && jyIndent.value ? jyIndent.value : 2);
     return Math.max(1, Math.min(8, Number.isFinite(n) ? n : 2));
+  }
+
+  const yamlSmartDoubleQuotes = new Set(["\u201C", "\u201D", "\u201E", "\u201F", "\u00AB", "\u00BB", "\u2033", "\u275D", "\u275E", "\uFF02"]);
+  const yamlSmartSingleQuotes = new Set(["\u2018", "\u2019", "\u201A", "\u201B", "\u2032", "\u275B", "\u275C", "\uFF07"]);
+  const yamlUnicodeDashes = new Set(["\u2010", "\u2011", "\u2012", "\u2013", "\u2014", "\u2015", "\u2212", "\uFE58", "\uFE63", "\uFF0D"]);
+  const yamlZeroWidthChars = new Set(["\u200B", "\u200C", "\u200D", "\uFEFF"]);
+
+  function toCodePointHex(char) {
+    const codePoint = char.codePointAt(0) || 0;
+    return "U+" + codePoint.toString(16).toUpperCase().padStart(4, "0");
+  }
+
+  function describeYamlCharIssue(ch) {
+    if (yamlSmartDoubleQuotes.has(ch)) {
+      return { label: "Virgolette doppie tipografiche", fix: 'Usa il doppio apice ASCII (")' };
+    }
+
+    if (yamlSmartSingleQuotes.has(ch)) {
+      return { label: "Virgolette singole tipografiche", fix: "Usa l'apice ASCII (')" };
+    }
+
+    if (yamlUnicodeDashes.has(ch)) {
+      return { label: "Trattino Unicode", fix: "Usa il trattino ASCII (-)" };
+    }
+
+    if (ch === "\u00A0") {
+      return { label: "Spazio non separabile (NBSP)", fix: "Usa uno spazio ASCII normale" };
+    }
+
+    if (yamlZeroWidthChars.has(ch)) {
+      return { label: "Carattere invisibile (zero-width/BOM)", fix: "Rimuovi il carattere invisibile" };
+    }
+
+    const codePoint = ch.codePointAt(0) || 0;
+    if (codePoint < 0x20 && ch !== "\n" && ch !== "\r" && ch !== "\t") {
+      return { label: "Carattere di controllo non valido", fix: "Rimuovi il carattere di controllo" };
+    }
+
+    if (codePoint > 0x7E) {
+      return { label: "Carattere non ASCII", fix: "Verifica che il carattere sia voluto e supportato" };
+    }
+
+    return null;
+  }
+
+  function collectYamlCharIssues(text) {
+    const source = String(text || "");
+    const issues = [];
+    let line = 1;
+    let column = 1;
+
+    for (const ch of source) {
+      const issue = describeYamlCharIssue(ch);
+      if (issue) {
+        issues.push({
+          line,
+          column,
+          char: ch,
+          code: toCodePointHex(ch),
+          label: issue.label,
+          fix: issue.fix,
+        });
+      }
+
+      if (ch === "\n") {
+        line += 1;
+        column = 1;
+      } else {
+        column += 1;
+      }
+    }
+
+    return issues;
+  }
+
+  function printableYamlChar(ch) {
+    if (ch === " ") return "[space]";
+    if (ch === "\t") return "[tab]";
+    if (ch === "\n") return "[newline]";
+    if (ch === "\r") return "[carriage-return]";
+    return ch;
+  }
+
+  function buildYamlValidationReport(parseError, issues) {
+    const lines = [];
+
+    if (parseError) {
+      lines.push("Sintassi YAML: ERRORE");
+      lines.push("Dettaglio parser: " + parseError);
+    } else {
+      lines.push("Sintassi YAML: OK");
+    }
+
+    if (!issues.length) {
+      lines.push("Caratteri sospetti/non-ASCII: nessuno.");
+      return lines.join("\n");
+    }
+
+    lines.push("Caratteri sospetti/non-ASCII trovati: " + issues.length);
+
+    const maxRows = 120;
+    issues.slice(0, maxRows).forEach((entry, index) => {
+      lines.push(
+        (index + 1)
+        + ". riga " + entry.line
+        + ", colonna " + entry.column
+        + " -> " + printableYamlChar(entry.char)
+        + " (" + entry.code + ")"
+        + " - " + entry.label + ". " + entry.fix + "."
+      );
+    });
+
+    if (issues.length > maxRows) {
+      lines.push("... altri " + (issues.length - maxRows) + " elementi non mostrati.");
+    }
+
+    return lines.join("\n");
   }
 
   if (jyConvertBtn && jyDirection && jyInput && jyOutput) {
@@ -734,6 +852,40 @@
         setStatus(jyStatus, `Errore: ${error.message}`, "err");
         syncTextareaHeights();
       }
+    });
+  }
+
+  if (jyCheckYamlBtn && jyInput && jyOutput) {
+    jyCheckYamlBtn.addEventListener("click", async () => {
+      const input = jyInput.value || "";
+      if (!input.trim()) {
+        setStatus(jyStatus, "Incolla YAML da validare.", "err");
+        return;
+      }
+
+      const issues = collectYamlCharIssues(input);
+      let parseError = "";
+
+      setStatus(jyStatus, "Validazione YAML in corso...");
+      try {
+        await convertJsonYamlApi(input, "yaml_to_json", getJyIndentValue());
+      } catch (error) {
+        parseError = error && error.message ? error.message : "Errore sconosciuto.";
+      }
+
+      jyOutput.value = buildYamlValidationReport(parseError, issues);
+
+      if (parseError) {
+        const cleanError = String(parseError).replace(/^YAML non valido:\s*/i, "");
+        const suffix = issues.length ? " | Caratteri sospetti: " + issues.length + "." : "";
+        setStatus(jyStatus, "YAML non valido: " + cleanError + suffix, "err");
+      } else if (issues.length) {
+        setStatus(jyStatus, "YAML valido ma con " + issues.length + " caratteri sospetti/non-ASCII. Vedi report.", "warn");
+      } else {
+        setStatus(jyStatus, "YAML valido. Nessun carattere sospetto rilevato.", "ok");
+      }
+
+      syncTextareaHeights();
     });
   }
 
