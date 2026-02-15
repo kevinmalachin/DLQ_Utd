@@ -22,12 +22,15 @@
     const refRightOnlyList = document.getElementById("refRightOnlyList");
     const tcLeftInput = document.getElementById("tcLeftInput");
     const tcRightInput = document.getElementById("tcRightInput");
+    const tcDiffMode = document.getElementById("tcDiffMode");
+    const tcOnlyChangesToggle = document.getElementById("tcOnlyChangesToggle");
     const tcCompareBtn = document.getElementById("tcCompareBtn");
     const tcSwapBtn = document.getElementById("tcSwapBtn");
     const tcClearBtn = document.getElementById("tcClearBtn");
     const tcResults = document.getElementById("tcResults");
     const tcLeftResult = document.getElementById("tcLeftResult");
     const tcRightResult = document.getElementById("tcRightResult");
+    const tcGroupTitle = document.getElementById("tcGroupTitle");
     const tcGroupList = document.getElementById("tcGroupList");
     const tcLeftFileBtn = document.getElementById("tcLeftFileBtn");
     const tcRightFileBtn = document.getElementById("tcRightFileBtn");
@@ -38,6 +41,10 @@
     const summaryLinesRemoved = document.getElementById("summaryLinesRemoved");
     const summaryLinesAdded = document.getElementById("summaryLinesAdded");
     const lineNumbersStorageKey = "devtoolbox-line-numbers";
+    const themeStorageKey = "devtoolbox-theme";
+    const systemThemeMediaQuery = window.matchMedia
+        ? window.matchMedia("(prefers-color-scheme: light)")
+        : null;
     const optionToggleInputs = Array.from(document.querySelectorAll(".option-toggle input[data-option]"));
 
     function ensureTextareaLineNumberLayout(textarea) {
@@ -126,9 +133,9 @@
     });
 
     const savedTheme = window.localStorage
-        ? localStorage.getItem("devtoolbox-theme")
+        ? localStorage.getItem(themeStorageKey)
         : null;
-    setTheme(savedTheme === "light" ? "light" : "dark");
+    setTheme(savedTheme || "system");
 
     const savedLineNumbers = window.localStorage
         ? localStorage.getItem(lineNumbersStorageKey)
@@ -137,13 +144,28 @@
 
     if (themeToggle) {
         themeToggle.addEventListener("click", () => {
-            const current = document.documentElement.getAttribute("data-theme");
-            const next = current === "light" ? "dark" : "light";
+            const currentMode = document.documentElement.getAttribute("data-theme-mode") || "system";
+            const nextMode = getNextThemeMode(currentMode);
             if (window.localStorage) {
-                localStorage.setItem("devtoolbox-theme", next);
+                localStorage.setItem(themeStorageKey, nextMode);
             }
-            setTheme(next);
+            setTheme(nextMode);
         });
+    }
+
+    if (systemThemeMediaQuery) {
+        const refreshSystemTheme = () => {
+            const mode = document.documentElement.getAttribute("data-theme-mode") || "system";
+            if (mode === "system") {
+                setTheme("system");
+            }
+        };
+
+        if (typeof systemThemeMediaQuery.addEventListener === "function") {
+            systemThemeMediaQuery.addEventListener("change", refreshSystemTheme);
+        } else if (typeof systemThemeMediaQuery.addListener === "function") {
+            systemThemeMediaQuery.addListener(refreshSystemTheme);
+        }
     }
 
     if (lineNumbersToggle) {
@@ -244,6 +266,8 @@
             if (tcLeftResult) tcLeftResult.innerHTML = "";
             if (tcRightResult) tcRightResult.innerHTML = "";
             if (tcGroupList) tcGroupList.innerHTML = "";
+            if (tcGroupTitle) tcGroupTitle.textContent = "Gruppi differenze";
+            if (tcOnlyChangesToggle) tcOnlyChangesToggle.checked = false;
             if (tcResults) tcResults.classList.add("hidden");
             if (tcLeftFile) tcLeftFile.value = "";
             if (tcRightFile) tcRightFile.value = "";
@@ -258,11 +282,21 @@
             }
             const leftText = tcLeftInput.value || "";
             const rightText = tcRightInput.value || "";
+            const mode = tcDiffMode ? tcDiffMode.value : "word";
             const options = getDiffOptions();
-            const diff = buildDiff(leftText, rightText, "word", options);
-            tcLeftResult.innerHTML = renderDiff(diff, "left", "word", { allowInline: true, options });
-            tcRightResult.innerHTML = renderDiff(diff, "right", "word", { allowInline: true, options });
-            renderWordGroups(tcGroupList, diff, options);
+            const diff = buildDiff(leftText, rightText, mode, options);
+            const allowInline = mode !== "line";
+            tcLeftResult.innerHTML = renderDiff(diff, "left", mode, { allowInline, options });
+            tcRightResult.innerHTML = renderDiff(diff, "right", mode, { allowInline, options });
+            if (tcOnlyChangesToggle && tcOnlyChangesToggle.checked) {
+                applyOnlyChangedLineFilter(tcLeftResult, "Nessuna differenza lato originale.");
+                applyOnlyChangedLineFilter(tcRightResult, "Nessuna differenza lato modificato.");
+            }
+            if (tcGroupTitle) {
+                const suffix = tcOnlyChangesToggle && tcOnlyChangesToggle.checked ? " - solo cambiamenti" : "";
+                tcGroupTitle.textContent = `Gruppi differenze (${getModeLabel(mode)})${suffix}`;
+            }
+            renderWordGroups(tcGroupList, diff, options, mode);
             if (tcResults) tcResults.classList.remove("hidden");
         });
     }
@@ -296,6 +330,8 @@
             ignoreCase: isOptionChecked("ignoreCase"),
             ignoreWhitespace: isOptionChecked("ignoreWhitespace"),
             ignorePunctuation: isOptionChecked("ignorePunctuation"),
+            ignoreAccents: isOptionChecked("ignoreAccents"),
+            normalizeUnicode: isOptionChecked("normalizeUnicode"),
         };
     }
 
@@ -465,6 +501,27 @@
         };
     }
 
+    function applyOnlyChangedLineFilter(container, emptyMessage) {
+        if (!container) return;
+
+        const lines = Array.from(container.querySelectorAll(".diff-line"));
+        if (!lines.length) return;
+
+        const changedLines = lines.filter((line) => line.querySelector(".diff-insert, .diff-delete"));
+
+        if (!changedLines.length) {
+            container.innerHTML = `<span class="diff-muted">${escapeHtml(emptyMessage || "Nessuna differenza trovata.")}</span>`;
+            return;
+        }
+
+        container.innerHTML = "";
+        changedLines.forEach((line, index) => {
+            const lineNo = line.querySelector(".diff-line-no");
+            if (lineNo) lineNo.textContent = String(index + 1);
+            container.appendChild(line);
+        });
+    }
+
     function renderSummary(segments, options) {
         if (!summaryLeftList || !summaryRightList) return;
         summaryLeftList.innerHTML = "";
@@ -627,18 +684,46 @@
             ignoreCase: Boolean(options && options.ignoreCase),
             ignoreWhitespace: Boolean(options && options.ignoreWhitespace),
             ignorePunctuation: Boolean(options && options.ignorePunctuation),
+            ignoreAccents: Boolean(options && options.ignoreAccents),
+            normalizeUnicode: Boolean(options && options.normalizeUnicode),
         };
     }
 
     function stripPunctuation(value) {
-        return value.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
+        return value.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\]^_`{|}~]/g, "");
+    }
+
+    function stripDiacritics(value) {
+        if (!value) return value;
+        return value.normalize("NFD").replace(/[̀-ͯ]/g, "");
+    }
+
+    function normalizeUnicodeToken(value) {
+        if (!value) return value;
+        return value
+            .normalize("NFKC")
+            .replace(/[​-‍﻿]/g, "")
+            .replace(/ /g, " ")
+            .replace(/[‘’‚‛′❛❜＇]/g, "'")
+            .replace(/[“”„‟«»″❝❞＂]/g, '"')
+            .replace(/[‐-―−﹘﹣－]/g, "-");
     }
 
     function normalizeToken(token, mode, options) {
         let normalized = token || "";
         if (!normalized) return "";
 
-        if (options.ignoreWhitespace) {
+        const normalizedOptions = normalizeOptions(options);
+
+        if (normalizedOptions.normalizeUnicode) {
+            normalized = normalizeUnicodeToken(normalized);
+        }
+
+        if (normalizedOptions.ignoreAccents) {
+            normalized = stripDiacritics(normalized);
+        }
+
+        if (normalizedOptions.ignoreWhitespace) {
             if (mode === "line") {
                 normalized = normalized.replace(/\s+/g, " ");
             } else if (/^\s+$/.test(normalized)) {
@@ -646,11 +731,11 @@
             }
         }
 
-        if (options.ignorePunctuation) {
+        if (normalizedOptions.ignorePunctuation) {
             normalized = stripPunctuation(normalized);
         }
 
-        if (options.ignoreCase) {
+        if (normalizedOptions.ignoreCase) {
             normalized = normalized.toLowerCase();
         }
 
@@ -752,7 +837,7 @@
         summaryLinesRemoved.textContent = String(stats.linesRemoved);
     }
 
-    function buildWordGroups(segments, options) {
+    function buildWordGroups(segments, options, mode) {
         const groups = [];
         let current = null;
         const normalizedOptions = normalizeOptions(options);
@@ -764,8 +849,8 @@
                         || hasMeaningfulContent(current.right, normalizedOptions);
                     if (hasWords) {
                         groups.push({
-                            left: formatGroupText(current.left),
-                            right: formatGroupText(current.right),
+                            left: formatGroupText(current.left, mode),
+                            right: formatGroupText(current.right, mode),
                         });
                     }
                     current = null;
@@ -789,8 +874,8 @@
                 || hasMeaningfulContent(current.right, normalizedOptions);
             if (hasWords) {
                 groups.push({
-                    left: formatGroupText(current.left),
-                    right: formatGroupText(current.right),
+                    left: formatGroupText(current.left, mode),
+                    right: formatGroupText(current.right, mode),
                 });
             }
         }
@@ -798,11 +883,11 @@
         return groups;
     }
 
-    function renderWordGroups(container, segments, options) {
+    function renderWordGroups(container, segments, options, mode) {
         if (!container) return;
         container.innerHTML = "";
 
-        const groups = buildWordGroups(segments, options);
+        const groups = buildWordGroups(segments, options, mode);
 
         if (!groups.length) {
             const empty = document.createElement("div");
@@ -818,31 +903,37 @@
 
             const leftCell = document.createElement("div");
             leftCell.className = "group-cell group-left";
-            renderGroupCell(leftCell, group.left, group.right, "left", options);
+            renderGroupCell(leftCell, group.left, group.right, "left", options, mode);
 
             const rightCell = document.createElement("div");
             rightCell.className = "group-cell group-right";
-            renderGroupCell(rightCell, group.left, group.right, "right", options);
+            renderGroupCell(rightCell, group.left, group.right, "right", options, mode);
 
             row.append(leftCell, rightCell);
             container.appendChild(row);
         });
     }
 
-    function renderGroupCell(cell, leftValue, rightValue, side, options) {
+    function renderGroupCell(cell, leftValue, rightValue, side, options, mode) {
         const raw = side === "left" ? leftValue : rightValue;
         if (!raw || isIgnorableSegment(raw, options)) {
             cell.innerHTML = '<span class="diff-muted">n/a</span>';
             return;
         }
 
-        const diff = buildDiff(leftValue || "", rightValue || "", "char", options);
-        const html = renderSegments(diff, side, "char", { options });
+        const cellMode = mode === "line" ? "line" : "char";
+        const allowInline = cellMode !== "line";
+        const diff = buildDiff(leftValue || "", rightValue || "", cellMode, options);
+        const html = renderSegments(diff, side, cellMode, { allowInline, options });
         cell.innerHTML = html || '<span class="diff-muted">n/a</span>';
     }
 
-    function formatGroupText(value) {
+    function formatGroupText(value, mode) {
         if (!value) return "";
+        if (mode === "line") {
+            return value.replace(/^\n+|\n+$/g, "");
+        }
+
         const trimmed = value.trim();
         if (trimmed) {
             return trimmed.replace(/\s+/g, " ");
@@ -863,14 +954,48 @@
             .replace(/>/g, "&gt;");
     }
 
-    function setTheme(theme) {
-        const normalized = theme === "light" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", normalized);
-        if (themeToggle) {
-            const isLight = normalized === "light";
-            themeToggle.textContent = isLight ? "Tema: Light" : "Tema: Dark";
-            themeToggle.setAttribute("aria-pressed", String(isLight));
+    function normalizeThemeMode(theme) {
+        if (theme === "light" || theme === "dark" || theme === "system") {
+            return theme;
         }
+        return "dark";
+    }
+
+    function resolveThemeMode(themeMode) {
+        const normalized = normalizeThemeMode(themeMode);
+        if (normalized !== "system") {
+            return normalized;
+        }
+        if (systemThemeMediaQuery && systemThemeMediaQuery.matches) {
+            return "light";
+        }
+        return "dark";
+    }
+
+    function getNextThemeMode(currentMode) {
+        const normalized = normalizeThemeMode(currentMode);
+        if (normalized === "dark") return "light";
+        if (normalized === "light") return "system";
+        return "dark";
+    }
+
+    function setTheme(theme) {
+        const normalizedMode = normalizeThemeMode(theme);
+        const resolvedMode = resolveThemeMode(normalizedMode);
+        document.documentElement.setAttribute("data-theme", resolvedMode);
+        document.documentElement.setAttribute("data-theme-mode", normalizedMode);
+
+        if (themeToggle) {
+            const label = normalizedMode.charAt(0).toUpperCase() + normalizedMode.slice(1);
+            themeToggle.textContent = `Tema: ${label}`;
+            themeToggle.setAttribute("aria-pressed", String(normalizedMode !== "dark"));
+        }
+    }
+
+    function getModeLabel(mode) {
+        if (mode === "char") return "caratteri";
+        if (mode === "line") return "linee";
+        return "parole";
     }
 
     function parseRefLines(text) {
