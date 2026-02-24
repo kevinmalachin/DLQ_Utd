@@ -1,0 +1,37 @@
+
+Salesforce
+
+MQ
+Christian Dior Couture
+Profile:KM
+PROD
+Destinations
+Queue Settings
+Message Sender
+Message Browser
+prod.process.generateinvoice.DLQ
+ID
+Payload Type
+Payload
+Date Created
+ed8458c9-d5a5-4cf9-b822-0da04f363ee8
+application/json; charset=UTF-8
+{ "originalPayload": { "orderCountryCode": "TH", "isPaidByDeposit": "true", "additionalReference": "6784175", "isPresales": false, "order": { "internalReference": "EC02605909-6789239", "externalReference": "EC02605909", "transferReference": "6784175", "shipmentMethodCode": "EXP", "deliveryType": "HD", "storeId": "THECO", "status": "SHIPPED", "firstPackConfirmedFulfilment": "true" }, "originalDocumentIdentifier": { "customerId": "d29a1cfad055-4373-96d0-224f678168db", "internalReference": "EC02605909-STD" }, "payment": { "amount": 26000.0, "authorizationNumber": "7190297922996332304983", "transactionNumber": "7190297922996332304983", "currency": "THB", "dueDate": "2024-06-22", "id": 1, "methodId": "DT4" }, "templateId": "Z62", "languageId": "THA", "cultureId": "th-TH", "isExchange": "false", "isCapturedAtCheckout": "false", "whTimeZone": "Asia/Hong_Kong", "items": [ { "reference": "3616252622296", "quantity": "1", "warehouseId": "THECOA", "serialNumber": "" } ] }, "retailerId": "6" }
+2024-06-25T10:38:13
+88b32917-23c6-4f9d-b058-b8a648f32fa6
+application/json; charset=UTF-8
+{ "originalPayload": { "orderCountryCode": "US", "isPaidByDeposit": "false", "additionalReference": "", "isPresales": false, "order": { "internalReference": "EC02528981-6738603", "externalReference": "EC02528981", "shipmentMethodCode": "NEX", "deliveryType": "HD", "storeId": "1ZECO", "status": "SHIPPED", "firstPackConfirmedFulfilment": "true" }, "originalDocumentIdentifier": { "customerId": "f7e4be054cf8-4ede-8581-3defce0f7733", "internalReference": "EC02528981-STD" }, "payment": { "amount": 0.0, "authorizationNumber": "", "transactionNumber": "", "currency": "USD", "dueDate": "1900-01-01", "id": 1, "methodId": "" }, "templateId": "Z27", "languageId": "US", "cultureId": "en-US", "isExchange": "false", "isCapturedAtCheckout": "false", "whTimeZone": "America/New_York", "items": [ { "reference": "3616250206900", "quantity": "1", "warehouseId": "1ZA19A", "serialNumber": "" }, { "reference": "3617062159071", "quantity": "0", "warehouseId": "1ZA19A", "serialNumber": "" }, { "reference": "3616250103728", "quantity": "1", "warehouseId": "1ZA19A", "serialNumber": "" }, { "reference": "3616250103711", "quantity": "1", "warehouseId": "1ZA19A", "serialNumber": "" } ] }, "retailerId": "2" }
+2024-06-25T01:31:28
+439ca845-7c4c-4328-833b-76728294235b
+application/json; charset=UTF-8
+{ "originalPayload": { "orderCountryCode": "US", "isPaidByDeposit": "false", "additionalReference": "", "isPresales": true, "order": { "internalReference": "EC02583098-6776380", "externalReference": "EC02583098", "transferReference": "", "shipmentMethodCode": "NEX", "deliveryType": "HD", "storeId": "1ZECO", "status": "PARTIAL_CAPTURED", "firstPackConfirmedFulfilment": "false" }, "originalDocumentIdentifier": { "customerId": "6f267525b792-4be0-a510-68ce916018bf", "internalReference": "EC02583098-STD" }, "payment": { "amount": 578.36, "authorizationNumber": "7186572399976838404990", "transactionNumber": "7186572399976838404990", "currency": "USD", "dueDate": "2024-06-17", "id": 1, "methodId": "B46" }, "templateId": "Z27", "languageId": "US", "cultureId": "en-US", "isExchange": "false", "isCapturedAtCheckout": "false", "whTimeZone": "America/New_York", "items": [ { "reference": "3617063883456", "quantity": "1", "warehouseId": "1ZA19A", "serialNumber": "" } ] }, "retailerId": "2" }
+2024-06-25T01:31:28
+4dfd930d-6f37-436f-8695-84237cf321fc
+application/json; charset=UTF-8
+{ "originalPayload": { "orderCountryCode": "JP", "isPaidByDeposit": "false", "additionalReference": "", "isPresales": false, "order": { "internalReference": "EC02606178-6786131", "externalReference": "EC02606178", "transferReference": "", "shipmentMethodCode": "STD", "deliveryType": "HD", "storeId": "JPECO", "status": "CAPTURED", "firstPackConfirmedFulfilment": "false" }, "originalDocumentIdentifier": { "customerId": "3473835c0406-498b-b431-dfeb11e8ae27", "internalReference": "EC02606178-STD" }, "payment": { "amount": 84000.0, "authorizationNumber": "7192958747426268704974", "transactionNumber": "7192958747426268704974", "currency": "JPY", "dueDate": "2024-06-26", "id": 1, "methodId": "BP7" }, "templateId": "Z53", "languageId": "JPN", "cultureId": "ja-JP", "isExchange": "false", "isCapturedAtCheckout": "false", "whTimeZone": "Asia/Tokyo", "items": [ { "reference": "3617063932277", "quantity": "1", "warehouseId": "JP200A", "serialNumber": "" } ] }, "retailerId": "5" }
+2024-06-25T10:15:50
+79331c4a-9c57-4030-9202-56432ef274aa
+application/json; charset=UTF-8
+{ "originalPayload": { "orderCountryCode": "JP", "isPaidByDeposit": "false", "additionalReference": "", "isPresales": false, "order": { "internalReference": "EC02605968-6785409", "externalReference": "EC02605968", "transferReference": "", "shipmentMethodCode": "STD", "deliveryType": "HD", "storeId": "JPECO", "status": "CAPTURED", "firstPackConfirmedFulfilment": "false" }, "originalDocumentIdentifier": { "customerId": "fe2b0c325818-4948-af3a-6f530a6ff5ad", "internalReference": "EC02605968-STD" }, "payment": { "amount": 29700.0, "authorizationNumber": "7192930042066881504986", "transactionNumber": "7192930042066881504986", "currency": "JPY", "dueDate": "2024-06-25", "id": 1, "methodId": "BQ4" }, "templateId": "Z53", "languageId": "JPN", "cultureId": "ja-JP", "isExchange": "false", "isCapturedAtCheckout": "false", "whTimeZone": "Asia/Tokyo", "items": [ { "reference": "3616251302410", "quantity": "1", "warehouseId": "JP200A", "serialNumber": "" } ] }, "retailerId": "5" }
+2024-06-25T10:15:49
+11 seconds : 5 messages
