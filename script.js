@@ -330,6 +330,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case dlqNameMatch(/prod\.apac\.sap\.point\-of\-sales\.erp\-transaction/):
       case dlqNameMatch(/prod\.apac\.sap\.good\-receipt\.erp\-supply/):
       case dlqNameMatch(/prod\.apac\.sap\.store\-transfert\.erp\-supply/):
+      case dlqNameMatch(/prod\.emea\.orex\.stockreservationack/):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
 
