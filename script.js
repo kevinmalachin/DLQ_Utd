@@ -169,8 +169,58 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
     const currentDLQNorm = currentDLQ.replace(/[-_]/g, ".").toLowerCase();
     const currentDLQRaw = currentDLQ.toLowerCase();
 
-    // helper: prova a matchare sia sulla versione normalizzata (.) che su quella raw (-/_)
-    const tiffMatch = (re) => re.test(currentDLQNorm) || re.test(currentDLQRaw);
+    // helper: rende i separatori (., -, _) equivalenti nei regex DLQ
+    const dlqRegexCache = new Map();
+    const buildDlqRegex = (re) => {
+      const cacheKey = `${re.source}__${re.flags}`;
+      if (dlqRegexCache.has(cacheKey)) return dlqRegexCache.get(cacheKey);
+
+      let out = "";
+      let inClass = false;
+
+      for (let i = 0; i < re.source.length; i++) {
+        const ch = re.source[i];
+
+        if (ch === "\\") {
+          const next = re.source[i + 1];
+          if (!inClass && (next === "." || next === "-")) {
+            out += "[._-]";
+            i++;
+            continue;
+          }
+          out += ch + (next || "");
+          i++;
+          continue;
+        }
+
+        if (ch === "[") {
+          inClass = true;
+          out += ch;
+          continue;
+        }
+
+        if (ch === "]") {
+          inClass = false;
+          out += ch;
+          continue;
+        }
+
+        if (!inClass && ch === "_") {
+          out += "[._-]";
+          continue;
+        }
+
+        out += ch;
+      }
+
+      const safeFlags = re.flags.replace(/[gy]/g, "");
+      const compiled = new RegExp(out, safeFlags);
+      dlqRegexCache.set(cacheKey, compiled);
+      return compiled;
+    };
+
+    const dlqNameMatch = (re) => buildDlqRegex(re).test(currentDLQRaw);
+    const tiffMatch = dlqNameMatch; // backward compatibility con i case esistenti
 
     console.log("Identified DLQ RAW:", currentDLQ);
     console.log("Identified DLQ NORM:", currentDLQNorm);
@@ -180,7 +230,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
 
     switch (true) {
       // PLM product
-      case /prod\.emea\.plm\.product/.test(currentDLQNorm): {
+      case dlqNameMatch(/prod\.emea\.plm\.product/): {
         const plmDetails = extractPLMProductDetails(dlqText);
 
         let plmReferences = [];
@@ -217,191 +267,191 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       }
 
       // Goods receptions
-      case /prod\.process\.goods\.receptions/.test(currentDLQNorm):
-      case /prod\.emea\.process\.goods\.receptions/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.process\.goods\.receptions/):
+      case dlqNameMatch(/prod\.emea\.process\.goods\.receptions/):
         references = extractGoodsReceptionDetails(dlqText);
         break;
 
       // Vari rootEntityRef
-      case /emea\.orderlifecycle\.returnreshipped/.test(currentDLQNorm):
-      case /emea\.orderlifecycle\.sendfullcancellationtoriskified/.test(currentDLQNorm):
-      case /emea\.orderlifecycle\.dcfulfilmentwms/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.generateinvoice/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.sendfulfilltoriskified/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.dcshipauthrcu/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.sendm06/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.sendm50/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.createcrossborderorder/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.orderlifecycle\.returnreshipped/):
+      case dlqNameMatch(/emea\.orderlifecycle\.sendfullcancellationtoriskified/):
+      case dlqNameMatch(/emea\.orderlifecycle\.dcfulfilmentwms/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.generateinvoice/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.sendfulfilltoriskified/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.dcshipauthrcu/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.sendm06/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.sendm50/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.createcrossborderorder/):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
 
       // entityRef
-      case /emea\.orderlifecycle\.paymentreversals/.test(currentDLQNorm):
-      case /emea\.orderlifecycle\.cegidexchangeconfirmation/.test(currentDLQNorm):
-      case /emea\.orderlifecycle\.activateqrcode/.test(currentDLQNorm):
-      case /emea\.orderlifecycle\.cscrtsalert/.test(currentDLQNorm):
-      case /emea\.orderlifecycle\.depositrefundsuccess/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.orderlifecycle\.paymentreversals/):
+      case dlqNameMatch(/emea\.orderlifecycle\.cegidexchangeconfirmation/):
+      case dlqNameMatch(/emea\.orderlifecycle\.activateqrcode/):
+      case dlqNameMatch(/emea\.orderlifecycle\.cscrtsalert/):
+      case dlqNameMatch(/emea\.orderlifecycle\.depositrefundsuccess/):
         patterns = [/\"entityRef\":\s*\"([^\"]+)\"/g];
         break;
 
       // alf-route
-      case /prod\.emea\.orderlifecycle\.alf[._-]route/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.alf[._-]route/):
         patterns = [
           /\"internalReference\":\s*\"([^\"]+)\"/g,
         ];
         break;
 
       // altri pattern
-      case /apac\.supply\.notifications\.transfer/.test(currentDLQNorm):
+      case dlqNameMatch(/apac\.supply\.notifications\.transfer/):
         patterns = [/\"Number\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /emea\.eboutique\.return\.receipt/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.eboutique\.return\.receipt/):
         patterns = [/\"returnNoticeExternalReference\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /apac\.store\.factory\.sapnotice/.test(currentDLQNorm):
-      case tiffMatch(/apac\.sap\.outbound\-delivery\.wtms\-supply/):
+      case dlqNameMatch(/apac\.store\.factory\.sapnotice/):
+      case dlqNameMatch(/apac\.sap\.outbound\-delivery\.wtms\-supply/):
         patterns = [/\"DOCNUM\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /emea\.orderfromstore\.availablecustomerorders\.sac/.test(currentDLQNorm):
-      case /prod\.emea\.store\.factory\.orderfromstore\.availablecustomerorders\.sac/.test(currentDLQNorm):
-      case /prod\.amer\.store\.factory\.orderfromstore\.availablecustomerorders\.sac/.test(currentDLQNorm):
-      case /prod\.apac\.store\.factory\.orderfromstore\.availablecustomerorders\.sac/.test(currentDLQNorm):
-      case /apac\.orderfromstore\.availablecustomerorders\.sac/.test(currentDLQNorm):
-      case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQNorm):
-      case /prod\.emea\.storefactory\.orderfromstore\.sales/.test(currentDLQNorm):
-      case tiffMatch(/prod\.emea\.orderlifecycle\.cdc\-route/):
-      case /prod\.amer\.storefactory\.orderfromstore\.sales/.test(currentDLQNorm):
-      case tiffMatch(/prod\.amer\.orex\.store\-factory\-customerorders\-ordered/):
-      case tiffMatch(/prod\.apac\.orex\.store\-factory\-customerorders\-ordered/):
-      case tiffMatch(/prod\.apac\.orex\.store\-factory\-sales/):
-      case tiffMatch(/prod\.apac\.sap\.point\-of\-sales\.erp\-transaction/):
-      case tiffMatch(/prod\.apac\.sap\.good\-receipt\.erp\-supply/):
-      case tiffMatch(/prod\.apac\.sap\.store\-transfert\.erp\-supply/):
+      case dlqNameMatch(/emea\.orderfromstore\.availablecustomerorders\.sac/):
+      case dlqNameMatch(/prod\.emea\.store\.factory\.orderfromstore\.availablecustomerorders\.sac/):
+      case dlqNameMatch(/prod\.amer\.store\.factory\.orderfromstore\.availablecustomerorders\.sac/):
+      case dlqNameMatch(/prod\.apac\.store\.factory\.orderfromstore\.availablecustomerorders\.sac/):
+      case dlqNameMatch(/apac\.orderfromstore\.availablecustomerorders\.sac/):
+      case dlqNameMatch(/prod\.emea\.paymentdeposit\.dnofu/):
+      case dlqNameMatch(/prod\.emea\.storefactory\.orderfromstore\.sales/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.cdc\-route/):
+      case dlqNameMatch(/prod\.amer\.storefactory\.orderfromstore\.sales/):
+      case dlqNameMatch(/prod\.amer\.orex\.store\-factory\-customerorders\-ordered/):
+      case dlqNameMatch(/prod\.apac\.orex\.store\-factory\-customerorders\-ordered/):
+      case dlqNameMatch(/prod\.apac\.orex\.store\-factory\-sales/):
+      case dlqNameMatch(/prod\.apac\.sap\.point\-of\-sales\.erp\-transaction/):
+      case dlqNameMatch(/prod\.apac\.sap\.good\-receipt\.erp\-supply/):
+      case dlqNameMatch(/prod\.apac\.sap\.store\-transfert\.erp\-supply/):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.apac\.storefactory\.orderfromstore\.sales/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.apac\.storefactory\.orderfromstore\.sales/):
         patterns = [/\"followUpReference\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /orderlifecycle\.sendpartialrefund/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.paymentrefund/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.paymentrefundstandalone/.test(currentDLQNorm):
+      case dlqNameMatch(/orderlifecycle\.sendpartialrefund/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.paymentrefund/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.paymentrefundstandalone/):
         patterns = [/\"entityRef\":\s*\"(CM_[^\"]+)\"/g];
         break;
 
-      case /process\.generateinvoice/.test(currentDLQNorm):
+      case dlqNameMatch(/process\.generateinvoice/):
         patterns = [/\"internalReference\":\s*\"(EC0[^\"]+)\"/g];
         break;
 
-      case /orderlifecycle\.ltreservefulfilment/.test(currentDLQNorm):
-      case /orderlifecycle\.ltrejectfulfilment/.test(currentDLQNorm):
-      case /orderlifecycle\.ltvalidatefulfilment/.test(currentDLQNorm):
+      case dlqNameMatch(/orderlifecycle\.ltreservefulfilment/):
+      case dlqNameMatch(/orderlifecycle\.ltrejectfulfilment/):
+      case dlqNameMatch(/orderlifecycle\.ltvalidatefulfilment/):
         patterns = [/\"rootEntityRef\":\s*\"(FR\d+|EC\d+)\"/g];
         break;
 
-      case /emea\.orderlifecycle\.createlabelsav/.test(currentDLQNorm):
-      case /orderlifecycle\.sendcodrefundcase/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.orderlifecycle\.createlabelsav/):
+      case dlqNameMatch(/orderlifecycle\.sendcodrefundcase/):
         patterns = [/\"entityRef\":\s*\"(EC\d+-R\d+)\"/g];
         break;
 
-      case /emea\.m51au\.process/.test(currentDLQNorm):
-      case /apac\.orderlifecycle\.dhl\.kr\.delivery/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.m51au\.process/):
+      case dlqNameMatch(/apac\.orderlifecycle\.dhl\.kr\.delivery/):
         patterns = [/\"REFLIV\":\s*\"(EC\d+-\d+)\"/g];
         break;
 
-      case /amer\.orderlifecycle\.stellae\.us\.delivery/.test(currentDLQNorm):
+      case dlqNameMatch(/amer\.orderlifecycle\.stellae\.us\.delivery/):
         patterns = [/\"REFLIV\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /emea\.plm\.livecycle\.style\.notifications/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.plm\.livecycle\.style\.notifications/):
         patterns = [/\"cnl\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orderlifecycle\.ordercreation/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.ordercreation/):
         patterns = [/\"rootEntityRef\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orderlifecycle\.checkout/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.checkout/):
         patterns = [/\"reference\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orderlifecycle\.massrecalcaftercontrolupdateforlocation/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.massrecalcaftercontrolupdateforlocation/):
         patterns = [/\"batchId\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.products\.pdh\.messages/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.products\.pdh\.messages/):
         patterns = [/\"codeStyle\":\s*\"([^\"]+)\"/g];
         break;
 
-      case tiffMatch(/prod\.emea\.orderlifecycle\.blr\-route/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.blr\-route/):
         patterns = [/\"creditMemoRef\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.hed\.diorstar\.orders/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.hed\.diorstar\.orders/):
         patterns = [/\"quoteId\":\s*\"([^\"]+)\"/g];
         break;
 
-      case tiffMatch(/prod\.emea\.orex\.return\-order\-creation/):
+      case dlqNameMatch(/prod\.emea\.orex\.return\-order\-creation/):
         patterns = [/\"orderReference\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.fluent\.returns\.creditmemos/.test(currentDLQNorm):
-      case /prod\.fluent\.returns\.creditmemos/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.fluent\.returns\.creditmemos/):
+      case dlqNameMatch(/prod\.fluent\.returns\.creditmemos/):
         patterns = [/\"ref\":\s*\"(CM_[^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQNorm):
-      case tiffMatch(/prod\.emea\.store\-factory\.orderfromstore\.sales\.ffa/):
+      case dlqNameMatch(/prod\.emea\.eboutique\.deposit\.cancel/):
+      case dlqNameMatch(/prod\.emea\.store\-factory\.orderfromstore\.sales\.ffa/):
         patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
         break;
 
-      case tiffMatch(/prod\.emea\.orex\.long\-tail\-receptions/):
+      case dlqNameMatch(/prod\.emea\.orex\.long\-tail\-receptions/):
         patterns = [/\"orderIncrementId\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /emea\.orderlifecycle\.fullordercancellation/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.sendmailccreminder1/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.sendmailccreminder2/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.sendemailconfirmation/.test(currentDLQNorm):
+      case dlqNameMatch(/emea\.orderlifecycle\.fullordercancellation/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.sendmailccreminder1/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.sendmailccreminder2/):
+      case dlqNameMatch(/prod\.emea\.orderlifecycle\.sendemailconfirmation/):
         patterns = [/\"entityRef\":\s*\"(EC\d+)\"/g];
         break;
 
-      case /prod\.emea\.eboutique\.order/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.eboutique\.order/):
         patterns = [/\"externalReference\":\s*\"(EC\d+)\"/g];
         break;
 
-      case /prod\.emea\.cim\.outbound\.messages\.ciam/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.cim\.outbound\.messages\.ciam/):
         patterns = [/\"gc_id\"\s*:\s*\"([a-f0-9\-]+)\"/g];
         break;
 
-      case /prod\.emea\.usermanagement\.users\.creations/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.usermanagement\.users\.creations/):
         patterns = [/\"iat\":\s*(\d+)/g];
         break;
 
-      case /prod\.emea\.fluent\.events\.invoices/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.fluent\.events\.invoices/):
         patterns = [/\"externalInvoiceId\":\s*\"([^\"]+)\"/g];
         break;
-      case /prod\.emea\.cjb\.outbound\.sfmc\.japan/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.cjb\.outbound\.sfmc\.japan/):
         patterns = [/\"number\":\s*\"([^\"]+)\"/g];
         break;
 
-      case tiffMatch(/prod\.emea\.orex\.financial\-transactions\-creation/):
-      case /prod\.emea\.orex\.inbound\.ordercancelation/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.orex\.financial\-transactions\-creation/):
+      case dlqNameMatch(/prod\.emea\.orex\.inbound\.ordercancelation/):
         patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
         break;
 
-      case tiffMatch(/prod\.emea\.orex\.callback\-transfers/):
-      case tiffMatch(/prod\.emea\.eboutique\.return\-notices/):
-      case /prod\.emea\.eboutique\.exchanges/.test(currentDLQNorm):
-      case tiffMatch(/prod\.emea\.eboutique\.close\-stock\-reservation/):
+      case dlqNameMatch(/prod\.emea\.orex\.callback\-transfers/):
+      case dlqNameMatch(/prod\.emea\.eboutique\.return\-notices/):
+      case dlqNameMatch(/prod\.emea\.eboutique\.exchanges/):
+      case dlqNameMatch(/prod\.emea\.eboutique\.close\-stock\-reservation/):
         patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orex\.ordercreation/.test(currentDLQNorm):
+      case dlqNameMatch(/prod\.emea\.orex\.ordercreation/):
         patterns = [/\"ref\":\s*\"([^\"]+)\"/g];
         break;
 
@@ -410,53 +460,53 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       // =========================
 
       // fileName
-      case tiffMatch(/tco\.rar\.archive\.files\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.archive\.files\.queue\.dlq(?:\.prd|\.prod)?/i):
         patterns = [/\"fileName\":\s*\"([^\"]+)\"/g];
         break;
 
       // C00-
-      case tiffMatch(/tco\.rar\.shipment\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.shipment\.queue\.dlq(?:\.prd|\.prod)?/i):
         patterns = [/\"C001\":\s*\"([^\"]+)\"/g];
         break;
 
       // BillToID
-      case tiffMatch(/tco\.rar\.orders\.release\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.rar\.create\.orders\.with\.deposit\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.rar\.order\.transfer\.notice\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.rar\.orders\.allocation\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.orders\.release\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.create\.orders\.with\.deposit\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.order\.transfer\.notice\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.orders\.allocation\.queue\.dlq(?:\.prd|\.prod)?/i):
       patterns = [/\"BillToID\":\s*\"([^\"]+)\"/g];
         break;
 
 
       // OrderNo
-      case tiffMatch(/tco\.rar\.tax\.release\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.rar\.oms\.retail\.invoice\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.oms\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.oms\.invoice\.resa\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.oms\.invoice\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.oms\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/tco\.rar\.oms\.retail\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i): // da controllare se ha OrderNo
+      case dlqNameMatch(/tco\.rar\.tax\.release\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.oms\.retail\.invoice\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.oms\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.oms\.invoice\.resa\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.oms\.invoice\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.oms\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.oms\.retail\.order\.to\.e1\.queue\.dlq(?:\.prd|\.prod)?/i): // da controllare se ha OrderNo
         patterns = [/\"OrderNo\":\s*\"([^\"]+)\"/g];
         break;
 
       // C03
-      case tiffMatch(/tco\.rar\.sales\.history\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.sales\.history\.queue\.dlq(?:\.prd|\.prod)?/i):
         patterns = [/\"C03\":\s*\"([^\"]+)\"/g];
         break;
 
       // InvoiceNo
-      case tiffMatch(/tco\.rar\.invoice\.creation\.queue\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/tco\.rar\.invoice\.creation\.queue\.dlq(?:\.prd|\.prod)?/i):
         patterns = [/\"InvoiceNo\":\s*\"([^\"]+)\"/g];
         break;
 
       // ControlNumber
-      case tiffMatch(/sys\.inv\.kdc\.esb\.shipstatus\.dgm\.dlq(?:\.prd|\.prod)?/i):
-      case tiffMatch(/sys\.inv\.3pl\.esb\.reccon\.dgm\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/sys\.inv\.kdc\.esb\.shipstatus\.dgm\.dlq(?:\.prd|\.prod)?/i):
+      case dlqNameMatch(/sys\.inv\.3pl\.esb\.reccon\.dgm\.dlq(?:\.prd|\.prod)?/i):
         patterns = [/\"ControlNumber\":\s*\"([^\"]+)\"/g];
         break;
 
       // tco-rar-tax-update-queue-dlq-prd – InvoiceNo + FlowId + FlowName
-      case tiffMatch(/tco[.\-]rar[.\-]tax[.\-]update[.\-]queue[.\-]dlq(?:[.\-](?:prd|prod))?/i): {
+      case dlqNameMatch(/tco[.\-]rar[.\-]tax[.\-]update[.\-]queue[.\-]dlq(?:[.\-](?:prd|prod))?/i): {
         // InvoiceNo (usato come reference principale verso Jira)
         const invoiceMatches = [...dlqText.matchAll(/"InvoiceNo":\s*"([^"]+)"/g)];
         const flowIdMatches  = [...dlqText.matchAll(/"FlowId":\s*"([^"]+)"/g)];
