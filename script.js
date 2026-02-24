@@ -261,7 +261,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         break;
 
       case /apac\.store\.factory\.sapnotice/.test(currentDLQNorm):
-      case /apac\.sap\.outbound\-delivery\.wtms\-supply/.test(currentDLQNorm):
+      case tiffMatch(/apac\.sap\.outbound\-delivery\.wtms\-supply/):
         patterns = [/\"DOCNUM\":\s*\"([^\"]+)\"/g];
         break;
 
@@ -272,14 +272,14 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
       case /apac\.orderfromstore\.availablecustomerorders\.sac/.test(currentDLQNorm):
       case /prod\.emea\.paymentdeposit\.dnofu/.test(currentDLQNorm):
       case /prod\.emea\.storefactory\.orderfromstore\.sales/.test(currentDLQNorm):
-      case /prod\.emea\.orderlifecycle\.cdc\-route/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.orderlifecycle\.cdc\-route/):
       case /prod\.amer\.storefactory\.orderfromstore\.sales/.test(currentDLQNorm):
-      case /prod\.amer\.orex\.store\-factory\-customerorders\-ordered/.test(currentDLQNorm):
-      case /prod\.apac\.orex\.store\-factory\-customerorders\-ordered/.test(currentDLQNorm):
-      case /prod\.apac\.orex\.store\-factory\-sales/.test(currentDLQNorm):
-      case /prod\.apac\.sap\.point\-of\-sales\.erp\-transaction/.test(currentDLQNorm):
-      case /prod\.apac\.sap\.good\-receipt\.erp\-supply/.test(currentDLQNorm):
-      case /prod\.apac\.sap\.store\-transfert\.erp\-supply/.test(currentDLQNorm):
+      case tiffMatch(/prod\.amer\.orex\.store\-factory\-customerorders\-ordered/):
+      case tiffMatch(/prod\.apac\.orex\.store\-factory\-customerorders\-ordered/):
+      case tiffMatch(/prod\.apac\.orex\.store\-factory\-sales/):
+      case tiffMatch(/prod\.apac\.sap\.point\-of\-sales\.erp\-transaction/):
+      case tiffMatch(/prod\.apac\.sap\.good\-receipt\.erp\-supply/):
+      case tiffMatch(/prod\.apac\.sap\.store\-transfert\.erp\-supply/):
         patterns = [/\"internalReference\":\s*\"([^\"]+)\"/g];
         break;
 
@@ -337,7 +337,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"codeStyle\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orderlifecycle\.blr\-route/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.orderlifecycle\.blr\-route/):
         patterns = [/\"creditMemoRef\":\s*\"([^\"]+)\"/g];
         break;
 
@@ -345,7 +345,7 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"quoteId\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orex\.return\-order\-creation/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.orex\.return\-order\-creation/):
         patterns = [/\"orderReference\":\s*\"([^\"]+)\"/g];
         break;
 
@@ -355,11 +355,11 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         break;
 
       case /prod\.emea\.eboutique\.deposit\.cancel/.test(currentDLQNorm):
-      case /prod\.emea\.store\-factory\.orderfromstore\.sales\.ffa/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.store\-factory\.orderfromstore\.sales\.ffa/):
         patterns = [/\"creditMemoReference\":\s*\"(CM_[^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orex\.long\-tail\-receptions/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.orex\.long\-tail\-receptions/):
         patterns = [/\"orderIncrementId\":\s*\"([^\"]+)\"/g];
         break;
 
@@ -389,15 +389,15 @@ if (!DLQtext || !results || !extractButton || !checkButton) {
         patterns = [/\"number\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orex\.financial\-transactions\-creation/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.orex\.financial\-transactions\-creation/):
       case /prod\.emea\.orex\.inbound\.ordercancelation/.test(currentDLQNorm):
         patterns = [/\"orderRef\":\s*\"([^\"]+)\"/g];
         break;
 
-      case /prod\.emea\.orex\.callback\-transfers/.test(currentDLQNorm):
-      case /prod\.emea\.eboutique\.return\-notices/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.orex\.callback\-transfers/):
+      case tiffMatch(/prod\.emea\.eboutique\.return\-notices/):
       case /prod\.emea\.eboutique\.exchanges/.test(currentDLQNorm):
-      case /prod\.emea\.eboutique\.close\-stock\-reservation/.test(currentDLQNorm):
+      case tiffMatch(/prod\.emea\.eboutique\.close\-stock\-reservation/):
         patterns = [/\"externalReference\":\s*\"([^\"]+)\"/g];
         break;
 
